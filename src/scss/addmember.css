@@ -1,0 +1,435 @@
+.hide {
+  display: none;
+}
+
+.add-member-container {
+  box-shadow: 2px;
+}
+
+.add-user-container {
+  width: 100%;
+  padding-top: 100px;
+  padding-left: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 2px;
+}
+
+.add-member-form,
+.add-user-form {
+  flex-direction: column;
+  padding: 20px 16px 40px 16px;
+  transform: translateZ(0);
+  text-align: center;
+}
+.add-member-form .add-member-form-title,
+.add-user-form .add-member-form-title {
+  margin: 12px;
+}
+
+h2 {
+  padding: 1rem 0;
+}
+
+.form {
+  gap: 32px;
+}
+
+.box {
+  background: rgba(0, 0, 0, 0.8);
+  width: 400px;
+  height: 420px;
+  border-radius: 5px;
+  padding: 40px;
+  box-sizing: border-box;
+  /* Positioning */
+  position: absolute;
+  top: 50%;
+  color: white;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.input-box {
+  position: relative;
+}
+
+.input-box input {
+  border-style: none;
+  background: transparent;
+  border-bottom: 1px solid #222222;
+  width: 100%;
+  position: relative;
+  outline: none;
+  padding: 10px 0;
+  font-size: 12px;
+  margin-bottom: 30px;
+}
+
+.input-box label {
+  color: #9eabb4;
+  position: absolute;
+  padding: 5px 0;
+  top: 0;
+  left: 0;
+  font-size: 12px;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.input-box input:-moz-read-only ~ label {
+  color: #ffa500;
+  font-size: 12px;
+  top: -20px;
+  -moz-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.input-box input:focus ~ label,
+.input-box input:read-only ~ label,
+.input-box input:valid ~ label {
+  color: #ffa500;
+  font-size: 12px;
+  top: -20px;
+  transition: 0.5s;
+}
+
+.input-box input:-moz-read-only ~ label, .input-box > div > input:-moz-read-only + label {
+  color: orange;
+  font-size: 12px;
+  top: -20px;
+  -moz-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.input-box input:focus ~ label,
+.input-box input:read-only ~ label,
+.input-box input:valid ~ label,
+.input-box > div > input:focus + label,
+.input-box > div > input:read-only + label,
+.input-box > div > input:valid + label {
+  color: orange;
+  font-size: 12px;
+  top: -20px;
+  transition: 0.5s;
+}
+
+.input-box div input:focus ~ label {
+  color: orange;
+  font-size: 12px;
+  top: -20px;
+  transition: 0.5s;
+}
+
+.input-box select {
+  border-style: none;
+  background: transparent;
+  border-bottom: 1px solid #222222;
+  width: 100%;
+  position: relative;
+  outline: none;
+  padding: 10px 0;
+  font-size: 12px;
+  margin-bottom: 30px;
+}
+
+.input-box label {
+  color: #9eabb4;
+  position: absolute;
+  padding: 5px 0;
+  top: 0;
+  left: 0;
+  font-size: 12px;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.input-box select:focus ~ label,
+.input-box select:valid ~ label {
+  color: orange;
+  font-size: 12px;
+  top: -20px;
+  transition: 0.5s;
+}
+
+.box input[type=submit] {
+  color: #222222;
+  border-spacing: none;
+  padding: 0.5rem 1rem;
+  font-size: 16px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+  background: orange;
+  border: 1px solid orange;
+  transition: 0.3s;
+}
+
+.box input[type=submit]:hover {
+  background: orange;
+  border: 1px solid orange;
+  transition: 0.3s;
+}
+
+.amber {
+  background: #ffb300;
+  color: #ffb300;
+  border: 1px solid #ffb300;
+  fill: #ffb300;
+}
+.amber:hover, .amber:hover:after, .amber.btn-fillup:after {
+  background: #cc8f00;
+  color: #cc8f00;
+  border: 1px solid transparent;
+}
+
+a,
+a:hover {
+  color: #111;
+  transition: 0.2s;
+}
+
+.box a {
+  margin-top: 0.5rem;
+  color: #9a9d9e;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.horizontal-divider {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.btn-lines {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 37px;
+  margin: 15px 0;
+  border: 1px solid #222222;
+  text-align: center;
+}
+.btn-lines small {
+  line-height: 34px;
+}
+.btn-lines div[class^=line] {
+  position: absolute;
+  border: 0px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+.btn-lines .line-top {
+  top: -1px;
+  left: -1px;
+  width: 0;
+  height: 1px;
+}
+.btn-lines .line-right {
+  bottom: 0;
+  right: -1px;
+  width: 1px;
+  height: 0;
+}
+.btn-lines .line-bottom {
+  bottom: -1px;
+  right: -1px;
+  width: 0;
+  height: 1px;
+}
+.btn-lines .line-left {
+  top: 0;
+  left: -1px;
+  width: 1px;
+  height: 0;
+}
+.btn-lines:hover .line-top, .btn-lines:hover .line-bottom {
+  width: 100px;
+}
+.btn-lines:hover .line-right, .btn-lines:hover .line-left {
+  height: 36px;
+}
+
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  transform: scale(1.1);
+  transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+}
+
+.modal-content {
+  position: absolute;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  background-color: white;
+  padding: 2rem 2.5rem;
+  width: 30em;
+  border-radius: 0.5rem;
+}
+
+.close-button {
+  float: right;
+  width: 1.5rem;
+  font-size: 1.2em;
+  line-height: 1;
+  padding: 0 0.2em 0.15em;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  background-color: var(--clr-neutral);
+  color: var(--clr-dark);
+  transition: color 0.12s ease-in-out;
+}
+
+.close-button:hover {
+  color: var(--clr-main);
+}
+
+.success-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.success-container .row {
+  border-radius: 20px;
+}
+
+.modalbox.success {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 20px;
+  background: #fff;
+  padding: 25px 25px 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalbox.success.animate .icon {
+  animation: fall-in 0.75s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.modalbox.success h1 {
+  font-family: "Montserrat", sans-serif;
+}
+
+.modalbox.success p {
+  font-family: "Open Sans", sans-serif;
+}
+
+.modalbox.success .icon {
+  position: relative;
+  margin: 0 auto;
+  margin-top: -75px;
+  background: #4caf50;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+}
+
+.modalbox.success .icon span {
+  position: absolute;
+  font-size: 4em;
+  color: #fff;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.center {
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+  /* stupid browser compat. smh */
+}
+
+.center .change {
+  clear: both;
+  display: block;
+  font-size: 10px;
+  color: #ccc;
+  margin-top: 10px;
+}
+
+.login-input-box {
+  position: relative;
+}
+
+.login-input-box input {
+  border-style: none;
+  background: transparent;
+  border-bottom: 1px solid #222222;
+  width: 100%;
+  position: relative;
+  outline: none;
+  padding: 10px 0;
+  font-size: 12px;
+  margin-bottom: 30px;
+}
+
+.login-input-box label {
+  color: #9a9d9e;
+  position: absolute;
+  padding: 5px 0;
+  top: 0;
+  left: 0;
+  font-size: 12px;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.login-input-box input:-moz-read-only ~ label {
+  color: #ffa500;
+  font-size: 12px;
+  top: -20px;
+  -moz-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.login-input-box input:focus ~ label,
+.login-input-box input:read-only ~ label,
+.login-input-box input:valid ~ label {
+  color: #ffa500;
+  font-size: 12px;
+  top: -20px;
+  transition: 0.5s;
+}
+
+.login-input-box input:-moz-read-only ~ label, .login-input-box > div > input:-moz-read-only + label {
+  color: orange;
+  font-size: 12px;
+  top: -20px;
+  -moz-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.login-input-box input:focus ~ label,
+.login-input-box input:read-only ~ label,
+.login-input-box input:valid ~ label,
+.login-input-box > div > input:focus + label,
+.login-input-box > div > input:read-only + label,
+.login-input-box > div > input:valid + label {
+  color: orange;
+  font-size: 12px;
+  top: -20px;
+  transition: 0.5s;
+}/*# sourceMappingURL=addmember.css.map */

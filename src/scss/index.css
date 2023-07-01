@@ -1,0 +1,13 @@
+.hide {
+  display: none;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.color {
+  color: #222222;
+}/*# sourceMappingURL=index.css.map */

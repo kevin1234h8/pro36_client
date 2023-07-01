@@ -1,0 +1,1035 @@
+import React, { useEffect, useRef, useState } from "react";
+import autoTable from "jspdf-autotable";
+import datas from "../data/datas.json";
+import { jsPDF } from "jspdf";
+import Navbar from "../components/Navbar";
+import axios from "axios";
+import ImportModal from "../components/ImportModal";
+import SuccessModal from "../components/SuccessModal";
+import { redirect } from "react-router-dom";
+import { count } from "console";
+import ImportAccountModal from "../components/ImportAccountModal";
+import { DetailRow } from "../interface/DetailRowInterface";
+import Sidebar from "../components/Sidebar";
+import { BASE_URL } from "../config/config";
+import ImportMemberAccount from "../components/ImportMemberAccountModal";
+import { AccountInterface } from "../interface/AccountInterface";
+import ImportMemberAccountModal from "../components/ImportMemberAccountModal";
+import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+
+const Summary = ({
+  setInvoiceNo,
+  setDate,
+  setServiceFee,
+  setClientName,
+  setRate,
+  setCity,
+  setCountry,
+  invoiceNo,
+  clientName,
+  date,
+  serviceFee,
+  rate,
+  city,
+  country,
+  setIsImportModalIsVisible,
+  setInvoiceNoDate,
+  invoiceNoDate,
+}: any) => {
+  const currentDate = new Date();
+  // Function to generate invoice number
+  function convertToRoman(month: number) {
+    const romanNumerals = [
+      "",
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V",
+      "VI",
+      "VII",
+      "VIII",
+      "IX",
+      "X",
+      "XI",
+      "XII",
+    ];
+
+    return romanNumerals[month];
+  }
+  const monthNumber = date.getMonth() + 1; // Adding 1 to get the month number from 1 to 12
+  const romanMonth = convertToRoman(monthNumber);
+  useEffect(() => {
+    const getLastestInvoiceNo = async () => {
+      try {
+        const res = await axios.get(
+          `${BASE_URL}/input-invoice/lastest-no-invoice`
+        );
+        const currentDate = new Date();
+        const currentDatePortion = `${currentDate.getFullYear()}/${romanMonth}/${currentDate.getDate()}/`;
+        setInvoiceNoDate(currentDatePortion);
+      } catch (error) {
+        console.log("Error retrieving latest invoice number:", error);
+      }
+    };
+
+    getLastestInvoiceNo();
+  }, []);
+
+  useEffect(() => {
+    const currentDatePortion = `${currentDate.getFullYear()}/${romanMonth}/${currentDate.getDate()}/`;
+    setInvoiceNoDate(currentDatePortion);
+    const values = {
+      date: currentDatePortion,
+    };
+    const getInvoiceNumber = async () => {
+      const res = await axios.post(
+        `${BASE_URL}/input-invoice/invoice-number`,
+        values
+      );
+      setInvoiceNo(res.data.invoiceNumber);
+    };
+    getInvoiceNumber();
+  }, [invoiceNoDate]);
+
+  return (
+    <div>
+      <div className="add-member-container lg:mx-[10rem] dark:text-white">
+        <div className="add-member-form w-100">
+          <h2 className="font-bold add-member-form-title">Summary</h2>
+          <div className="flex justify-end">
+            <button
+              onClick={() => setIsImportModalIsVisible(true)}
+              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-xs">Import</span>
+            </button>
+          </div>
+          <form className="form lg:w-full ">
+            <div className=" w-[100%] md:w-[768px] max-w-7xl lg:w-full">
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  defaultValue={invoiceNo}
+                  readOnly
+                />
+                <label>No Invoice</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  readOnly
+                  value={date
+                    .toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })
+                    .replace(/\//g, "-")}
+                />
+                <label>Date</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                />
+                <label>Client Name</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  max="100"
+                  value={serviceFee}
+                  onChange={(e) => {
+                    let value = parseFloat(e.target.value);
+
+                    if (value > 100) {
+                      value = 100;
+                    }
+
+                    setServiceFee(value);
+                  }}
+                />
+                <label>Service Fee</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="number"
+                  name=""
+                  min={1}
+                  required
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                />
+                <label>Rate</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+                <label>City</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                />
+                <label>Country</label>
+              </div>
+            </div>
+            <div className="form-footer"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// TransferTo component
+const TransferTo = ({
+  setBankName,
+  setBeneficiaryName,
+  setAccountNumber,
+  accountNumber,
+  bankName,
+  beneficiaryName,
+}: any) => {
+  return (
+    <div>
+      <div className="add-member-container lg:mx-[10rem] dark:text-white ">
+        <div className="add-member-form w-100">
+          <h2 className="font-bold add-member-form-title">Transfer To</h2>
+          <form className="form lg:w-full">
+            <div className="w-[100%] md:w-[768px] lg:w-full">
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                />
+                <label>Bank Name</label>
+              </div>
+
+              <div className="input-box">
+                <input
+                  type="text"
+                  name=""
+                  required
+                  value={beneficiaryName}
+                  onChange={(e) => setBeneficiaryName(e.target.value)}
+                />
+                <label>Bank Beneficiary Name</label>
+              </div>
+              <div className="input-box">
+                <input
+                  type="number"
+                  name=""
+                  value={accountNumber}
+                  min={1}
+                  required
+                  onChange={(e) => setAccountNumber(parseInt(e.target.value))}
+                />
+                <label>Bank Account No</label>
+              </div>
+            </div>
+            <div className="form-footer"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Detai;l component
+
+interface DetailProps {
+  details: DetailRow[];
+  onAddDetailRow: () => void;
+  onDetailChange: (
+    index: number,
+    field: keyof DetailRow,
+    value: string
+  ) => void;
+  onRemoveDetailRow: (index: number) => void;
+}
+
+const Detail: React.FC<any> = ({
+  details,
+  serviceFee,
+  onAddDetailRow,
+  onDetailChange,
+  rate,
+  setProfit,
+  setImportAccountModalVisible,
+  onRemoveDetailRow,
+  setIsImportModalIsVisible,
+  setImportMemberAccountModalVisible,
+}) => {
+  const widthStyle = useContainerWidthUtils();
+  const handleInputChange = (
+    index: number,
+    field: keyof DetailRow,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    onDetailChange(index, field, event.target.value);
+  };
+
+  const handleInputChangeFloat = (
+    index: number,
+    field: keyof DetailRow,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let newValue = parseFloat(event.target.value);
+    if (field === "service") {
+      // Convert the percentage input to a decimal value
+      newValue = newValue / 100;
+    }
+    onDetailChange(index, field, newValue);
+  };
+  const getService = () => {
+    details?.map((detail: any) => {
+      return detail.service;
+    });
+  };
+  return (
+    <div className=" max-w-7xl">
+      <div className="flex flex-col items-center font-bold">
+        <h2>Detail</h2>
+        <div className="flex items-end justify-end"></div>
+      </div>
+      <div className="flex justify-end w-full gap-4 px-4">
+        <button
+          onClick={() => setImportMemberAccountModalVisible(true)}
+          className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-xs">Import Existing Account</span>
+        </button>
+
+        <button
+          onClick={() => setImportAccountModalVisible(true)}
+          className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-xs">Import Existing Details</span>
+        </button>
+      </div>
+      <div className="flex items-center justify-between w-full px-4">
+        <div className="flex justify-end w-full"></div>
+      </div>
+      {details > 0 ? (
+        <div
+          className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+          style={{ width: widthStyle }}
+        >
+          <div className="row row--top-40"></div>
+          <div className="row row--top-20">
+            <div className="col-md-12">
+              <div className="table-container  dark:bg-[#0e1011]">
+                <table className="table">
+                  <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
+                    <tr>
+                      {datas.inputInvoice.map((data, index: number) => {
+                        return (
+                          <th
+                            key={index}
+                            className="text-center table__th dark:text-white"
+                          >
+                            {data.name}
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody className="table__tbody">
+                    {details?.map((detail: any, index: number) => {
+                      return (
+                        <tr
+                          key={index}
+                          className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
+                        >
+                          <td data-column="No" className="table-row__td">
+                            {index + 1}
+                          </td>
+                          <td
+                            data-column="Period To"
+                            className="table-row__td "
+                          >
+                            <div className="table-row__info">
+                              <p className="table-row__name w-[100px]">
+                                {detail.periodFrom}
+                              </p>
+                            </div>
+                          </td>
+                          <td
+                            data-column="Period From"
+                            className="table-row__td "
+                          >
+                            <div className="table-row__info w-[100px]">
+                              <p className="text-center table-row__name ">
+                                {detail.periodTo}
+                              </p>
+                            </div>
+                          </td>
+                          <td
+                            data-column="Account No"
+                            className="table-row__td"
+                          >
+                            <p className="flex items-center justify-center gap-2">
+                              <input
+                                type="number"
+                                className="text-center border-none appearance-none cursor-pointer"
+                                placeholder="0"
+                                min={1}
+                                value={detail.accountNo}
+                                onChange={(e) =>
+                                  handleInputChange(index, "accountNo", e)
+                                }
+                              />
+                            </p>
+                          </td>
+                          <td
+                            data-column="Broker Name"
+                            className="table-row__td"
+                          >
+                            <p className="flex items-center justify-center gap-2">
+                              <input
+                                className="text-center"
+                                type="text"
+                                value={detail.broker}
+                                placeholder="broker name"
+                                onChange={(e) =>
+                                  handleInputChange(index, "broker", e)
+                                }
+                              />
+                            </p>
+                          </td>
+                          <td data-column="Profit" className="table-row__td ">
+                            <p className="flex items-center justify-center ">
+                              <input
+                                className="text-center"
+                                type="number"
+                                placeholder="0"
+                                value={detail.profit}
+                                onChange={(e) =>
+                                  handleInputChange(index, "profit", e)
+                                }
+                              />
+                            </p>
+                          </td>
+
+                          <td data-column="Service" className="table-row__td">
+                            <p className="flex items-center justify-center ">
+                              <input
+                                className="text-center outline-none"
+                                type="number"
+                                step="0.01"
+                                value={
+                                  detail.service == 0
+                                    ? (
+                                        detail.profit *
+                                        (1 - serviceFee / 100)
+                                      ).toFixed(2)
+                                    : detail.service
+                                }
+                                readOnly
+                                onChange={(e) =>
+                                  handleInputChangeFloat(index, "service", e)
+                                }
+                              />
+                            </p>
+                          </td>
+
+                          <td data-column="Rupiah" className="table-row__td">
+                            {detail.rupiah == 0
+                              ? (
+                                  detail.profit *
+                                  (1 - serviceFee / 100) *
+                                  rate
+                                ).toFixed(2)
+                              : detail.rupiah}
+                          </td>
+                          <td data-column="Action" className="table-row__td">
+                            <i
+                              onClick={() => onRemoveDetailRow(index)}
+                              className="text-red-500 cursor-pointer fa-solid fa-trash"
+                            ></i>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="px-5 py-4 mt-4 text-center text-gray-600 bg-gray-100">
+          <p className="text-sm font-semibold">No Invoice Added </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const InvoiceDocument = ({
+  details,
+  clientName,
+  rate,
+  serviceFee,
+  invoiceNo,
+  date,
+  city,
+  country,
+  bankName,
+  beneficiaryName,
+  accountNumber,
+  user,
+  setIsSuccessModalVisible,
+  invoiceNoDate,
+}: any) => {
+  const [totalAmountInRupiah, setTotalAmountInRupiah] = useState();
+  const [totalServiceFee, setTotalServiceFee] = useState(0);
+
+  useEffect(() => {
+    if (details) {
+      const totalAmount = details.reduce((sum: number, detail: any) => {
+        const amount = detail.rupiah
+          ? detail.rupiah
+          : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+        return sum + parseFloat(amount);
+      }, 0);
+      setTotalAmountInRupiah(totalAmount.toFixed(2));
+
+      const totalFee = details.reduce((sum: number, detail: any) => {
+        // const fee = Number(detail.service) ;
+        const fee = detail.service
+          ? detail.service
+          : (detail.profit * (1 - serviceFee / 100)).toFixed(2);
+        return sum + parseFloat(fee);
+      }, 0);
+      setTotalServiceFee(totalFee.toFixed(2));
+    }
+  }, [details]);
+
+  const generatePDF = async () => {
+    const doc = new jsPDF();
+    const rows = details?.map((detail: any, index: number) => [
+      index + 1,
+      detail.periodFrom,
+      detail.periodTo,
+      detail.accountNo,
+      detail.broker,
+      detail.profit,
+      detail.service
+        ? "$" + detail.service
+        : "$" + (detail.profit * (1 - serviceFee / 100)).toFixed(2),
+      detail.rupiah
+        ? "Rp" + detail.rupiah
+        : "Rp" + (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2),
+    ]);
+
+    const values = details?.map((detail: any, index: number) => [
+      invoiceNo,
+      detail.periodFrom,
+      detail.periodTo,
+      detail.accountNo,
+      detail.broker,
+      detail.profit,
+      detail.service,
+      detail.rupiah,
+      user?.id,
+      user?.id,
+    ]);
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/input-invoice/input-invoice-details/create`,
+        { values }
+      );
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+    const summaryValues = {
+      invoiceNo: invoiceNoDate,
+      date: date
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-"),
+      clientName,
+      serviceFee,
+      rate,
+      city,
+      country,
+      bankName,
+      beneficiaryName,
+      accountNumber,
+      totalAmountInRupiah,
+      created_by: user?.id,
+      owner: user?.id,
+    };
+
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/input-invoice/input-invoice-summary/create`,
+        summaryValues
+      );
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+    const totalRow = [
+      "Total",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "$" + totalServiceFee,
+      "Rp" + totalAmountInRupiah,
+    ];
+    rows.push(totalRow);
+    // Set table properties
+    const tableProps = {
+      startY: 80,
+      margin: { top: 150 },
+    };
+
+    // Add the table to the PDF document
+    autoTable(doc, {
+      head: [
+        [
+          "No",
+          "Period From",
+          "Period To",
+          "Account No",
+          "Broker",
+          "Amount ($)",
+          "Service Fee ($)",
+          "Amount in Rupiah",
+        ],
+      ],
+      body: rows,
+      ...tableProps,
+    });
+
+    doc.setFontSize(10);
+
+    // doc.setTextColor(255, 0, 0); //
+    doc.setFont("helvetica", "bold");
+    doc.text(clientName, 15, 20);
+    doc.setTextColor(0, 0, 0); //
+    doc.setFont("helvetica", "normal");
+    doc.text(city, 15, 25);
+    doc.text(country, 15, 30);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setFillColor(255, 165, 0); // Orange color
+    doc.rect(15, 43, 70, 10, "F");
+    doc.text("SERVICE FEE", 15, 50);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("service fee", 15, 57);
+    doc.text("kurs&", 15, 64);
+    doc.setFont("helvetica", "normal");
+    doc.text(serviceFee + "%", 50, 57);
+    doc.text("Rp" + rate, 50, 64);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("Statement Date", 120, 15);
+    doc.text("Statement No.", 120, 20);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      date
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-"),
+      170,
+      15
+    );
+    doc.text(invoiceNo, 170, 20);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFillColor(255, 165, 0); // Orange color
+    doc.rect(118, 43, 80, 10, "F");
+    doc.text("PAYMENT SUMMARY", 120, 50);
+    doc.text("Ammount (Rp)", 170, 50);
+    doc.text("Total", 120, 57);
+    doc.setFont("helvetica", "normal");
+
+    doc.text("Rp" + totalAmountInRupiah, 170, 57);
+
+    doc.text("Payment By Transfer To (Full amount in Rupiah)", 15, 250);
+    doc.setFont("helvetica", "bold");
+    doc.text(bankName, 15, 260);
+    doc.text(beneficiaryName, 15, 265);
+    doc.text(accountNumber.toString(), 15, 270);
+
+    doc.setFont("helvetica", "italic");
+
+    // Set the underline style
+
+    // Set the font size and text color
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+
+    // Add the text with underline and italic style
+    doc.rect(8, 285, 190, 10);
+    doc.text(
+      "Please make a payment within 7 days after this statement is issued, otherwise the robot will be deactivated",
+      12,
+      290
+    );
+
+    doc.save("invoice.pdf");
+    setIsSuccessModalVisible(true);
+  };
+  return (
+    <div className="px-4 mx-auto max-w-7xl sm:px-8 ">
+      <div className="container flex justify-end w-full px-4 mx-auto my-10 lg:px-4">
+        {details.length > 0 &&
+        clientName !== "" &&
+        serviceFee !== 0 &&
+        rate !== 0 &&
+        city !== "" &&
+        country !== "" &&
+        bankName !== "" &&
+        beneficiaryName !== "" &&
+        accountNumber !== "" ? (
+          <button
+            onClick={generatePDF}
+            className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-xs">Print</span>
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+export interface InvoiceDocumentRef {
+  print: () => void;
+}
+
+const AddInputInvoicePage = ({ user }: any) => {
+  const [invoiceNo, setInvoiceNo] = useState("");
+
+  const [date, setDate] = useState(new Date());
+  const [clientName, setClientName] = useState("");
+  const [serviceFee, setServiceFee] = useState<number>(1);
+  const [rate, setRate] = useState<number>(1);
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+
+  const [bankName, setBankName] = useState("");
+  const [beneficiaryName, setBeneficiaryName] = useState("");
+  const [accountNumber, setAccountNumber] = useState<number>(1);
+  const [invoiceNoDate, setInvoiceNoDate] = useState("");
+  const [details, setDetails] = useState<DetailRow[]>([]);
+
+  const [profit, setProfit] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [invoiceDetailsSearchQuery, setInvoiceDetailsSearchQuery] =
+    useState<string>("");
+  const [memberAccountSearchQuery, setMemberAccountSearchQuery] =
+    useState<string>("");
+  const [invoiceDetailsSearchResults, setInvoiceDetailsSearchResults] =
+    useState<any>([]);
+  const [isImportModalIsVisible, setIsImportModalIsVisible] = useState(false);
+  const [isImportAccountModalVisible, setImportAccountModalVisible] =
+    useState<boolean>(false);
+  const [
+    isImportMemberAccountModalVisible,
+    setImportMemberAccountModalVisible,
+  ] = useState<boolean>(false);
+  const [searchMessage, setSearchMessage] = useState("");
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const [createdDate, setCreatedDate] = useState<string>("");
+  const [createdDateInvoiceDetails, setCreatedDateInvoiceDetails] =
+    useState<string>("");
+  const [createdDateMemberAccount, setCreatedDateMemberAccount] =
+    useState<string>("");
+  const [memberAccounts, setMemberAccounts] = useState<any>([]);
+  const getImportAccount = async () => {
+    const res = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`
+    );
+    setSearchResults(res.data.inputInvoiceSummary);
+  };
+
+  const options: any = { day: "2-digit", month: "2-digit", year: "numeric" };
+
+  const addDetailRow = () => {
+    const newDetail: DetailRow = {
+      periodFrom: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
+      periodTo: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
+      accountNo: 0,
+      broker: "",
+      profit: Number(0),
+      service: calculateService(Number(profit), rate),
+      rupiah: Number(0),
+    };
+    setDetails((prevDetails) => [...prevDetails, newDetail]);
+  };
+  console.log("invoiceNo :", invoiceNo);
+  const calculateService = (profit: number, rate: number) => {
+    return profit * rate;
+  };
+
+  const handleImport = async (id: string) => {
+    const res = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
+    );
+    if (res.status === 200) {
+      const response = await axios.get(
+        `${BASE_URL}/input-invoice/input-invoice-summary/${res.data.inputInvoiceSummary.no_invoice}`
+      );
+      console.log("response : ", response.data.inputInvoiceSummary);
+      const inputInvoiceSummary = res.data.inputInvoiceSummary;
+      setClientName(inputInvoiceSummary.client_name);
+      setServiceFee(inputInvoiceSummary.service_fee);
+      setRate(inputInvoiceSummary.rate);
+      setCity(inputInvoiceSummary.city);
+      setCountry(inputInvoiceSummary.country);
+      setBankName(inputInvoiceSummary.bank_name);
+      setBeneficiaryName(inputInvoiceSummary.bank_beneficiary);
+      setAccountNumber(inputInvoiceSummary.bank_no);
+      setIsImportModalIsVisible(false);
+      const newDetails: DetailRow[] = response.data.inputInvoiceSummary?.map(
+        (detailsObject: any) => ({
+          periodFrom: detailsObject.period_from,
+          periodTo: detailsObject.period_to,
+          accountNo: detailsObject.account_no,
+          broker: detailsObject.broker_name,
+          profit: detailsObject.profit,
+          service: detailsObject.service_cost,
+          rupiah: detailsObject.cost_in_rupiah,
+        })
+      );
+      setDetails(newDetails);
+    }
+  };
+  console.log("memberAccounts : ", memberAccounts);
+  const handleImportInvoiceDetails = async (accountNo: number) => {
+    const res = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-details/${user?.id}/${accountNo}`
+    );
+    const inputInvoiceDetailsObject = res.data.inputInvoiceDetails;
+    console.log(res.data.inputInvoiceDetails);
+    const newDetail: DetailRow = {
+      periodFrom: inputInvoiceDetailsObject.period_from,
+      periodTo: inputInvoiceDetailsObject.period_to,
+      accountNo: inputInvoiceDetailsObject.account_no,
+      broker: inputInvoiceDetailsObject.broker_name,
+      profit: inputInvoiceDetailsObject.profit,
+      service: inputInvoiceDetailsObject.service_cost,
+      rupiah: inputInvoiceDetailsObject.cost_in_rupiah,
+    };
+    setDetails((prevDetails) => [...prevDetails, newDetail]);
+    setImportAccountModalVisible(false);
+  };
+
+  const handleImportMemberAccounts = async (id: string) => {
+    const res = await axios.get(`${BASE_URL}/account/${id}`);
+    console.log(res);
+    const memberAccounts = res.data.account;
+    console.log(id);
+    console.log("memberAccountsById : ", memberAccounts);
+    const newDetail: DetailRow = {
+      periodFrom: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
+      periodTo: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
+      accountNo: memberAccounts.account_no,
+      broker: memberAccounts.server,
+      profit: 0,
+      service: 0,
+      rupiah: 0,
+    };
+    setDetails((prevDetails) => [...prevDetails, newDetail]);
+    setImportMemberAccountModalVisible(false);
+  };
+  const getMemberAccounts = async () => {
+    const res = await axios.get(
+      `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`
+    );
+    console.log(res);
+    setMemberAccounts(res.data.accounts);
+  };
+  const getInvoiceDetails = async () => {
+    let res = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&owner=${user?.id}&createdDate=${createdDateInvoiceDetails}`
+    );
+    if (user.level === 1) {
+      res = await axios.get(
+        `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`
+      );
+    }
+    console.log(res);
+    setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
+  };
+
+  const handleDetailChange = (
+    index: number,
+    field: keyof DetailRow,
+    value: string
+  ) => {
+    const updatedDetails = [...details];
+    updatedDetails[index] = {
+      ...updatedDetails[index],
+      [field]: value,
+    };
+    setDetails(updatedDetails);
+  };
+  const removeDetailRow = (index: number) => {
+    const updatedDetails = [...details];
+    updatedDetails.splice(index, 1);
+    setDetails(updatedDetails);
+  };
+  return (
+    <div>
+      <Navbar user={user} />
+      {isImportMemberAccountModalVisible ? (
+        <ImportMemberAccountModal
+          setMemberAccountSearchQuery={setMemberAccountSearchQuery}
+          setCreatedDateMemberAccount={setCreatedDateMemberAccount}
+          getMemberAccount={getMemberAccounts}
+          handleImportMemberAccounts={handleImportMemberAccounts}
+          memberAccounts={memberAccounts}
+          setImportMemberAccountModalVisible={
+            setImportMemberAccountModalVisible
+          }
+        />
+      ) : null}
+      {isSuccessModalVisible ? (
+        <SuccessModal
+          text="PDF File has been created successfully"
+          redirectLink="/input-invoice"
+        />
+      ) : null}
+      {isImportAccountModalVisible ? (
+        <ImportAccountModal
+          setImportMemberAccountModalVisible={
+            setImportMemberAccountModalVisible
+          }
+          getInvoiceDetails={getInvoiceDetails}
+          setInvoiceDetailsSearchQuery={setInvoiceDetailsSearchQuery}
+          invoiceDetailsSearchResults={invoiceDetailsSearchResults}
+          handleImportMemberAccounts={handleImportMemberAccounts}
+          setImportAccountModalVisible={setImportAccountModalVisible}
+          setCreatedDateInvoiceDetails={setCreatedDateInvoiceDetails}
+        />
+      ) : null}
+
+      {isImportModalIsVisible ? (
+        <ImportModal
+          searchResults={searchResults}
+          setIsImportModalIsVisible={setIsImportModalIsVisible}
+          getImportAccount={getImportAccount}
+          setSearchQuery={setSearchQuery}
+          handleImport={handleImport}
+          searchMessage={searchMessage}
+          setCreatedDate={setCreatedDate}
+        />
+      ) : null}
+
+      <Summary
+        setIsImportModalIsVisible={setIsImportModalIsVisible}
+        invoiceNo={invoiceNo}
+        date={date}
+        clientName={clientName}
+        serviceFee={serviceFee}
+        rate={rate}
+        city={city}
+        country={country}
+        setInvoiceNo={setInvoiceNo}
+        setDate={setDate}
+        setClientName={setClientName}
+        setServiceFee={setServiceFee}
+        setCity={setCity}
+        setCountry={setCountry}
+        setRate={setRate}
+        setInvoiceNoDate={setInvoiceNoDate}
+        invoiceNoDate={invoiceNoDate}
+      />
+      <TransferTo
+        bankName={bankName}
+        setBankName={setBankName}
+        beneficiaryName={beneficiaryName}
+        setBeneficiaryName={setBeneficiaryName}
+        accountNumber={accountNumber}
+        setAccountNumber={setAccountNumber}
+      />
+      <Detail
+        setImportAccountModalVisible={setImportAccountModalVisible}
+        setIsImportModalIsVisible={setIsImportModalIsVisible}
+        setProfit={setProfit}
+        rate={rate}
+        serviceFee={serviceFee}
+        details={details}
+        onAddDetailRow={addDetailRow}
+        onDetailChange={handleDetailChange}
+        onRemoveDetailRow={removeDetailRow}
+        setImportMemberAccountModalVisible={setImportMemberAccountModalVisible}
+      />
+
+      <InvoiceDocument
+        setIsSuccessModalVisible={setIsSuccessModalVisible}
+        user={user}
+        details={details}
+        invoiceNo={invoiceNo}
+        date={date}
+        clientName={clientName}
+        serviceFee={serviceFee}
+        rate={rate}
+        city={city}
+        country={country}
+        bankName={bankName}
+        beneficiaryName={beneficiaryName}
+        accountNumber={accountNumber}
+        invoiceNoDate={invoiceNoDate}
+      />
+    </div>
+  );
+};
+
+export default AddInputInvoicePage;

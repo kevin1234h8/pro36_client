@@ -1,0 +1,27 @@
+@import "./variables";
+
+.navbar {
+  @include flexBetween(row);
+  position: sticky;
+  width: 100%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  background-color: $deep-black;
+  color: $light-gray;
+  padding: $padding-base $padding-xxl;
+  z-index: 1000;
+  #{&}__name {
+    color: $white;
+  }
+  #{&}__user-name {
+    color: $light-gray;
+    font-size: 12px;
+  }
+}
+
+.logo {
+  background-color: linear-gradient(to right, red, yellow);
+}
+
+

@@ -1,0 +1,196 @@
+{
+  "navbar": [
+    {
+      "name": "New Account",
+      "icon": "fa-solid fa-user navigation-sidebar-icon text-indigo-600",
+      "link": "/"
+    },
+    {
+      "name": "Ex Account",
+      "icon": "fa-solid fa-users navigation-sidebar-icon text-indigo-600",
+      "link": "/ex-account"
+    },
+    {
+      "name": "Input Invoice",
+      "icon": "fa-solid fa-user navigation-sidebar-icon text-indigo-600",
+      "link": "/input-invoice"
+    },
+    {
+      "name": "Add User",
+      "icon": "fa-solid fa-user navigation-sidebar-icon text-indigo-600",
+      "link": "/add-user"
+    }
+  ],
+  "account_table_head": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Regist Date"
+    },
+    {
+      "name": "Client Name"
+    },
+    {
+      "name": "Account No"
+    },
+    {
+      "name": "Server"
+    },
+
+    {
+      "name": "Expired Date"
+    },
+    {
+      "name": "Ea Name"
+    },
+    {
+      "name": "Remark"
+    },
+    {
+      "name": "VPS"
+    },
+    {
+      "name": "Recruit By"
+    },
+    {
+      "name": "Action"
+    }
+  ],
+  "account_detail_modal": [
+    {
+      "name": "Regist Date"
+    },
+    {
+      "name": "Client Name"
+    },
+    {
+      "name": "Account No"
+    },
+    {
+      "name": "Server"
+    },
+    {
+      "name": "Expired Date"
+    },
+    {
+      "name": "Ea Name"
+    },
+    {
+      "name": "Remark"
+    },
+    {
+      "name": "VPS"
+    },
+    {
+      "name": "Recruit By"
+    }
+  ],
+  "import_modal_account_header": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Client Name"
+    },
+    {
+      "name": "Account No"
+    },
+
+    {
+      "name": "Ea Name"
+    },
+
+    {
+      "name": "Action"
+    }
+  ],
+  "role": [
+    { "value": 1, "label": "Master" },
+    { "value": 2, "label": "Admin" },
+    { "value": 3, "label": "User" }
+  ],
+  "inputInvoice": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Period From"
+    },
+    {
+      "name": "Period To"
+    },
+    {
+      "name": "Account No"
+    },
+    {
+      "name": "Broker"
+    },
+    {
+      "name": "Profit ($)"
+    },
+    {
+      "name": "Service ($)"
+    },
+    {
+      "name": "Rupiah"
+    }
+  ],
+  "inputInvoiceSummary": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Invoice Date"
+    },
+    {
+      "name": "Invoice No"
+    },
+    {
+      "name": "Client Name"
+    },
+    {
+      "name": "City"
+    },
+    {
+      "name": "Country"
+    },
+    {
+      "name": "Total (Rp)"
+    }
+  ],
+  "importInvoiceDetails": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Date"
+    },
+    {
+      "name": "Invoice No"
+    },
+    {
+      "name": "Broker"
+    },
+    {
+      "name": "Action"
+    }
+  ],
+  "importInvoiceSummary": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Date"
+    },
+    {
+      "name": "Invoice No"
+    },
+    {
+      "name": "Client Name"
+    },
+    {
+      "name": "Action"
+    }
+  ]
+}

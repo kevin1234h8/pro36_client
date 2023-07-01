@@ -1,0 +1,82 @@
+@import "./variables";
+
+.navigation-sidebar {
+  // width: 300px;
+  position: fixed;
+  padding: $padding-base;
+  color: $white;
+  min-height: 100vh;
+  padding: $padding-base;
+  background-color: $dark-blue;
+  z-index: 100;
+
+  #{&}__content {
+    font-size: 14px;
+    display: flex;
+    gap: 1rem;
+    padding: $padding-base;
+    margin: $margin-base 0;
+    flex-direction: column;
+
+    a {
+      color: #cccccc;
+    }
+  }
+  #{&}__content__menu {
+    @include customFlex(center, flex-start, row, 1.5rem);
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    &:hover {
+      background-color: $royal-blue;
+    }
+  }
+  .navigation-sidebar-toggle-btn {
+    position: absolute;
+    right: -15px;
+    top: 30px;
+    font-size: 10px;
+    background-color: white;
+  }
+}
+.navigation-sidebar-icon {
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.colleps-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 26px;
+  margin: 1rem 0;
+  cursor: pointer;
+  color: $black;
+}
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  position: absolute;
+  z-index: 1;
+  top: -30px;
+  left: 70px;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

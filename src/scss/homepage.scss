@@ -1,0 +1,120 @@
+@import "./variables";
+
+.main {
+  @include flex(row);
+  #{&}__content {
+    .member-list {
+      display: flex;
+      gap: $gap-xl;
+      flex-direction: column;
+      .member-list-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $gap-s;
+        .member-list-title {
+          font-size: $h5-font-size;
+        }
+      }
+    }
+    .filter-container {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+
+      .filter-section {
+        display: flex;
+        align-items: center;
+        gap: $gap-s;
+        .show-select {
+          padding: 1rem;
+          border: 1px solid orange;
+          border-radius: 0.5rem;
+          outline: none;
+        }
+      }
+    }
+  }
+}
+
+.search-box {
+  background: white;
+  height: 40px;
+  border-radius: 40px;
+  border: none;
+}
+.search-btn {
+  color: #007bff;
+  float: right;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  transition: 0.4s;
+}
+.search-txt {
+  border: none;
+  background: none;
+  outline: none;
+  float: left;
+  padding: 0;
+  color: $black;
+  font-size: 16px;
+  transition: 0.4s;
+  line-height: 40px;
+  width: 0px;
+}
+.search-box:focus-within > .search-txt {
+  width: 240px;
+  padding: 0 1rem;
+}
+.search-box:focus-within > .search-btn {
+  background: $light-black;
+}
+
+.btn-16 {
+  border: none;
+  color: #000;
+}
+.btn-16:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  left: 0;
+  direction: rtl;
+  z-index: -1;
+  box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9,
+    7px 7px 20px 0px #0002, 4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}
+.btn-16:hover {
+  color: #000;
+}
+.btn-16:hover:after {
+  left: auto;
+  right: 0;
+  width: 100%;
+}
+.btn-16:active {
+  top: 2px;
+}
+
+.btn-16:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  left: 0;
+  direction: rtl;
+  z-index: -1;
+  box-shadow: -7px -7px 20px 0px #fff9, -4px -4px 5px 0px #fff9,
+    7px 7px 20px 0px #0002, 4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}

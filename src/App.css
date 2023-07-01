@@ -1,38 +1,102 @@
-.App {
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.react-select__control {
+  background-color: #1f2937;
+  color: #ffffff;
+  border-color: transparent;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.react-select-dark .react-select__option {
+  background-color: #1f2937;
+  color: #ffffff;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.react-select-dark .react-select__single-value {
+  color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Optional: Handle different scrollbar styles for different browsers */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Optional: Handle different scrollbar styles for different browsers */
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"] {
+  -webkit-appearance: none;
+  margin: 0;
+  -moz-appearance: textfield !important;
+}
+/* #cover-spin {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+  display: none;
+}
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
   to {
+    transform: rotate(360deg);
+  }
+} */
+
+.loader-container {
+  background-color: rgba(0, 0, 0, 0.3); /* Gray background color */
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  z-index: 10;
+}
+
+.spinner {
+  border: 4px solid #007bff; /* Blue color */
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
     transform: rotate(360deg);
   }
 }

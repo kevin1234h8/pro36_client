@@ -1,0 +1,150 @@
+$black: #222222;
+$light-black: #2f3640;
+$dark: #1e1c22;
+$light-gray: #cccccc;
+$white: #fff;
+$gray: #8a8a8a;
+$light-blue: #01b9d1;
+$royal-blue: #2864f6;
+$blue: #4097ff;
+$dark-blue: #0a4ef4;
+$light-gray: #9eabb4;
+$border-gray: #eee;
+$deep-purple: #5e35b1;
+$indigo: #3f51b5;
+$blue: #2196f3;
+$light-blue: #03a9f4;
+$cyan: #00bcd4;
+$teal: #009688;
+$green: #b0d139;
+$light-green: #8bc34a;
+$lime: #cddc39;
+$yellow: #ffeb3b;
+$amber: #ffb300;
+$orange: #e64a19;
+$purple: #6337e3;
+$deep-black: #1e1c22;
+$bezier: cubic-bezier(0.215, 0.61, 0.355, 1);
+$time: 300ms;
+$clr-main: #d75b4c;
+$clr-dark: #333;
+$clr-neutral: #ddd;
+$clr-light: #fff;
+$icon-blue: #378fee;
+$icon-green: #37ca7a;
+$purple-taupe: #906c85;
+$icon-orange: #db540b;
+$icon-purple: #9663ef;
+
+//? padding
+
+$padding-none: 0;
+$padding-xs: 4px;
+$padding-s: 8px;
+$padding-base: 12px;
+$padding-m: 16px;
+$padding-l: 24px;
+$padding-xl: 32px;
+$padding-xxl: 40px;
+
+//? margin
+
+$margin-none: 0;
+$margin-xs: 4px;
+$margin-s: 8px;
+$margin-base: 12px;
+$margin-m: 16px;
+$margin-l: 24px;
+$margin-xl: 32px;
+$margin-xxl: 40px;
+
+//?
+$gap-none: 0;
+$gap-xs: 4px;
+$gap-s: 8px;
+$gap-base: 12px;
+$gap-m: 16px;
+$gap-l: 24px;
+$gap-xl: 32px;
+$gap-xxl: 40px;
+
+$line-thickness: 0.25em;
+$glass-size: 65%;
+$icon-height: 7rem;
+$transition-speed: 0.45s;
+$timing-function: cubic;
+
+$font-size-base: 1rem !default;
+$font-size-sm: $font-size-base * 0.875 !default;
+$font-size-lg: $font-size-base * 1.25 !default;
+
+$font-weight-lighter: lighter !default;
+$font-weight-light: 300 !default;
+$font-weight-normal: 400 !default;
+$font-weight-medium: 500 !default;
+$font-weight-semibold: 600 !default;
+$font-weight-bold: 700 !default;
+$font-weight-bolder: bolder !default;
+
+$font-weight-base: $font-weight-normal !default;
+
+$line-height-base: 1.5 !default;
+$line-height-sm: 1.25 !default;
+$line-height-lg: 2 !default;
+
+$h1-font-size: $font-size-base * 2.5 !default;
+$h2-font-size: $font-size-base * 2 !default;
+$h3-font-size: $font-size-base * 1.75 !default;
+$h4-font-size: $font-size-base * 1.5 !default;
+$h5-font-size: $font-size-base * 1.25 !default;
+$h6-font-size: $font-size-base !default;
+
+@mixin flexBetween($direction) {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: $direction;
+}
+
+@mixin flexCenter($direction) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $direction;
+}
+
+@mixin flex($direction) {
+  display: flex;
+  flex-direction: $direction;
+}
+
+@mixin customFlex($align, $justify, $direction, $gap) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $align;
+  flex-direction: $direction;
+  gap: $gap;
+}
+@mixin transition($transitions...) {
+  -webkit-transition: $transitions;
+  -moz-transition: $transitions;
+  -ms-transition: $transitions;
+  transition: $transitions;
+}
+
+@mixin transform($transforms) {
+  -webkit-transform: $transforms;
+  -moz-transform: $transforms;
+  -ms-transform: $transforms;
+  -o-transform: $transforms;
+  transform: $transforms;
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+.hide {
+  display: none;
+}

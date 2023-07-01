@@ -1,0 +1,29 @@
+.hide {
+  display: none;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  position: sticky;
+  width: 100%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  background-color: #1e1c22;
+  color: #9eabb4;
+  padding: 12px 40px;
+  z-index: 1000;
+}
+.navbar .navbar__name {
+  color: #fff;
+}
+.navbar .navbar__user-name {
+  color: #9eabb4;
+  font-size: 12px;
+}
+
+.logo {
+  background-color: linear-gradient(to right, red, yellow);
+} /*# sourceMappingURL=navbar.css.map */
