@@ -91,7 +91,6 @@ function App() {
       setLoginInfo(login);
     }
   }, []);
-  console.log("widht", screen.width);
 
   function onWindowMatch() {
     if (
