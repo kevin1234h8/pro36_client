@@ -52,15 +52,6 @@ function App() {
     getAvatar();
   }, []);
 
-  useEffect(() => {
-    const getExchangeRate = async () => {
-      const response = await axios.get(
-        `http://api.exchangeratesapi.io/${formattedDate}?base=USD&access_key=${apiKey}`
-      );
-    };
-    getExchangeRate();
-  }, []);
-
   const toggleNavigationSidebar = () => {
     setIsOpen(!isOpen);
   };
