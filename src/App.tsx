@@ -29,14 +29,20 @@ function App() {
   const apiKey = "38a4000d2421d3f8cf6b913c32d87aeb";
   const formattedDate = currentDate.toISOString().split("T")[0];
   const [loading, setLoading] = useState(true); // Add a loading state
+
   useEffect(() => {
     const getLoginUser = async () => {
       try {
         const res = await axios.get("http://localhost:5000/user/profile", {
           withCredentials: true,
         });
+        if (res.data.user) {
+          setUser(res.data.user);
+        } else {
+          const newUser = undefined;
+          setUser(newUser);
+        }
         console.log(res.data);
-        setUser(res.data.user);
         setLoading(false);
       } catch (err) {
         console.log(err);
@@ -44,6 +50,7 @@ function App() {
     };
     getLoginUser();
   }, []);
+
   useEffect(() => {
     const getAvatar = async () => {
       const res = await axios.get(`http://localhost:5000/avatar/${user?.id}`);
