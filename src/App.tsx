@@ -42,10 +42,11 @@ function App() {
           const newUser = undefined;
           setUser(newUser);
         }
-        console.log(res.data);
         setLoading(false);
+        console.log(res.data);
       } catch (err) {
         console.log(err);
+        setLoading(false);
       }
     };
     getLoginUser();
