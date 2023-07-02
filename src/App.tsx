@@ -30,6 +30,23 @@ function App() {
   const formattedDate = currentDate.toISOString().split("T")[0];
   const [loading, setLoading] = useState(true); // Add a loading state
 
+  const getCookie = (name: string) => {
+    const cookieName = name + "=";
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i];
+      while (cookie.charAt(0) === " ") {
+        cookie = cookie.substring(1);
+      }
+      if (cookie.indexOf(cookieName) === 0) {
+        return cookie.substring(cookieName.length, cookie.length);
+      }
+    }
+    return null;
+  };
+
+  const jwtCookie = getCookie("jwt");
+
   useEffect(() => {
     const getLoginUser = async () => {
       try {
@@ -47,7 +64,7 @@ function App() {
       }
     };
     getLoginUser();
-  }, []);
+  }, [jwtCookie]);
 
   useEffect(() => {
     const getAvatar = async () => {
@@ -104,20 +121,6 @@ function App() {
   // Whenever the user explicitly chooses light mode
 
   // Whenever the user explicitly chooses to respect the OS preference
-  const getCookie = (name: string) => {
-    const cookieName = name + "=";
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i];
-      while (cookie.charAt(0) === " ") {
-        cookie = cookie.substring(1);
-      }
-      if (cookie.indexOf(cookieName) === 0) {
-        return cookie.substring(cookieName.length, cookie.length);
-      }
-    }
-    return null;
-  };
 
   return loading ? (
     <LoadingSpinner />
