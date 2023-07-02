@@ -30,6 +30,8 @@ const Navbar = ({ user }: any) => {
     try {
       const res = await axios.get(`${BASE_URL}/user/logout`);
       if (res.status === 200) {
+        document.cookie =
+          "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         navigate("/login");
       }
     } catch (error) {

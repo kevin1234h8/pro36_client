@@ -42,8 +42,10 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
         setShowErrorMessage(false);
         setCookie("isLogin", true, 7);
         localStorage.setItem("showToast", JSON.stringify(true));
-
         if (res.data.data.level === 3) {
+          document.cookie = `jwt=${res.data.accessToken}; max-age=${
+            3 * 24 * 60 * 60
+          }; path=/;`;
           localStorage.setItem("activeMenu", "Input Invoice");
           navigate("/input-invoice");
         } else {
