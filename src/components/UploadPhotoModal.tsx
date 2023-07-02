@@ -1,14 +1,12 @@
-import React, { useRef } from "react";
 import "../scss/hiddenFile.css";
 const UploadPhotoModal = ({ setIsUploadPhotoModal }: any) => {
-
   return (
     <div
       className=" min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-[100] outline-none focus:outline-none bg-no-repeat bg-center bg-cover"
       id="modal-id"
     >
-      <div className="absolute bg-black opacity-80 inset-0 z-0"></div>
-      <div className="w-full  max-w-lg p-5 relative mx-auto my-auto rounded-xl shadow-lg  bg-white ">
+      <div className="absolute inset-0 z-0 bg-black opacity-80"></div>
+      <div className="relative w-full max-w-lg p-5 mx-auto my-auto bg-white shadow-lg rounded-xl ">
         <div className="absolute top-0 right-0">
           <i
             onClick={() => setIsUploadPhotoModal(false)}
@@ -16,10 +14,10 @@ const UploadPhotoModal = ({ setIsUploadPhotoModal }: any) => {
           ></i>
         </div>
         <div className="relative">
-          <div className="text-center p-5 flex-auto justify-center">
-            <h2 className="text-xl font-bold py-4 ">Change Profile Photo</h2>
+          <div className="justify-center flex-auto p-5 text-center">
+            <h2 className="py-4 text-xl font-bold ">Change Profile Photo</h2>
           </div>
-          <div className="p-3  mt-2 text-center space-x-4 md:block">
+          <div className="p-3 mt-2 space-x-4 text-center md:block">
             <form action="">
               <input
                 type="file"
@@ -32,7 +30,7 @@ const UploadPhotoModal = ({ setIsUploadPhotoModal }: any) => {
               File upload
             </a>
             <button className="file-upload">File upload</button>
-            <button className="mb-2 md:mb-0 bg-green-500 border border-green-500 px-5 py-2 text-sm shadow-sm font-medium tracking-wider text-white rounded-full hover:shadow-lg hover:bg-green-600">
+            <button className="px-5 py-2 mb-2 text-sm font-medium tracking-wider text-white bg-green-500 border border-green-500 rounded-full shadow-sm md:mb-0 hover:shadow-lg hover:bg-green-600">
               {/* <a href={redirectLink} className="text-white hover:text-white">
               Ok
             </a> */}

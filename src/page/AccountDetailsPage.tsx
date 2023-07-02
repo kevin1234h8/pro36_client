@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { AccountInterface } from "../interface/AccountInterface";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ActionButton from "../components/ActionButton";
+import Navbar from "../components/Navbar";
 import SuccessModal from "../components/SuccessModal";
-import { goBack } from "../utils/navigationUtils";
 import { BASE_URL } from "../config/config";
+import { AccountInterface } from "../interface/AccountInterface";
+import { goBack } from "../utils/navigationUtils";
+
 const DetailsPage = ({ user }: any) => {
   const { id } = useParams();
   const [account, setAccount] = useState<AccountInterface>();
@@ -15,8 +15,12 @@ const DetailsPage = ({ user }: any) => {
 
   useEffect(() => {
     const getAccount = async () => {
-      const res = await axios.get(`${BASE_URL}/account/${id}`);
-      setAccount(res.data.account);
+      try {
+        const res = await axios.get(`${BASE_URL}/account/${id}`);
+        setAccount(res.data.account);
+      } catch (err) {
+        console.log(err);
+      }
     };
     getAccount();
   }, [id]);
@@ -27,7 +31,6 @@ const DetailsPage = ({ user }: any) => {
     );
     if (confirmed) {
       const res = await axios.put(`${BASE_URL}/account/delete/${id}`);
-      console.log(res);
       if (res.status === 200) {
         setIsSuccessModalVisible(true);
       }

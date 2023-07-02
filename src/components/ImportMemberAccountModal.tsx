@@ -1,5 +1,6 @@
 import React from "react";
 import datas from "../data/datas.json";
+import { AccountInterface } from "../interface/AccountInterface";
 const ImportMemberAccountModal = ({
   setMemberAccountSearchQuery,
   setCreatedDateMemberAccount,
@@ -101,38 +102,44 @@ const ImportMemberAccountModal = ({
                     </tr>
                   </thead>
                   <tbody className="text-sm divide-y divide-gray-100">
-                    {memberAccounts?.map((result: any, index: number) => {
-                      return (
-                        <tr key={index}>
-                          <td className="p-2">
-                            <div className="text-gray-800 ">{index + 1}</div>
-                          </td>
-                          <td className="py-2">
-                            <div className="text-gray-800 ">{result.date}</div>
-                          </td>
-                          <td className="p-2">
-                            <div className="text-left">{result.no_invoice}</div>
-                          </td>
+                    {memberAccounts?.map(
+                      (result: AccountInterface, index: number) => {
+                        return (
+                          <tr key={index}>
+                            <td className="p-2">
+                              <div className="text-gray-800 ">{index + 1}</div>
+                            </td>
+                            <td className="py-2">
+                              <div className="text-gray-800 w-[100px]">
+                                {result.regist_date}
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="text-left">
+                                {result.account_no}
+                              </div>
+                            </td>
 
-                          <td className="p-2">
-                            <div className="text-left">
-                              {result.client_name}
-                            </div>
-                          </td>
-                          <td className="p-2">
-                            <div className="flex justify-center">
-                              <button
-                                onClick={() =>
-                                  handleImportMemberAccounts(result.id)
-                                }
-                              >
-                                <i className="fa-solid fa-cloud-arrow-up text-[#1E90FF]"></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                            <td className="p-2">
+                              <div className="text-left">
+                                {result.client_name}
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="flex justify-center">
+                                <button
+                                  onClick={() =>
+                                    handleImportMemberAccounts(result.id)
+                                  }
+                                >
+                                  <i className="fa-solid fa-cloud-arrow-up text-[#1E90FF]"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )}
                   </tbody>
                 </table>
               </div>

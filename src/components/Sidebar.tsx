@@ -27,7 +27,6 @@ const Sidebar = ({ user }: any) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  console.log("userLevel : ", user?.level);
   return (
     <>
       {isSidebarOpen ? null : (

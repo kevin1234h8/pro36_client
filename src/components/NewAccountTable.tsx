@@ -10,11 +10,8 @@ const NewAccountTable = ({
   setPageSize,
   totalAccount,
   page,
-  setIsSuccessModalVisible,
   setSearch,
-  setPage,
   deleteAccount,
-  setConfirmationModalVisible,
 }: any) => {
   const totalPages = Math.ceil(totalAccount / pageSize);
   const widthStyle = useContainerWidthUtils();

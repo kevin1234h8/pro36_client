@@ -5,30 +5,34 @@ import { AccountInterface } from "../interface/AccountInterface";
 import Navbar from "../components/Navbar";
 import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
-
+import { goBack } from "../utils/navigationUtils";
 const EditAccountPage = ({ user }: any) => {
   const { id } = useParams();
   useEffect(() => {
-    const getAccount = async () => {
-      const res = await axios.get(`${BASE_URL}/account/${id}`);
-      setAccount(res.data.account);
-      setClientName(res.data.account.client_name);
-      setAccountNo(res.data.account.account_no);
-      setPassword(res.data.account.password);
-      setInvPassword(res.data.account.inv_pass);
-      setServer(res.data.account.server);
-      setEaName(res.data.account.ea_name);
-      setSerialKey(res.data.account.serial_key);
-      setRemark(res.data.account.remark);
-      setVps(res.data.account.vps);
-      setRecruitBy(res.data.account.recruit_by);
-      setRegistDate(res.data.account.regist_date);
-      setExpiredDate(res.data.account.expired_date);
-    };
-    getAccount();
+    try {
+      const getAccount = async () => {
+        const res = await axios.get(`${BASE_URL}/account/${id}`);
+        setAccount(res.data.account);
+        setClientName(res.data.account.client_name);
+        setAccountNo(res.data.account.account_no);
+        setPassword(res.data.account.password);
+        setInvPassword(res.data.account.inv_pass);
+        setServer(res.data.account.server);
+        setEaName(res.data.account.ea_name);
+        setSerialKey(res.data.account.serial_key);
+        setRemark(res.data.account.remark);
+        setVps(res.data.account.vps);
+        setRecruitBy(res.data.account.recruit_by);
+        setRegistDate(res.data.account.regist_date);
+        setExpiredDate(res.data.account.expired_date);
+      };
+      getAccount();
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
-  const [account, setAccount] = useState<AccountInterface>();
 
+  const [account, setAccount] = useState<AccountInterface>();
   const [clientName, setClientName] = useState<string>("");
   const [accountNo, setAccountNo] = useState<number>(0);
   const [password, setPassword] = useState<string>("");
@@ -43,8 +47,6 @@ const EditAccountPage = ({ user }: any) => {
   const [registDate, setRegistDate] = useState<string>("");
   const [isSuccessModelIsVisible, setIsSuccessModelIsVisible] =
     useState<boolean>(false);
-
-  console.log("password : ", password);
 
   const handleSubmit = async (e: SyntheticEvent) => {
     try {
@@ -68,20 +70,11 @@ const EditAccountPage = ({ user }: any) => {
       if (res.status === 200) {
         setIsSuccessModelIsVisible(true);
       }
-      console.log(res);
     } catch (error) {
       setIsSuccessModelIsVisible(false);
     }
   };
 
-  console.log(account?.client_name);
-  console.log("client_name : ", account?.client_name);
-  console.log("client_name : ", clientName);
-
-  const goBack = () => {
-    window.history.back();
-  };
-  console.log(account);
   return (
     <div className="dark:bg-[#0e1011] ">
       {isSuccessModelIsVisible ? (

@@ -4,14 +4,14 @@ const ActionButton = () => {
   return (
     <div className="relative ml-24">
       <button
-        className="sharebtn relative flex z-10 bg-white border rounded-md p-2 opacity-50 hover:opacity-100 focus:outline-none focus:border-blue-400"
+        className="relative z-10 flex p-2 bg-white border rounded-md opacity-50 sharebtn hover:opacity-100 focus:outline-none focus:border-blue-400"
         title="click to enable menu"
       >
         <span className="inline-block pr-4 text-gray-600">Share</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 448 512"
-          className="h-5 w-6 my-1 text-blue-700"
+          className="w-6 h-5 my-1 text-blue-700"
         >
           <path
             fill="currentColor"
@@ -19,7 +19,7 @@ const ActionButton = () => {
           ></path>
         </svg>
       </button>
-      <div className="sharebtn-dropdown absolute right-0 mt-0 w-48 bg-white rounded-sm overflow-hidden shadow-lg z-20 hidden border border-gray-100">
+      <div className="absolute right-0 z-20 hidden w-48 mt-0 overflow-hidden bg-white border border-gray-100 rounded-sm shadow-lg sharebtn-dropdown">
         <a
           href="#"
           title="Share on Facebook (NB! does not work in this demo)"

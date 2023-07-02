@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { AccountInterface } from "../interface/AccountInterface";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import ExAccountTable from "../components/ExAccountTable";
-import SuccessModal from "../components/SuccessModal";
-import Sidebar from "../components/Sidebar";
-import { BASE_URL } from "../config/config";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Navbar from "../components/Navbar";
+import { BASE_URL } from "../config/config";
+import { AccountInterface } from "../interface/AccountInterface";
 
-const ExAccountPage = ({ isOpen, toggleNavigationSidebar, user }: any) => {
+const ExAccountPage = ({ user }: any) => {
   const [exAccount, setExAccount] = useState<AccountInterface>();
   const [totalExAccount, setTotalExAccount] = useState<number>();
   const [exAccountPageSize, setExAccountPageSize] = useState<number>(20);
   const [exAccountPage, setExAccountPage] = useState<number>(1);
   const [exAccountSearch, setExAccountSearch] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isSuccessModalVisible, setIsSuccessModalVisible] =
-    useState<boolean>(false);
 
   useEffect(() => {
     const getExAccount = async () => {
@@ -49,12 +45,6 @@ const ExAccountPage = ({ isOpen, toggleNavigationSidebar, user }: any) => {
     <LoadingSpinner />
   ) : (
     <div className="relative bg-[#fafafa]  dark:bg-[#0e1011]">
-      {/* {isSuccessModalVisible ? (
-        <SuccessModal
-          text={"Account Deleted Successfully"}
-          redirectLink={"/"}
-        />
-      ) : null} */}
       <div>
         <Navbar user={user} />
         <div className="main">

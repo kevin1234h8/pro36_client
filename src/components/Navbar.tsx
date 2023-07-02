@@ -1,22 +1,18 @@
 import axios from "axios";
-import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
-import UploadPhotoModal from "./UploadPhotoModal";
-import { Navigate, redirect, useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../config/config";
-import LoadingSpinner from "./LoadingSpinner";
 import useLoading from "../hooks/useLoading";
+import UploadPhotoModal from "./UploadPhotoModal";
 const Navbar = ({ user }: any) => {
   const [open, setOpen] = React.useState(false);
   const [activeMenu, setActiveMenu] = useState<string>("");
   const [avatar, setAvatar] = useState<any>({});
   const [isUploadPhotoModal, setIsUploadPhotoModal] = useState<boolean>(false);
-  const [errorUploadAvatar, setErrorUploadAvatar] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const [isLoading, setIsLoading] = useLoading();
   const navigate = useNavigate();
-  console.log(avatar === undefined);
   useEffect(() => {
     const getAvatar = async () => {
       const res = await axios.get(`${BASE_URL}/avatar/${user?.id}`);

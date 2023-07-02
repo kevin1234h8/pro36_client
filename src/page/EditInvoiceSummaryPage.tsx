@@ -1,18 +1,10 @@
 import axios from "axios";
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { InputInvoiceSummary } from "../interface/InputInvoiceSummary";
-import SuccessModal from "../components/SuccessModal";
 import Navbar from "../components/Navbar";
-import { deleteInvoiceSummary } from "../utils/apiUtils";
-import { goBack } from "../utils/navigationUtils";
+import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
+import { goBack } from "../utils/navigationUtils";
 
 const EditInvoiceSummaryPage = ({ user }: any) => {
   const { id }: any = useParams();
@@ -39,14 +31,13 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
   const bankNameRef = useRef("");
   const beneficiaryNameRef = useRef("");
   const accountNumberRef = useRef(1);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // New loading state
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
       );
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
-      console.log(inputInvoiceSummary);
       setInvoiceNo(inputInvoiceSummary.invoiceNo);
       setDate(inputInvoiceSummary.date);
       setClientName(inputInvoiceSummary.client_name);
@@ -97,9 +88,6 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
       console.log(err);
     }
   };
-  if (isLoading) {
-    return <div>Loading...</div>; // Render a loading indicator while data is being fetched
-  }
 
   return (
     <div className="dark:bg-[#0e1011]  ">

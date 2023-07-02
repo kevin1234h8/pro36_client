@@ -10,18 +10,8 @@ import { BASE_URL } from "../config/config";
 import { AccountInterface } from "../interface/AccountInterface";
 import "../scss/addbutton.css";
 import "../scss/homepage.css";
-const HomePage = ({
-  setUser,
-  isOpen,
-  user,
-  toggleNavigationSidebar,
-  isLoggedIn,
-  notificationCount,
-  loginInfo,
-  showToast,
-  setShowToast,
-  avatar,
-}: any) => {
+
+const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
   const [account, setAccount] = useState<AccountInterface>();
   const [totalAccount, setTotalAccount] = useState<number>();
   const [pageSize, setPageSize] = useState<number>(20);
@@ -51,7 +41,6 @@ const HomePage = ({
   useEffect(() => {
     const showToasts = () => {
       setShowToast(localStorage.getItem("showToast"));
-
       if (showToast === "true") {
         toast.success("Login successfully", {
           position: "top-right",
@@ -92,7 +81,6 @@ const HomePage = ({
     const values = {
       deleted_by: user.id,
     };
-
     try {
       const confirmed = window.confirm(
         "Are you sure you want to delete this account ?"

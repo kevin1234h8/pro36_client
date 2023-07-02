@@ -6,23 +6,13 @@ import Navbar from "../components/Navbar";
 import tradingAnimation from "../lottie/114986-ultimate-trading-experience.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 
-// Import Swiper styles
-import "swiper/css";
-
 const MainPage = ({ user }: any) => {
   const widthStyle = useContainerWidthUtils();
-  console.log("widthStyle", widthStyle);
   useEffect(() => {
     AOS.init({
       once: true,
     });
   });
-
-  // const lottieTradingAnimation = {
-  //   loop: true,
-  //   autoplay: true,
-  //   animationData: tradingAnimation,
-  // };
 
   return (
     <div>
@@ -104,29 +94,19 @@ const MainPage = ({ user }: any) => {
             </div>
           </div>
           <div className="w-full lg:w-1/2">
-            {/* <img
-            data-aos="fade-left"
-            data-aos-duration="1500"
-            src={tradingChart}
-            className=""
-            alt=""
-          /> */}
             {widthStyle != "100%" ? (
               <Lottie
-                // options={lottieTradingAnimation}
                 animationData={tradingAnimation}
-                height={250} // Set the height of the animation
-                width={250} // Set the width of the animation
+                style={{ width: "100%", height: "300px", textAlign: "center" }}
               />
             ) : (
               <Lottie
                 animationData={tradingAnimation}
-                height={450} // Set the height of the animation
-                width={450} // Set the width of the animation
+                height={450}
+                width={450}
               />
             )}
           </div>
-          {/* <div className="font-bold text-center">pro 36</div> */}
         </div>
       </div>
     </div>

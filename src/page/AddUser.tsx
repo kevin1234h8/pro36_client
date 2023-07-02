@@ -1,31 +1,17 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
-import ButtonOutline from "../components/ButtonOutline";
 import axios from "axios";
-import ComboBoxs from "../components/ComboBoxs";
-import SuccessModal from "../components/SuccessModal";
-import Select from "react-select";
-import datas from "../data/datas.json";
+import { SyntheticEvent, useState } from "react";
 import Navbar from "../components/Navbar";
-import Compressor from "compressorjs";
-import Sidebar from "../components/Sidebar";
-import { goBack } from "../utils/navigationUtils";
+import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
-const AddUser = ({
-  isOpen,
-  user,
-  toggleNavigationSidebar,
-  isLoggedIn,
-}: any) => {
+import { goBack } from "../utils/navigationUtils";
+
+const AddUser = ({ user }: any) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [level, setLevel] = useState<number>();
-  const [showPassword, setShowPassword] = useState(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-  const [avatar, setAvatar] = useState<any>();
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -47,7 +33,6 @@ const AddUser = ({
       setShowErrorMessage(true);
     }
   };
-  console.log(level);
 
   return (
     <div className="dark:bg-[#0e1011] h-screen ">

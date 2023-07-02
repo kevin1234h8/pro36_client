@@ -2,11 +2,6 @@ import checkAnimation from "../lottie/99592-checkmark.json";
 import Lottie from "lottie-react";
 
 const SuccessModal = ({ text, redirectLink }: any) => {
-  // const lottieCheckAnimation = {
-  //   loop: true,
-  //   autoplay: true,
-  //   animationData: checkAnimation,
-  // };
   return (
     <div
       className=" min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-[100] outline-none focus:outline-none bg-no-repeat bg-center bg-cover"

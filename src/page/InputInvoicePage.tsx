@@ -8,27 +8,55 @@ import datas from "../data/datas.json";
 import useLoading from "../hooks/useLoading";
 import { InputInvoiceSummary } from "../interface/InputInvoiceSummary";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+
 const InputInvoicePage = ({ user }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [inputDetails, setInputDetails] = useState<InputInvoiceSummary[]>([]);
   const [totalInvoiceSummary, setTotalInvoiceSummary] = useState<number>(1);
-  const [invoiceSummaryPage, setInvoiceSummaryPage] = useState<any>();
+  const [invoiceSummaryPage, setInvoiceSummaryPage] = useState<number>(1);
   const [searchInvoiceSummary, setSearchInvoiceSummary] = useState<string>("");
   const [invoiceSummaryPageSize, setInvoiceSummaryPageSize] =
     useState<number>(20);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useLoading();
+
   const totalPages = Math.ceil(totalInvoiceSummary / invoiceSummaryPageSize);
 
   useEffect(() => {
-    const getInputInvoiceDetails = async () => {
+    try {
+      const getInputInvoiceDetails = async () => {
+        let res = await axios.get(
+          `${BASE_URL}/input-invoice/input-invoice-summary?owner=${user.id}`
+        );
+        if (user.level === 1) {
+          res = await axios.get(
+            `${BASE_URL}/input-invoice/input-invoice-summary`
+          );
+        }
+        if (res.status === 200) {
+          setIsLoading(false);
+        }
+        setInputDetails(res.data.inputInvoiceSummary);
+        setTotalInvoiceSummary(res.data.totalInvoiceSummary);
+      };
+      getInputInvoiceDetails();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  const getInvoiceSummaryPaginateData = async (
+    newPage: number,
+    newPageSize: number
+  ) => {
+    try {
       let res = await axios.get(
-        `${BASE_URL}/input-invoice/input-invoice-summary?owner=${user.id}`
+        `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}&owner=${user.id}`
       );
       if (user.level === 1) {
         res = await axios.get(
-          `${BASE_URL}/input-invoice/input-invoice-summary`
+          `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}`
         );
       }
       if (res.status === 200) {
@@ -36,30 +64,10 @@ const InputInvoicePage = ({ user }: any) => {
       }
       setInputDetails(res.data.inputInvoiceSummary);
       setTotalInvoiceSummary(res.data.totalInvoiceSummary);
-    };
-
-    getInputInvoiceDetails();
-  }, []);
-
-  const getInvoiceSummaryPaginateData = async (
-    newPage: number,
-    newPageSize: number
-  ) => {
-    let res = await axios.get(
-      `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}&owner=${user.id}`
-    );
-    if (user.level === 1) {
-      res = await axios.get(
-        `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}`
-      );
+      setInvoiceSummaryPage(newPage);
+    } catch (err) {
+      console.log(err);
     }
-    if (res.status === 200) {
-      setIsLoading(false);
-    }
-    console.log(res.data.inputInvoiceSummary);
-    setInputDetails(res.data.inputInvoiceSummary);
-    setTotalInvoiceSummary(res.data.totalInvoiceSummary);
-    setInvoiceSummaryPage(newPage);
   };
 
   const deleteInvoiceSummary = async (id: string) => {
@@ -71,7 +79,6 @@ const InputInvoicePage = ({ user }: any) => {
         const res = await axios.delete(
           `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
         );
-        console.log(res);
         if (res.status === 200) {
           setIsSuccessModalVisible(true);
         }
@@ -80,6 +87,7 @@ const InputInvoicePage = ({ user }: any) => {
       console.log(err);
     }
   };
+
   return isLoading ? (
     <LoadingSpinner />
   ) : (
@@ -193,27 +201,6 @@ const InputInvoicePage = ({ user }: any) => {
                               );
                             }
                           )}
-                          {/* <th className="text-center table__th dark:text-white">
-                          No
-                        </th>
-                        <th className="text-center table__th dark:text-white">
-                          Invoice Date
-                        </th>
-                        <th className="text-center table__th dark:text-white">
-                          Invoice No
-                        </th>
-                        <th className="text-center table__th dark:text-white">
-                          Client Name
-                        </th>
-                        <th className="text-center table__th dark:text-white">
-                          City
-                        </th>
-                        <th className="text-center table__th dark:text-white">
-                          Country
-                        </th>
-                        <th className="text-center table__th dark:text-white">
-                          Total (Rp)
-                        </th> */}
                         </tr>
                       </thead>
                       <tbody className="table__tbody">

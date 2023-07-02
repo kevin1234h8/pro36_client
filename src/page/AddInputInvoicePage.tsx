@@ -1,25 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import autoTable from "jspdf-autotable";
-import datas from "../data/datas.json";
-import { jsPDF } from "jspdf";
-import Navbar from "../components/Navbar";
 import axios from "axios";
-import ImportModal from "../components/ImportModal";
-import SuccessModal from "../components/SuccessModal";
-import { redirect } from "react-router-dom";
-import { count } from "console";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import React, { useEffect, useState } from "react";
 import ImportAccountModal from "../components/ImportAccountModal";
-import { DetailRow } from "../interface/DetailRowInterface";
-import Sidebar from "../components/Sidebar";
-import { BASE_URL } from "../config/config";
-import ImportMemberAccount from "../components/ImportMemberAccountModal";
-import { AccountInterface } from "../interface/AccountInterface";
 import ImportMemberAccountModal from "../components/ImportMemberAccountModal";
+import ImportModal from "../components/ImportModal";
+import Navbar from "../components/Navbar";
+import SuccessModal from "../components/SuccessModal";
+import { BASE_URL } from "../config/config";
+import datas from "../data/datas.json";
+import { DetailRow } from "../interface/DetailRowInterface";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 
 const Summary = ({
   setInvoiceNo,
-  setDate,
   setServiceFee,
   setClientName,
   setRate,
@@ -37,7 +31,6 @@ const Summary = ({
   invoiceNoDate,
 }: any) => {
   const currentDate = new Date();
-  // Function to generate invoice number
   function convertToRoman(month: number) {
     const romanNumerals = [
       "",
@@ -62,9 +55,7 @@ const Summary = ({
   useEffect(() => {
     const getLastestInvoiceNo = async () => {
       try {
-        const res = await axios.get(
-          `${BASE_URL}/input-invoice/lastest-no-invoice`
-        );
+        await axios.get(`${BASE_URL}/input-invoice/lastest-no-invoice`);
         const currentDate = new Date();
         const currentDatePortion = `${currentDate.getFullYear()}/${romanMonth}/${currentDate.getDate()}/`;
         setInvoiceNoDate(currentDatePortion);
@@ -317,7 +308,7 @@ const Detail: React.FC<any> = ({
         <h2>Detail</h2>
         <div className="flex items-end justify-end"></div>
       </div>
-      <div className="flex justify-end w-full gap-4 px-4">
+      <div className="flex justify-end w-full gap-4 px-4 lg:px-20">
         <button
           onClick={() => setImportMemberAccountModalVisible(true)}
           className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
@@ -337,9 +328,9 @@ const Detail: React.FC<any> = ({
       <div className="flex items-center justify-between w-full px-4">
         <div className="flex justify-end w-full"></div>
       </div>
-      {details > 0 ? (
+      {details.length > 0 ? (
         <div
-          className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+          className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
           style={{ width: widthStyle }}
         >
           <div className="row row--top-40"></div>
@@ -567,7 +558,6 @@ const InvoiceDocument = ({
         `${BASE_URL}/input-invoice/input-invoice-details/create`,
         { values }
       );
-      console.log(res);
     } catch (error) {
       console.error(error);
     }
@@ -598,7 +588,6 @@ const InvoiceDocument = ({
         `${BASE_URL}/input-invoice/input-invoice-summary/create`,
         summaryValues
       );
-      console.log(res);
     } catch (err) {
       console.log(err);
     }
@@ -808,7 +797,7 @@ const AddInputInvoicePage = ({ user }: any) => {
     };
     setDetails((prevDetails) => [...prevDetails, newDetail]);
   };
-  console.log("invoiceNo :", invoiceNo);
+
   const calculateService = (profit: number, rate: number) => {
     return profit * rate;
   };
@@ -821,7 +810,6 @@ const AddInputInvoicePage = ({ user }: any) => {
       const response = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-summary/${res.data.inputInvoiceSummary.no_invoice}`
       );
-      console.log("response : ", response.data.inputInvoiceSummary);
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
       setClientName(inputInvoiceSummary.client_name);
       setServiceFee(inputInvoiceSummary.service_fee);
@@ -846,13 +834,12 @@ const AddInputInvoicePage = ({ user }: any) => {
       setDetails(newDetails);
     }
   };
-  console.log("memberAccounts : ", memberAccounts);
+
   const handleImportInvoiceDetails = async (accountNo: number) => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${user?.id}/${accountNo}`
     );
     const inputInvoiceDetailsObject = res.data.inputInvoiceDetails;
-    console.log(res.data.inputInvoiceDetails);
     const newDetail: DetailRow = {
       periodFrom: inputInvoiceDetailsObject.period_from,
       periodTo: inputInvoiceDetailsObject.period_to,
@@ -868,10 +855,7 @@ const AddInputInvoicePage = ({ user }: any) => {
 
   const handleImportMemberAccounts = async (id: string) => {
     const res = await axios.get(`${BASE_URL}/account/${id}`);
-    console.log(res);
     const memberAccounts = res.data.account;
-    console.log(id);
-    console.log("memberAccountsById : ", memberAccounts);
     const newDetail: DetailRow = {
       periodFrom: new Date()
         .toLocaleDateString("en-GB", options)
@@ -888,13 +872,18 @@ const AddInputInvoicePage = ({ user }: any) => {
     setDetails((prevDetails) => [...prevDetails, newDetail]);
     setImportMemberAccountModalVisible(false);
   };
+
   const getMemberAccounts = async () => {
-    const res = await axios.get(
-      `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`
-    );
-    console.log(res);
-    setMemberAccounts(res.data.accounts);
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`
+      );
+      setMemberAccounts(res.data.accounts);
+    } catch (err) {
+      console.log(err);
+    }
   };
+
   const getInvoiceDetails = async () => {
     let res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&owner=${user?.id}&createdDate=${createdDateInvoiceDetails}`
@@ -904,7 +893,6 @@ const AddInputInvoicePage = ({ user }: any) => {
         `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`
       );
     }
-    console.log(res);
     setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
   };
 
@@ -925,6 +913,7 @@ const AddInputInvoicePage = ({ user }: any) => {
     updatedDetails.splice(index, 1);
     setDetails(updatedDetails);
   };
+
   return (
     <div>
       <Navbar user={user} />
@@ -951,10 +940,10 @@ const AddInputInvoicePage = ({ user }: any) => {
           setImportMemberAccountModalVisible={
             setImportMemberAccountModalVisible
           }
+          handleImportInvoiceDetails={handleImportInvoiceDetails}
           getInvoiceDetails={getInvoiceDetails}
           setInvoiceDetailsSearchQuery={setInvoiceDetailsSearchQuery}
           invoiceDetailsSearchResults={invoiceDetailsSearchResults}
-          handleImportMemberAccounts={handleImportMemberAccounts}
           setImportAccountModalVisible={setImportAccountModalVisible}
           setCreatedDateInvoiceDetails={setCreatedDateInvoiceDetails}
         />

@@ -2,23 +2,18 @@ import axios from "axios";
 import { SyntheticEvent, useState } from "react";
 import { v4 } from "uuid";
 import Navbar from "../components/Navbar";
-import "../scss/addmember.css";
 import SuccessModal from "../components/SuccessModal";
-import Sidebar from "../components/Sidebar";
-import { goBack } from "../utils/navigationUtils";
 import { BASE_URL } from "../config/config";
-import Datepicker from "react-tailwindcss-datepicker";
-import {
-  DateValueType,
-  DatepickerType,
-} from "react-tailwindcss-datepicker/dist/types";
-const AddMember = ({ notificationCount, setNotificationCount, user }: any) => {
+import "../scss/addmember.css";
+import { goBack } from "../utils/navigationUtils";
+
+const AddMember = ({ setNotificationCount, user }: any) => {
   const date = new Date();
   const oneYearLaterDate = new Date(date);
   oneYearLaterDate.setFullYear(date.getFullYear() + 1);
   let uuidv4: string;
   uuidv4 = v4();
-  console.log("user from add member : ", user?.id);
+
   const [registDate, setRegistDate] = useState<any>(
     date
       .toLocaleDateString("en-GB", {
@@ -28,7 +23,6 @@ const AddMember = ({ notificationCount, setNotificationCount, user }: any) => {
       })
       .replace(/\//g, "-")
   );
-  // const [registDate, setRegistDate] = useState<Date | null>(null);
 
   const [expiredDate, setExpiredDate] = useState<string>(
     oneYearLaterDate
@@ -39,7 +33,6 @@ const AddMember = ({ notificationCount, setNotificationCount, user }: any) => {
       })
       .replace(/\//g, "-")
   );
-  console.log(expiredDate);
   const [id] = useState<string>(uuidv4);
   const [clientName, setClientName] = useState<string>("");
   const [accountNo, setAccountNumber] = useState<number>(0);

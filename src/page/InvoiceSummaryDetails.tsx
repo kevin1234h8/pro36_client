@@ -5,38 +5,43 @@ import SuccessModal from "../components/SuccessModal";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
-
+import { goBack } from "../utils/navigationUtils";
 const InvoiceSummaryDetails = ({ user }: any) => {
   const { id } = useParams();
   const [invoiceSummary, setInvoiceSummary] = useState<InputInvoiceSummary>();
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
+
   useEffect(() => {
-    const getInvoiceSummary = async () => {
-      const res = await axios.get(
-        `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
-      );
-      setInvoiceSummary(res.data.inputInvoiceSummary);
-    };
-    getInvoiceSummary();
+    try {
+      const getInvoiceSummary = async () => {
+        const res = await axios.get(
+          `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
+        );
+        setInvoiceSummary(res.data.inputInvoiceSummary);
+      };
+      getInvoiceSummary();
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this invoice ?"
-    );
-    if (confirmed) {
-      const res = await axios.delete(
-        `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
+    try {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this invoice ?"
       );
-      console.log(res);
-      if (res.status === 200) {
-        setIsSuccessModalVisible(true);
+      if (confirmed) {
+        const res = await axios.delete(
+          `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
+        );
+        if (res.status === 200) {
+          setIsSuccessModalVisible(true);
+        }
       }
+    } catch (err) {
+      console.log(err);
     }
-  };
-  const goBack = () => {
-    window.history.back();
   };
 
   return (

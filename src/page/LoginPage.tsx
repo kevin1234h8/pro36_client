@@ -15,12 +15,6 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  // const lottieOptions = {
-  //   loop: true,
-  //   autoplay: true,
-  //   animationData: animationData,
-  // };
-
   const setCookie = (name: string, value: any, days: number) => {
     const date = new Date();
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
@@ -74,11 +68,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
       <ToastContainer />
       <div className="flex h-screen">
         <div className="items-center justify-around hidden w-full lg:flex lg:w-1/2 login_img_section">
-          <Lottie
-            animationData={animationData}
-            height={500} // Set the height of the animation
-            width={500} // Set the width of the animation
-          />
+          <Lottie animationData={animationData} height={500} width={500} />
         </div>
         <div className="flex items-center justify-center w-full space-y-8 bg-white lg:w-1/2">
           <div className="w-full px-8 md:px-32 lg:px-24">
