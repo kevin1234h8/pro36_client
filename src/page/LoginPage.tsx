@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { SyntheticEvent, useState } from "react";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import animationData from "../lottie/63787-secure-login.json";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,11 +15,11 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const lottieOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-  };
+  // const lottieOptions = {
+  //   loop: true,
+  //   autoplay: true,
+  //   animationData: animationData,
+  // };
 
   const setCookie = (name: string, value: any, days: number) => {
     const date = new Date();
@@ -73,7 +73,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
       <div className="flex h-screen">
         <div className="items-center justify-around hidden w-full lg:flex lg:w-1/2 login_img_section">
           <Lottie
-            options={lottieOptions}
+            animationData={animationData}
             height={500} // Set the height of the animation
             width={500} // Set the width of the animation
           />

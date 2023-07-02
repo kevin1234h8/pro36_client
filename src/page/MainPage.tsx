@@ -1,7 +1,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import Navbar from "../components/Navbar";
 import tradingAnimation from "../lottie/114986-ultimate-trading-experience.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
@@ -18,11 +18,11 @@ const MainPage = ({ user }: any) => {
     });
   });
 
-  const lottieTradingAnimation = {
-    loop: true,
-    autoplay: true,
-    animationData: tradingAnimation,
-  };
+  // const lottieTradingAnimation = {
+  //   loop: true,
+  //   autoplay: true,
+  //   animationData: tradingAnimation,
+  // };
 
   return (
     <div>
@@ -113,17 +113,16 @@ const MainPage = ({ user }: any) => {
           /> */}
             {widthStyle != "100%" ? (
               <Lottie
-                options={lottieTradingAnimation}
+                // options={lottieTradingAnimation}
+                animationData={tradingAnimation}
                 height={250} // Set the height of the animation
                 width={250} // Set the width of the animation
-                speed={0.5}
               />
             ) : (
               <Lottie
-                options={lottieTradingAnimation}
+                animationData={tradingAnimation}
                 height={450} // Set the height of the animation
                 width={450} // Set the width of the animation
-                speed={0.5}
               />
             )}
           </div>
