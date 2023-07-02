@@ -38,9 +38,6 @@ function App() {
         });
         if (res.data.user) {
           setUser(res.data.user);
-        } else {
-          const newUser = undefined;
-          setUser(newUser);
         }
         setLoading(false);
         console.log(res.data);
