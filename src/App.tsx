@@ -148,6 +148,7 @@ function App() {
                   notificationCount={notificationCount}
                   isOpen={isOpen}
                   user={user}
+                  parsedUserData={parsedUserData}
                   isLoggedIn={isLoggedIn}
                   toggleNavigationSidebar={toggleNavigationSidebar}
                   loginInfo={loginInfo}

@@ -12,7 +12,13 @@ import "../scss/addbutton.css";
 import "../scss/homepage.css";
 import Breadcrumb from "../components/Breadcrumb";
 
-const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
+const HomePage = ({
+  user,
+  showToast,
+  setShowToast,
+  avatar,
+  parsedUserData,
+}: any) => {
   const [account, setAccount] = useState<AccountInterface>();
   const [totalAccount, setTotalAccount] = useState<number>();
   const [pageSize, setPageSize] = useState<number>(20);
@@ -27,7 +33,7 @@ const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
     try {
       const getAccounts = async () => {
         const res = await axios.get(`${BASE_URL}/account`, {
-          withCredentials: true,
+          headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
         });
         setAccount(res.data.accounts);
         setTotalAccount(res.data.totalAccount);
