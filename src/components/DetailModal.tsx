@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { AccountInterface } from "../interface/AccountInterface";
 import axios from "axios";
 import datas from "../data/datas.json";
+import { BASE_URL } from "../config/config";
 const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
   const [exAccount, setExAccount] = useState<AccountInterface>();
   useEffect(() => {
     try {
       const getAccount = async () => {
         const res = await axios.get(
-          `http://localhost:5000/account/${accountId}`
+          `${BASE_URL}/account/${accountId}`
         );
         setExAccount(res.data.account);
       };

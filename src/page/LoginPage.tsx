@@ -32,10 +32,13 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
       const res = await axios.post(`${BASE_URL}/user/login`, values, {
         withCredentials: true,
       });
+      setLoginInfo(res.data);
+      console.log(res.data);
       if (res.status === 200) {
         setShowErrorMessage(false);
         setCookie("isLogin", true, 7);
         localStorage.setItem("showToast", JSON.stringify(true));
+        sessionStorage.setItem("userData", JSON.stringify(res.data));
         if (res.data.data.level === 3) {
           document.cookie = `jwt=${res.data.accessToken}; max-age=${
             3 * 24 * 60 * 60

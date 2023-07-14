@@ -14,7 +14,6 @@ const MainPage = ({ user }: any) => {
       once: true,
     });
   });
-
   return (
     <div>
       <div>

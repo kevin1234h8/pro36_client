@@ -30,7 +30,7 @@ import PageNotFoundPage from "./page/PageNotFoundPage";
 
 function App() {
   const [user, setUser] = useState<User>();
-  const [loginInfo, setLoginInfo] = useState();
+  const [loginInfo, setLoginInfo] = useState<any>();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [showToast, setShowToast] = useState<any>();
@@ -56,12 +56,14 @@ function App() {
   };
 
   const jwtCookie = getCookie("jwt");
-
+  const userData: any = sessionStorage.getItem("userData");
+  const parsedUserData = JSON.parse(userData);
+  console.log("loginInfo ; ", parsedUserData);
   useEffect(() => {
     const getLoginUser = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/user/profile`, {
-          withCredentials: true,
+          headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
         });
         if (res.data.user) {
           setUser(res.data.user);
