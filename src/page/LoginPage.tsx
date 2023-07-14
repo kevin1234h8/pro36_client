@@ -43,6 +43,9 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
           localStorage.setItem("activeMenu", "Input Invoice");
           navigate("/input-invoice");
         } else {
+          document.cookie = `jwt=${res.data.accessToken}; max-age=${
+            3 * 24 * 60 * 60
+          }; path=/;`;
           localStorage.setItem("activeMenu", "New Account");
           navigate("/new-account");
         }
