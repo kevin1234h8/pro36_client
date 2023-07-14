@@ -178,6 +178,7 @@ function App() {
                 <ExAccountPage
                   isOpen={isOpen}
                   user={user}
+                  parsedUserData={parsedUserData}
                   isLoggedIn={isLoggedIn}
                   toggleNavigationSidebar={toggleNavigationSidebar}
                   avatar={avatar}

@@ -7,7 +7,7 @@ import { BASE_URL } from "../config/config";
 import { AccountInterface } from "../interface/AccountInterface";
 import Breadcrumb from "../components/Breadcrumb";
 
-const ExAccountPage = ({ user }: any) => {
+const ExAccountPage = ({ user, parsedUserData }: any) => {
   const [exAccount, setExAccount] = useState<AccountInterface>();
   const [totalExAccount, setTotalExAccount] = useState<number>();
   const [exAccountPageSize, setExAccountPageSize] = useState<number>(20);
@@ -18,7 +18,7 @@ const ExAccountPage = ({ user }: any) => {
   useEffect(() => {
     const getExAccount = async () => {
       const res = await axios.get(`${BASE_URL}/ex-account`, {
-        withCredentials: true,
+        headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
       });
       console.log(res);
       if (res.status === 200) {
