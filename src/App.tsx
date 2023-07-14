@@ -39,7 +39,7 @@ function App() {
   const apiKey = "38a4000d2421d3f8cf6b913c32d87aeb";
   const formattedDate = currentDate.toISOString().split("T")[0];
   const [loading, setLoading] = useState(true); // Add a loading state
-
+  axios.defaults.withCredentials = true;
   const getCookie = (name: string) => {
     const cookieName = name + "=";
     const cookies = document.cookie.split(";");
