@@ -6,6 +6,7 @@ import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import "../scss/addmember.css";
 import { goBack } from "../utils/navigationUtils";
+import Breadcrumb from "../components/Breadcrumb";
 
 const AddMember = ({ setNotificationCount, user }: any) => {
   const date = new Date();
@@ -93,6 +94,7 @@ const AddMember = ({ setNotificationCount, user }: any) => {
   return (
     <div className="dark:bg-[#0e1011] ">
       <Navbar user={user} />
+      <Breadcrumb />
       {isSuccessModalVisible ? (
         <SuccessModal
           text={"User created successfully"}

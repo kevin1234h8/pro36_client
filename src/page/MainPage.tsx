@@ -5,6 +5,7 @@ import Lottie from "lottie-react";
 import Navbar from "../components/Navbar";
 import tradingAnimation from "../lottie/114986-ultimate-trading-experience.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import Breadcrumb from "../components/Breadcrumb";
 
 const MainPage = ({ user }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -18,7 +19,6 @@ const MainPage = ({ user }: any) => {
     <div>
       <div>
         <Navbar user={user} />
-
         <div className="flex flex-col-reverse items-center justify-center mx-auto bg lg:flex-row lg:px-48 lg:py-10">
           <div className="w-full lg:w-1/2">
             <div className="flex flex-col gap-12">
@@ -27,28 +27,22 @@ const MainPage = ({ user }: any) => {
                   data-aos="fade-right"
                   className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
                 >
-                  New
+                  Organize
                 </div>
-                <div
-                  data-aos="fade-right"
-                  data-aos-duration="1000"
-                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
-                >
-                  Technology
-                </div>
+
                 <div
                   data-aos="fade-right"
                   data-aos-duration="1150"
                   className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
                 >
-                  Forex
+                  Data
                 </div>
                 <div
                   data-aos="fade-right"
                   data-aos-duration="1300"
                   className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
                 >
-                  Trading
+                  Management
                 </div>
               </div>
               <div className="flex flex-col gap-2 lg:hidden">

@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
+import Breadcrumb from "../components/Breadcrumb";
 const EditAccountPage = ({ user }: any) => {
   const { id } = useParams();
   useEffect(() => {
@@ -84,6 +85,7 @@ const EditAccountPage = ({ user }: any) => {
         />
       ) : null}
       <Navbar user={user} />
+      <Breadcrumb />
       <div className="add-member-container lg:mx-[10rem] dark:text-white ">
         <div className="add-member-form w-100">
           <h2 className="font-medium add-member-form-title">Edit Account</h2>

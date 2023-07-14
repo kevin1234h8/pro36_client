@@ -5,6 +5,7 @@ import { useState } from "react";
 import SuccessModal from "./SuccessModal";
 import DetailModal from "./DetailModal";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import NoResultsFound from "./NoResultsFound";
 const ExAccountTable = ({
   user,
   exAccount,
@@ -78,11 +79,36 @@ const ExAccountTable = ({
                   getExAccountPaginateData(1, selectedPageSize);
                 }}
               >
-                <option value="20">20</option>
-                <option value="40">40</option>
-                <option value="60">60</option>
-                <option value="80">80</option>
-                <option value="100">100</option>
+                <option
+                  value="20"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  20
+                </option>
+                <option
+                  value="40"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  40
+                </option>
+                <option
+                  value="60"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  60
+                </option>
+                <option
+                  value="80"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  80
+                </option>
+                <option
+                  value="100"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  100
+                </option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
                 <svg
@@ -333,9 +359,7 @@ const ExAccountTable = ({
             </div>
           </div>
         ) : (
-          <div className="px-5 py-4 text-center text-gray-600 bg-gray-100">
-            <p className="text-xs font-semibold">No Results Found</p>
-          </div>
+          <NoResultsFound />
         )}
       </div>
     </div>

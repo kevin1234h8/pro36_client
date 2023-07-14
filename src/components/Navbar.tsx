@@ -3,14 +3,23 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BASE_URL } from "../config/config";
+import {
+  BASE_URL,
+  CLIENT_REPORT_PATH,
+  LICENSE_EXPIRED_REPORT_PATH,
+  REPORT_PATH,
+} from "../config/config";
 import useLoading from "../hooks/useLoading";
 import UploadPhotoModal from "./UploadPhotoModal";
+import LicenseExpiredReportPage from "../page/LicenseExpiredReportPage";
+import ClientReportPage from "../page/ClientReportPage";
+import Breadcrumb from "./Breadcrumb";
 const Navbar = ({ user }: any) => {
   const [open, setOpen] = React.useState(false);
   const [activeMenu, setActiveMenu] = useState<string>("");
   const [avatar, setAvatar] = useState<any>({});
   const [isUploadPhotoModal, setIsUploadPhotoModal] = useState<boolean>(false);
+  const [showDropdownMenu, setShowDropdownMenu] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   useEffect(() => {
@@ -58,6 +67,10 @@ const Navbar = ({ user }: any) => {
     fileInputRef.current?.click();
   };
 
+  const handleShowDropdownMenu = () => {
+    setShowDropdownMenu(!showDropdownMenu);
+  };
+
   const handleSubmitPhoto = async (e: any) => {
     e.preventDefault();
 
@@ -92,7 +105,7 @@ const Navbar = ({ user }: any) => {
       {isUploadPhotoModal ? (
         <UploadPhotoModal setIsUploadPhotoModal={setIsUploadPhotoModal} />
       ) : null}
-      <div className="sticky top-0 w-full bg-white  dark:bg-[#0e1011] dark:border-gray-700 z-50">
+      <div className="sticky top-0 w-full bg-white backdrop-blur  dark:bg-[#0e1011] dark:border-gray-700 z-50">
         <div className="px-4 mx-auto max-w-7xl sm:px-8">
           <div className="flex items-center justify-between py-6 border-gray-100 md:justify-start md:space-x-10">
             <div className="flex justify-start lg:w-0 lg:flex-1">
@@ -113,7 +126,7 @@ const Navbar = ({ user }: any) => {
             <div className="mr-2 -my-2 md:hidden">
               <button
                 type="button"
-                className="inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-700"
+                className="inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
                 onClick={() => setOpen(!open)}
               >
                 <span className="sr-only">Open menu</span>
@@ -182,7 +195,82 @@ const Navbar = ({ user }: any) => {
                   </a>
                 </div>
               ) : null}
-
+              {/* <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
+                <a
+                  href={REPORT_PATH}
+                  className={`text-base   font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
+                    activeMenu === "Report"
+                      ? " text-gray-900 dark:text-red-500"
+                      : ""
+                  }`}
+                  onClick={() => handleClick("Report")}
+                >
+                  Report
+                </a>
+              </div> */}
+              <div
+                className="relative inline-block text-left"
+                onClick={handleShowDropdownMenu}
+              >
+                <div>
+                  <button
+                    type="button"
+                    className={`inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-400   ring-inset ring-gray-300 hover:text-black  dark:bg-[#0e1011] dark:hover:text-red-500 dark:hover:border-b-red-500 dark :hover:border-b-2 ${
+                      activeMenu === "Report"
+                        ? " text-gray-900 dark:text-red-500"
+                        : ""
+                    }`}
+                    id="menu-button"
+                    aria-expanded="true"
+                    aria-haspopup="true"
+                  >
+                    Report
+                    <svg
+                      className="w-5 h-5 -mr-1 text-gray-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                {showDropdownMenu ? (
+                  <div
+                    className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-labelledby="menu-button"
+                  >
+                    <div className="py-1 hover:bg-gray-200" role="none">
+                      <a
+                        href={LICENSE_EXPIRED_REPORT_PATH}
+                        onClick={() => handleClick("Report")}
+                        className="block px-4 py-2 text-sm text-gray-700"
+                        role="menuitem"
+                        id="menu-item-0"
+                      >
+                        License Expired Report
+                      </a>
+                    </div>
+                    <div className="py-1 hover:bg-gray-200" role="none">
+                      <a
+                        href={CLIENT_REPORT_PATH}
+                        className="block px-4 py-2 text-sm text-gray-700"
+                        role="menuitem"
+                        id="menu-item-3"
+                        onClick={() => handleClick("Report")}
+                      >
+                        Client P/L Report
+                      </a>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
               {user != undefined && user?.level === 1 ? (
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
@@ -212,15 +300,18 @@ const Navbar = ({ user }: any) => {
                     onClick={handleImageClick}
                   >
                     {avatar === null || avatar === undefined ? (
-                      <div className="relative flex items-center justify-center w-12 h-12 m-1 mr-2 text-xl text-white uppercase bg-blue-500 rounded-full">
+                      <div className="relative flex items-center justify-center w-12 h-12 m-1 mr-2 text-xl text-white uppercase transition-colors bg-blue-500 rounded-full">
                         <i className="fa fa-user"></i>
                       </div>
                     ) : (
-                      <img
-                        className="object-cover rounded-full w-14 h-14"
-                        src={`${BASE_URL}/uploads/${avatar?.path}`}
-                        alt="image"
-                      />
+                      <div>
+                        <img
+                          className="relative z-10 object-cover border-white rounded-full w-14 h-14"
+                          src={`${BASE_URL}/uploads/${avatar?.path}`}
+                          alt="image"
+                        />
+                        {/* <div className="absolute top-[-2px] left-[-2px] flex items-center justify-center w-16 h-16 rounded-full blur-sm bg-gradient-to-r from-pink-600 to-purple-600"></div> */}
+                      </div>
                     )}
                   </label>
 
@@ -234,7 +325,7 @@ const Navbar = ({ user }: any) => {
                   />
                 </form>
 
-                <div className="text-base font-medium text-gray-500 whitespace-nowrap hover:text-gray-900">
+                <div className="text-base font-medium text-gray-500 whitespace-nowrap hover:text-gray-900 dark:hover:text-red-500 ">
                   {user?.username}
                 </div>
                 <div
@@ -261,10 +352,10 @@ const Navbar = ({ user }: any) => {
           className={
             open
               ? "opacity-100  transition ease-out duration-200 absolute top-0 inset-x-0 p-2  transform origin-top-right md:hidden"
-              : "hidden scale-0 absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden"
+              : "hidden scale-0 absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden "
           }
         >
-          <div className="bg-white divide-y-2 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-gray-50">
+          <div className="bg-white divide-y-2 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-gray-50 dark:bg-[#0e1011] dark:border-white border-4">
             <div className="px-5 pt-5 pb-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -273,7 +364,7 @@ const Navbar = ({ user }: any) => {
                 <div className="-mr-2">
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                    className="inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
                     onClick={() => setOpen(!open)}
                   >
                     <span className="sr-only">Close menu</span>
@@ -310,7 +401,7 @@ const Navbar = ({ user }: any) => {
                         onClick={handleImageClick}
                       >
                         {avatar === null || avatar === undefined ? (
-                          <div className="relative flex items-center justify-center w-12 h-12 m-1 mr-2 text-xl text-white uppercase bg-blue-500 rounded-full">
+                          <div className="relative flex items-center justify-center w-12 h-12 m-1 mr-2 text-xl text-white uppercase bg-blue-500 rounded-full ">
                             <i className="fa fa-user"></i>
                           </div>
                         ) : (
@@ -337,10 +428,10 @@ const Navbar = ({ user }: any) => {
                   (user?.level === 1 || user?.level === 2) ? (
                     <a
                       href="/new-account"
-                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50"
+                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50 dark:hover:bg-[#161b22]"
                     >
-                      <div className="text-indigo-600 fa-solid fa-user navigation-sidebar-icon"></div>
-                      <span className="ml-3 text-base font-medium text-gray-900">
+                      <div className="text-indigo-500 fa-solid fa-user navigation-sidebar-icon"></div>
+                      <span className="ml-3 text-base font-medium text-gray-900 dark:text-white">
                         New Account
                       </span>
                     </a>
@@ -349,10 +440,10 @@ const Navbar = ({ user }: any) => {
                   (user?.level === 1 || user?.level === 2) ? (
                     <a
                       href="/ex-account"
-                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50"
+                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]"
                     >
                       <div className="text-indigo-600 fa-solid fa-users navigation-sidebar-icon"></div>
-                      <span className="ml-3 text-base font-medium text-gray-900">
+                      <span className="ml-3 text-base font-medium text-gray-900 dark:text-white">
                         Ex Account
                       </span>
                     </a>
@@ -360,10 +451,10 @@ const Navbar = ({ user }: any) => {
                   {user != undefined ? (
                     <a
                       href="/input-invoice"
-                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50"
+                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]"
                     >
                       <div className="text-indigo-600 fa-solid fa-user navigation-sidebar-icon"></div>
-                      <span className="ml-3 text-base font-medium text-gray-900">
+                      <span className="ml-3 text-base font-medium text-gray-900 dark:text-white">
                         Input Invoice
                       </span>
                     </a>
@@ -371,10 +462,10 @@ const Navbar = ({ user }: any) => {
                   {user != undefined && user?.level === 1 ? (
                     <a
                       href="/add-user"
-                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50"
+                      className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]"
                     >
                       <div className="text-indigo-600 fa-solid fa-user navigation-sidebar-icon"></div>
-                      <span className="ml-3 text-base font-medium text-gray-900">
+                      <span className="ml-3 text-base font-medium text-gray-900 dark:text-white">
                         Add User
                       </span>
                     </a>

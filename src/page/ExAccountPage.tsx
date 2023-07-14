@@ -5,6 +5,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import Navbar from "../components/Navbar";
 import { BASE_URL } from "../config/config";
 import { AccountInterface } from "../interface/AccountInterface";
+import Breadcrumb from "../components/Breadcrumb";
 
 const ExAccountPage = ({ user }: any) => {
   const [exAccount, setExAccount] = useState<AccountInterface>();
@@ -16,11 +17,14 @@ const ExAccountPage = ({ user }: any) => {
 
   useEffect(() => {
     const getExAccount = async () => {
-      const res = await axios.get(`${BASE_URL}/ex-account`);
-      setExAccount(res.data.exAccounts);
-      setTotalExAccount(res.data.totalAccount);
+      const res = await axios.get(`${BASE_URL}/ex-account`, {
+        withCredentials: true,
+      });
+      console.log(res);
       if (res.status === 200) {
         setIsLoading(false);
+        setExAccount(res.data.exAccounts);
+        setTotalExAccount(res.data.totalAccount);
       }
     };
     getExAccount();
@@ -47,8 +51,9 @@ const ExAccountPage = ({ user }: any) => {
     <div className="relative bg-[#fafafa]  dark:bg-[#0e1011]">
       <div>
         <Navbar user={user} />
+        <Breadcrumb />
         <div className="main">
-          <div className={`main__content pt-[32px] pb-[32px] w-full `}>
+          <div className={`main__content pt-[32px] pb-[32px] w-full h-screen`}>
             <div className="member-list">
               <div className={`member-list-container`}></div>
             </div>

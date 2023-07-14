@@ -8,6 +8,10 @@ import datas from "../data/datas.json";
 import useLoading from "../hooks/useLoading";
 import { InputInvoiceSummary } from "../interface/InputInvoiceSummary";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import Breadcrumb from "../components/Breadcrumb";
+import NoResultsFound from "../components/NoResultsFound";
 
 const InputInvoicePage = ({ user }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -20,8 +24,226 @@ const InputInvoicePage = ({ user }: any) => {
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useLoading();
-
+  const [inputInvoice, setInputInvoice] = useState<any>();
+  const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
   const totalPages = Math.ceil(totalInvoiceSummary / invoiceSummaryPageSize);
+  const [totalAmountInRupiah, setTotalAmountInRupiah] = useState(0);
+  const [totalServiceFee, setTotalServiceFee] = useState(0);
+  const [totalProfitInUSD, setTotalProfitInUSD] = useState(0);
+  useEffect(() => {
+    if (inputInvoiceDetails) {
+    }
+  }, [inputInvoiceDetails]);
+
+  // const getInputInvoice = async (noInvoice: string) => {
+  //   const res = await axios.get(
+  //     `${BASE_URL}/input-invoice/input-invoice-summary/${noInvoice}`
+  //   );
+  //   setInputInvoice(res.data.inputInvoiceSummary);
+  // };
+  // useEffect(() => {
+  //   const getInputInvoiceDetails = async () => {
+
+  //   };
+  //   getInputInvoiceDetails();
+  // }, [inputInvoice?.accountNo]);
+  // const getPDFInfo = async (id: string, noInvoice: string) => {
+  //   const res = await axios.get(
+  //     `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
+  //   );
+  //   setInputInvoice(res.data.inputInvoiceSummary);
+  //   console.log("inputInvoice: ", res.data.inputInvoiceSummary);
+
+  //   const inputInvoiceDetailsRes = await axios.get(
+  //     `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
+  //   );
+  //   setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceSummary);
+  //   console.log("inputInvoiceDetailsRes: ", inputInvoiceDetailsRes.data);
+  //   console.log("inputInvoice: ", inputInvoice);
+  // };
+  const print = async (id: string, noInvoice: string) => {
+    setIsLoading(false);
+    const res = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
+    );
+    setInputInvoice(res.data.inputInvoiceSummary);
+    console.log("inputInvoice: ", res.data.inputInvoiceSummary);
+    const data = res.data.inputInvoiceSummary;
+    console.log("data", data.client_name);
+    const inputInvoiceDetailsRes = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
+    );
+    setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceSummary);
+    const inputInvoiceDataDetails =
+      inputInvoiceDetailsRes.data.inputInvoiceSummary;
+    console.log(inputInvoiceDataDetails);
+
+    const totalUSDProfit = inputInvoiceDataDetails.reduce(
+      (sum: number, detail: any) => {
+        const profit = detail.profit.toFixed(2);
+        return sum + parseFloat(profit);
+      },
+      0
+    );
+
+    const totalAmount = inputInvoiceDataDetails.reduce(
+      (sum: number, detail: any) => {
+        const amount = detail.cost_in_rupiah
+          ? detail.cost_in_rupiah
+          : (detail.profit * (1 - data.service_fee / 100) * data.rate).toFixed(
+              2
+            );
+        return sum + parseFloat(amount);
+      },
+      0
+    );
+    const totalAmountInRupiah = totalAmount.toLocaleString("id-ID");
+
+    const totalFee = inputInvoiceDataDetails.reduce(
+      (sum: number, detail: any) => {
+        // const fee = Number(detail.service) ;
+        const fee = detail.service
+          ? detail.service
+          : (detail.profit * (1 - data.service_fee / 100)).toFixed(2);
+        return sum + parseFloat(fee);
+      },
+      0
+    );
+
+    const doc = new jsPDF();
+    const startY = 80; // Initial Y-coordinate for the table
+    const rowHeight = 10; // Adjust the row height as needed
+
+    if (data || inputInvoiceDataDetails) {
+      const rows = inputInvoiceDataDetails?.map(
+        (detail: any, index: number) => [
+          index + 1,
+          detail.period_from,
+          detail.period_to,
+          detail.account_no,
+          detail.broker_name,
+          "$" + detail.profit.toLocaleString("id-ID"),
+          detail.service
+            ? "$" + detail.service.toLocaleString("id-ID")
+            : "$" +
+              (detail.profit * (1 - data.service_fee / 100)).toLocaleString(
+                "id-ID"
+              ),
+          detail.rupiah
+            ? "Rp" + detail.rupiah.toLocaleString("id-ID")
+            : "Rp" +
+              (
+                detail.profit *
+                (1 - data.service_fee / 100) *
+                data.rate
+              ).toLocaleString("id-ID"),
+        ]
+      );
+
+      const totalRow = [
+        "Total",
+        "",
+        "",
+        "",
+        "",
+        "$" + totalUSDProfit.toLocaleString("id-ID"),
+        "$" + totalFee.toLocaleString("id-ID"),
+        "Rp" + totalAmountInRupiah,
+      ];
+      rows.push(totalRow);
+      // Set table properties
+
+      const tableHeaders = [
+        "No",
+        "Period From",
+        "Period To",
+        "Account No",
+        "Broker",
+        "Amount ($)",
+        "Service Fee ($)",
+        "Amount in Rupiah",
+      ];
+      const tableData = [tableHeaders, ...rows];
+      const tableConfig = {
+        startY: startY,
+        head: [tableHeaders],
+        body: rows,
+      };
+      autoTable(doc, tableConfig);
+      const tableHeight = tableData.length * rowHeight;
+
+      doc.setFontSize(10);
+
+      doc.setFont("helvetica", "bold");
+      doc.text(data?.client_name || "", 15, 20);
+      doc.setTextColor(0, 0, 0); //
+      doc.setFont("helvetica", "normal");
+      doc.text(data.city, 15, 25);
+      doc.text(data.country, 15, 30);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setFillColor(255, 165, 0); // Orange color
+      doc.rect(15, 43, 70, 10, "F");
+      doc.text("SERVICE FEE", 15, 50);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text("service fee", 15, 57);
+      doc.text("kurs&", 15, 64);
+      doc.setFont("helvetica", "normal");
+      doc.text(data.service_fee + "%", 50, 57);
+      doc.text("Rp" + data.rate, 50, 64);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Statement Date", 120, 15);
+      doc.text("Statement No.", 120, 20);
+      doc.setFont("helvetica", "normal");
+      doc.text(data.date, 170, 15);
+      doc.text(data.no_invoice, 170, 20);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFillColor(255, 165, 0); // Orange color
+      doc.rect(118, 43, 80, 10, "F");
+      doc.text("PAYMENT SUMMARY", 120, 50);
+      doc.text("Ammount (Rp)", 170, 50);
+      doc.text("Total", 120, 57);
+      doc.setFont("helvetica", "normal");
+
+      doc.text("Rp" + totalAmountInRupiah, 170, 57);
+      doc.setFontSize(10);
+      doc.text(
+        "Payment By Transfer To (Full amount in Rupiah)",
+        15,
+        startY + tableHeight + 30
+      );
+      doc.setFont("helvetica", "bold");
+      doc.text(data.bank_name, 15, startY + tableHeight + 40);
+      doc.text(data.bank_beneficiary, 15, startY + tableHeight + 45);
+      doc.text(data.bank_no, 15, startY + tableHeight + 50);
+
+      doc.setFont("helvetica", "italic");
+
+      // Set the underline style
+
+      // Set the font size and text color
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+
+      // Add the text with underline and italic style
+      doc.rect(8, startY + tableHeight + 65, 190, 10);
+      doc.text(
+        "Please make a payment within 7 days after this statement is issued, otherwise the robot will be deactivated",
+        12,
+        startY + tableHeight + 70
+      );
+
+      const pdfBlob = doc.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+    }
+  };
 
   useEffect(() => {
     try {
@@ -99,7 +321,8 @@ const InputInvoicePage = ({ user }: any) => {
         />
       ) : null}
       <Navbar user={user} />
-      <div className="w-full lg:mx-auto ">
+      <Breadcrumb />
+      <div className="w-full h-screen lg:mx-auto">
         <div className="mx-auto max-w-7xl lg:px-24 ">
           <div className="flex items-center justify-between px-4 lg:px-0 ">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white">
@@ -127,11 +350,36 @@ const InputInvoicePage = ({ user }: any) => {
                     getInvoiceSummaryPaginateData(1, selectedPageSize);
                   }}
                 >
-                  <option value="20">20</option>
-                  <option value="40">40</option>
-                  <option value="60">60</option>
-                  <option value="80">80</option>
-                  <option value="100">100</option>
+                  <option
+                    value="20"
+                    className="text-[6px] md:text-[10px] lg:text-[12px]"
+                  >
+                    20
+                  </option>
+                  <option
+                    value="40"
+                    className="text-[6px] md:text-[10px] lg:text-[12px]"
+                  >
+                    40
+                  </option>
+                  <option
+                    value="60"
+                    className="text-[6px] md:text-[10px] lg:text-[12px]"
+                  >
+                    60
+                  </option>
+                  <option
+                    value="80"
+                    className="text-[6px] md:text-[10px] lg:text-[12px]"
+                  >
+                    80
+                  </option>
+                  <option
+                    value="100"
+                    className="text-[6px] md:text-[10px] lg:text-[12px]"
+                  >
+                    100
+                  </option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
                   <svg
@@ -179,7 +427,7 @@ const InputInvoicePage = ({ user }: any) => {
           </div>
           {inputDetails.length > 0 ? (
             <div
-              className="dark:bg-[#0e1011] overflow-x-scroll px-4 md:px-8 lg:px-0"
+              className="dark:bg-[#0e1011] overflow-x-scroll px-4 md:px-8 lg:px-0 h-screen"
               style={{ width: widthStyle }}
             >
               <div className="row row--top-40"></div>
@@ -267,13 +515,10 @@ const InputInvoicePage = ({ user }: any) => {
                                   className=" table-row__td"
                                 >
                                   <div className="table-row__info ">
-                                    Rp{" "}
-                                    {(
-                                      details.total_amount / 1000
-                                    ).toLocaleString(undefined, {
-                                      minimumFractionDigits: 3,
-                                      maximumFractionDigits: 3,
-                                    })}
+                                    Rp
+                                    {details.total_amount.toLocaleString(
+                                      "id-ID"
+                                    )}
                                   </div>
                                 </td>
 
@@ -293,6 +538,12 @@ const InputInvoicePage = ({ user }: any) => {
                                           deleteInvoiceSummary(details.id)
                                         }
                                         className="cursor-pointer fa-solid fa-trash"
+                                      ></i>
+                                      <i
+                                        onClick={() => {
+                                          print(details.id, details.no_invoice);
+                                        }}
+                                        className="fa-solid fa-file-pdf text-[#3fd2ea] cursor-pointer"
                                       ></i>
                                     </div>
                                   </div>
@@ -383,9 +634,7 @@ const InputInvoicePage = ({ user }: any) => {
               </div>
             </div>
           ) : (
-            <div className="px-5 py-4 text-center text-gray-600 bg-gray-100">
-              <p className="text-lg font-semibold">No Results Found</p>
-            </div>
+            <NoResultsFound />
           )}
         </div>
       </div>

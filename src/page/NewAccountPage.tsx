@@ -10,6 +10,7 @@ import { BASE_URL } from "../config/config";
 import { AccountInterface } from "../interface/AccountInterface";
 import "../scss/addbutton.css";
 import "../scss/homepage.css";
+import Breadcrumb from "../components/Breadcrumb";
 
 const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
   const [account, setAccount] = useState<AccountInterface>();
@@ -25,7 +26,9 @@ const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
   useEffect(() => {
     try {
       const getAccounts = async () => {
-        const res = await axios.get(`${BASE_URL}/account`);
+        const res = await axios.get(`${BASE_URL}/account`, {
+          withCredentials: true,
+        });
         setAccount(res.data.accounts);
         setTotalAccount(res.data.totalAccount);
         if (res.status === 200) {
@@ -64,7 +67,8 @@ const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       let res = await axios.get(
-        `${BASE_URL}/account?page=${newPage}&pageSize=${newPageSize}&search=${search}`
+        `${BASE_URL}/account?page=${newPage}&pageSize=${newPageSize}&search=${search}`,
+        { withCredentials: true }
       );
       if (res.status === 200) {
         setIsLoading(false);
@@ -125,8 +129,11 @@ const HomePage = ({ user, showToast, setShowToast, avatar }: any) => {
 
       <div className="dark:bg-[#0e1011]">
         <Navbar user={user} avatar={avatar} />
+        <Breadcrumb />
         <div className="main">
-          <div className={`main__content  pt-[32px] pb-[32px] w-full `}>
+          <div
+            className={`main__content  pt-[32px] pb-[32px] w-full h-screen `}
+          >
             <div className="member-list">
               <div className={`member-list-container`}></div>
             </div>

@@ -192,5 +192,42 @@
     {
       "name": "Action"
     }
+  ],
+  "licenseExpiredAccounts": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "User ID"
+    },
+    {
+      "name": "Account No"
+    },
+    {
+      "name": "Expired Date"
+    },
+    {
+      "name": "Recruit By"
+    },
+    {
+      "name": "VPS"
+    },
+    {
+      "name": "Bot Name"
+    }
+  ],
+  "clientReport": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Invoice Date"
+    },
+    {
+      "name": "Invoice No"
+    },
+    {
+      "name": "Total P/L"
+    }
   ]
 }

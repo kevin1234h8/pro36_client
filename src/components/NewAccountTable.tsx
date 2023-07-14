@@ -3,6 +3,8 @@ import { AccountInterface } from "../interface/AccountInterface";
 import "../scss/table.css";
 import datas from "../data/datas.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import { ADD_MEMBER_PATH, EDIT_MEMBER_PATH } from "../config/config";
+import NoResultsFound from "./NoResultsFound";
 const NewAccountTable = ({
   account,
   getPaginateData,
@@ -25,10 +27,9 @@ const NewAccountTable = ({
           <button className="add-member-btn">
             <i className="fa-fa-solid add"></i>
             <a
-              href={`/add-member`}
+              href={ADD_MEMBER_PATH}
               className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
             >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-xs">Add Member</span>
             </a>
           </button>
@@ -45,11 +46,36 @@ const NewAccountTable = ({
                   getPaginateData(1, selectedPageSize);
                 }}
               >
-                <option value="20">20</option>
-                <option value="40">40</option>
-                <option value="60">60</option>
-                <option value="80">80</option>
-                <option value="100">100</option>
+                <option
+                  value="20"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  20
+                </option>
+                <option
+                  value="40"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  40
+                </option>
+                <option
+                  value="60"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  60
+                </option>
+                <option
+                  value="80"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  80
+                </option>
+                <option
+                  value="100"
+                  className="text-[6px] md:text-[10px] lg:text-[12px]"
+                >
+                  100
+                </option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
                 <svg
@@ -193,7 +219,12 @@ const NewAccountTable = ({
                             <td data-column="Action" className="table-row__td">
                               <p className="table-row__progress status--blue status">
                                 <div className="action">
-                                  <a href={`/edit-account/${user.id}`}>
+                                  <a
+                                    href={EDIT_MEMBER_PATH.replace(
+                                      ":id",
+                                      user.id
+                                    )}
+                                  >
                                     <i className="fa-solid fa-pen text-[#3fd2ea]"></i>
                                   </a>
                                   <i
@@ -277,11 +308,7 @@ const NewAccountTable = ({
             </div>
           </div>
         ) : (
-          <div className="px-5 py-4 text-center text-gray-600 bg-gray-100">
-            <p className="text-xs font-semibold lg:text-base">
-              No Results Found
-            </p>
-          </div>
+          <NoResultsFound />
         )}
       </div>
     </div>

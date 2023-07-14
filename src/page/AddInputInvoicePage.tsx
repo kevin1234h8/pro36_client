@@ -302,6 +302,7 @@ const Detail: React.FC<any> = ({
       return detail.service;
     });
   };
+
   return (
     <div className=" max-w-7xl">
       <div className="flex flex-col items-center font-bold">
@@ -435,30 +436,31 @@ const Detail: React.FC<any> = ({
                                 className="text-center outline-none"
                                 type="number"
                                 step="0.01"
+                                placeholder="0"
                                 value={
-                                  detail.service == 0
+                                  detail.service === 0
                                     ? (
-                                        detail.profit *
+                                        parseInt(detail.profit) *
                                         (1 - serviceFee / 100)
                                       ).toFixed(2)
-                                    : detail.service
+                                    : parseInt(detail.service)
                                 }
                                 readOnly
                                 onChange={(e) =>
-                                  handleInputChangeFloat(index, "service", e)
+                                  handleInputChange(index, "service", e)
                                 }
                               />
                             </p>
                           </td>
 
                           <td data-column="Rupiah" className="table-row__td">
-                            {detail.rupiah == 0
+                            {detail.rupiah === 0
                               ? (
-                                  detail.profit *
+                                  parseInt(detail.profit) *
                                   (1 - serviceFee / 100) *
                                   rate
                                 ).toFixed(2)
-                              : detail.rupiah}
+                              : parseInt(detail.rupiah)}
                           </td>
                           <td data-column="Action" className="table-row__td">
                             <i
@@ -502,30 +504,16 @@ const InvoiceDocument = ({
 }: any) => {
   const [totalAmountInRupiah, setTotalAmountInRupiah] = useState();
   const [totalServiceFee, setTotalServiceFee] = useState(0);
-
+  console.log("details : ", details);
   useEffect(() => {
     if (details) {
-      const totalAmount = details.reduce((sum: number, detail: any) => {
-        const amount = detail.rupiah
-          ? detail.rupiah
-          : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
-        return sum + parseFloat(amount);
-      }, 0);
-      setTotalAmountInRupiah(totalAmount.toFixed(2));
-
-      const totalFee = details.reduce((sum: number, detail: any) => {
-        // const fee = Number(detail.service) ;
-        const fee = detail.service
-          ? detail.service
-          : (detail.profit * (1 - serviceFee / 100)).toFixed(2);
-        return sum + parseFloat(fee);
-      }, 0);
-      setTotalServiceFee(totalFee.toFixed(2));
     }
   }, [details]);
 
   const generatePDF = async () => {
     const doc = new jsPDF();
+    const startY = 80; // Initial Y-coordinate for the table
+    const rowHeight = 10; // Adjust the row height as needed
     const rows = details?.map((detail: any, index: number) => [
       index + 1,
       detail.periodFrom,
@@ -548,11 +536,12 @@ const InvoiceDocument = ({
       detail.accountNo,
       detail.broker,
       detail.profit,
-      detail.service,
-      detail.rupiah,
+      (detail.profit * (1 - serviceFee / 100)).toFixed(2),
+      (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2),
       user?.id,
       user?.id,
     ]);
+    console.log("values :", values);
     try {
       const res = await axios.post(
         `${BASE_URL}/input-invoice/input-invoice-details/create`,
@@ -604,31 +593,30 @@ const InvoiceDocument = ({
     rows.push(totalRow);
     // Set table properties
     const tableProps = {
-      startY: 80,
+      startY: startY,
       margin: { top: 150 },
     };
-
-    // Add the table to the PDF document
-    autoTable(doc, {
-      head: [
-        [
-          "No",
-          "Period From",
-          "Period To",
-          "Account No",
-          "Broker",
-          "Amount ($)",
-          "Service Fee ($)",
-          "Amount in Rupiah",
-        ],
-      ],
+    const tableHeaders = [
+      "No",
+      "Period From",
+      "Period To",
+      "Account No",
+      "Broker",
+      "Amount ($)",
+      "Service Fee ($)",
+      "Amount in Rupiah",
+    ];
+    const tableData = [tableHeaders, ...rows];
+    const tableConfig = {
+      startY: startY,
+      head: [tableHeaders],
       body: rows,
-      ...tableProps,
-    });
+    };
+    autoTable(doc, tableConfig);
+    const tableHeight = tableData.length * rowHeight;
 
     doc.setFontSize(10);
 
-    // doc.setTextColor(255, 0, 0); //
     doc.setFont("helvetica", "bold");
     doc.text(clientName, 15, 20);
     doc.setTextColor(0, 0, 0); //
@@ -677,12 +665,16 @@ const InvoiceDocument = ({
     doc.setFont("helvetica", "normal");
 
     doc.text("Rp" + totalAmountInRupiah, 170, 57);
-
-    doc.text("Payment By Transfer To (Full amount in Rupiah)", 15, 250);
+    doc.setFontSize(10);
+    doc.text(
+      "Payment By Transfer To (Full amount in Rupiah)",
+      15,
+      startY + tableHeight + 30
+    );
     doc.setFont("helvetica", "bold");
-    doc.text(bankName, 15, 260);
-    doc.text(beneficiaryName, 15, 265);
-    doc.text(accountNumber.toString(), 15, 270);
+    doc.text(bankName, 15, startY + tableHeight + 40);
+    doc.text(beneficiaryName, 15, startY + tableHeight + 45);
+    doc.text(accountNumber.toString(), 15, startY + tableHeight + 50);
 
     doc.setFont("helvetica", "italic");
 
@@ -693,16 +685,168 @@ const InvoiceDocument = ({
     doc.setTextColor(0, 0, 0);
 
     // Add the text with underline and italic style
-    doc.rect(8, 285, 190, 10);
+    doc.rect(8, startY + tableHeight + 65, 190, 10);
     doc.text(
       "Please make a payment within 7 days after this statement is issued, otherwise the robot will be deactivated",
       12,
-      290
+      startY + tableHeight + 70
     );
 
-    doc.save("invoice.pdf");
     setIsSuccessModalVisible(true);
   };
+
+  const previewPDF = async () => {
+    const doc = new jsPDF();
+    const startY = 80; // Initial Y-coordinate for the table
+    const rowHeight = 10; // Adjust the row height as needed
+    const totalAmount = details.reduce((sum: number, detail: any) => {
+      const amount = detail.rupiah
+        ? detail.rupiah
+        : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+      return sum + parseFloat(amount);
+    }, 0);
+    setTotalAmountInRupiah(totalAmount.toFixed(2));
+
+    const totalFee = details.reduce((sum: number, detail: any) => {
+      // const fee = Number(detail.service) ;
+      const fee = detail.service
+        ? detail.service
+        : (detail.profit * (1 - serviceFee / 100)).toFixed(2);
+      return sum + parseFloat(fee);
+    }, 0);
+    setTotalServiceFee(totalFee.toFixed(2));
+    const rows = details?.map((detail: any, index: number) => [
+      index + 1,
+      detail.periodFrom,
+      detail.periodTo,
+      detail.accountNo,
+      detail.broker,
+      detail.profit,
+      detail.service
+        ? "$" + detail.service
+        : "$" + (detail.profit * (1 - serviceFee / 100)).toFixed(2),
+      detail.rupiah
+        ? "Rp" + detail.rupiah
+        : "Rp" + (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2),
+    ]);
+
+    const totalRow = [
+      "Total",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "$" + totalServiceFee,
+      "Rp" + totalAmountInRupiah,
+    ];
+    rows.push(totalRow);
+    // Set table properties
+    const tableProps = {
+      startY: startY,
+      margin: { top: 150 },
+    };
+    const tableHeaders = [
+      "No",
+      "Period From",
+      "Period To",
+      "Account No",
+      "Broker",
+      "Amount ($)",
+      "Service Fee ($)",
+      "Amount in Rupiah",
+    ];
+    const tableData = [tableHeaders, ...rows];
+    const tableConfig = {
+      startY: startY,
+      head: [tableHeaders],
+      body: rows,
+    };
+    autoTable(doc, tableConfig);
+    const tableHeight = tableData.length * rowHeight;
+
+    doc.setFontSize(10);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(clientName, 15, 20);
+    doc.setTextColor(0, 0, 0); //
+    doc.setFont("helvetica", "normal");
+    doc.text(city, 15, 25);
+    doc.text(country, 15, 30);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setFillColor(255, 165, 0); // Orange color
+    doc.rect(15, 43, 70, 10, "F");
+    doc.text("SERVICE FEE", 15, 50);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("service fee", 15, 57);
+    doc.text("kurs&", 15, 64);
+    doc.setFont("helvetica", "normal");
+    doc.text(serviceFee + "%", 50, 57);
+    doc.text("Rp" + rate, 50, 64);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("Statement Date", 120, 15);
+    doc.text("Statement No.", 120, 20);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      date
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replace(/\//g, "-"),
+      170,
+      15
+    );
+    doc.text(invoiceNo, 170, 20);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFillColor(255, 165, 0); // Orange color
+    doc.rect(118, 43, 80, 10, "F");
+    doc.text("PAYMENT SUMMARY", 120, 50);
+    doc.text("Ammount (Rp)", 170, 50);
+    doc.text("Total", 120, 57);
+    doc.setFont("helvetica", "normal");
+
+    doc.text("Rp" + totalAmountInRupiah, 170, 57);
+    doc.setFontSize(10);
+    doc.text(
+      "Payment By Transfer To (Full amount in Rupiah)",
+      15,
+      startY + tableHeight + 30
+    );
+    doc.setFont("helvetica", "bold");
+    doc.text(bankName, 15, startY + tableHeight + 40);
+    doc.text(beneficiaryName, 15, startY + tableHeight + 45);
+    doc.text(accountNumber.toString(), 15, startY + tableHeight + 50);
+
+    doc.setFont("helvetica", "italic");
+
+    // Set the underline style
+
+    // Set the font size and text color
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+
+    // Add the text with underline and italic style
+    doc.rect(8, startY + tableHeight + 65, 190, 10);
+    doc.text(
+      "Please make a payment within 7 days after this statement is issued, otherwise the robot will be deactivated",
+      12,
+      startY + tableHeight + 70
+    );
+
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, "_blank");
+  };
+
   return (
     <div className="px-4 mx-auto max-w-7xl sm:px-8 ">
       <div className="container flex justify-end w-full px-4 mx-auto my-10 lg:px-4">
@@ -715,13 +859,22 @@ const InvoiceDocument = ({
         bankName !== "" &&
         beneficiaryName !== "" &&
         accountNumber !== "" ? (
-          <button
-            onClick={generatePDF}
-            className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-xs">Print</span>
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={previewPDF}
+              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-xs">Preview PDF</span>
+            </button>
+            <button
+              onClick={generatePDF}
+              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+            >
+              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+              <span className="relative text-xs">Save</span>
+            </button>
+          </div>
         ) : null}
       </div>
     </div>
@@ -808,8 +961,10 @@ const AddInputInvoicePage = ({ user }: any) => {
     );
     if (res.status === 200) {
       const response = await axios.get(
-        `${BASE_URL}/input-invoice/input-invoice-summary/${res.data.inputInvoiceSummary.no_invoice}`
+        `${BASE_URL}/input-invoice/input-invoice-details/${res.data.inputInvoiceSummary.no_invoice}`
       );
+
+      console.log("response : ", response.data);
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
       setClientName(inputInvoiceSummary.client_name);
       setServiceFee(inputInvoiceSummary.service_fee);
@@ -837,9 +992,10 @@ const AddInputInvoicePage = ({ user }: any) => {
 
   const handleImportInvoiceDetails = async (accountNo: number) => {
     const res = await axios.get(
-      `${BASE_URL}/input-invoice/input-invoice-details/${user?.id}/${accountNo}`
+      `${BASE_URL}/input-invoice/input-invoice-details?${user?.id}/${accountNo}`
     );
     const inputInvoiceDetailsObject = res.data.inputInvoiceDetails;
+    console.log("inputInvoiceDetailsObject : ", inputInvoiceDetailsObject);
     const newDetail: DetailRow = {
       periodFrom: inputInvoiceDetailsObject.period_from,
       periodTo: inputInvoiceDetailsObject.period_to,
@@ -931,7 +1087,7 @@ const AddInputInvoicePage = ({ user }: any) => {
       ) : null}
       {isSuccessModalVisible ? (
         <SuccessModal
-          text="PDF File has been created successfully"
+          text="Input invoice has been added successfully"
           redirectLink="/input-invoice"
         />
       ) : null}

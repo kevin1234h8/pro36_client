@@ -17,6 +17,15 @@ import axios from "axios";
 import InvoiceSummaryDetails from "./page/InvoiceSummaryDetails";
 import EditInvoiceSummaryPage from "./page/EditInvoiceSummaryPage";
 import LoadingSpinner from "./components/LoadingSpinner";
+import {
+  ADD_MEMBER_PATH,
+  CLIENT_REPORT_PATH,
+  EDIT_MEMBER_PATH,
+  LICENSE_EXPIRED_REPORT_PATH,
+} from "./config/config";
+import LicenseExpiredReportPage from "./page/LicenseExpiredReportPage";
+import ClientReportPage from "./page/ClientReportPage";
+import PageNotFoundPage from "./page/PageNotFoundPage";
 
 function App() {
   const [user, setUser] = useState<User>();
@@ -149,7 +158,7 @@ function App() {
             }
           />
           <Route
-            path="/add-member"
+            path={ADD_MEMBER_PATH}
             element={
               <AddMember
                 notificationCount={notificationCount}
@@ -195,7 +204,7 @@ function App() {
             }
           />
           <Route
-            path="/edit-account/:id"
+            path={EDIT_MEMBER_PATH}
             element={
               user != undefined && (user?.level === 1 || user?.level === 2) ? (
                 <EditMemberPage user={user} />
@@ -259,6 +268,18 @@ function App() {
             }
           />
           <Route path="/" element={<MainPage user={user} avatar={avatar} />} />
+          <Route
+            path={LICENSE_EXPIRED_REPORT_PATH}
+            element={<LicenseExpiredReportPage user={user} avatar={avatar} />}
+          />
+          <Route
+            path={CLIENT_REPORT_PATH}
+            element={<ClientReportPage user={user} avatar={avatar} />}
+          />
+          <Route
+            path={"/report"}
+            element={<PageNotFoundPage user={user} avatar={avatar} />}
+          />
         </Routes>
       </Router>
     </div>
