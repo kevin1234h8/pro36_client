@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BASE_URL } from "../config/config";
 
 type SuccessCallback = () => void;
 
@@ -8,7 +9,7 @@ export const deleteInvoiceSummary = async (
 ) => {
   try {
     const res = await axios.delete(
-      `http://localhost:5000/input-invoice/input-invoice-summary/${id}`
+      `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
     );
     console.log(res);
     if (res.status === 200) {

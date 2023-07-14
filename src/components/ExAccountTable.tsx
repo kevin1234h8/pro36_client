@@ -6,6 +6,7 @@ import SuccessModal from "./SuccessModal";
 import DetailModal from "./DetailModal";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import NoResultsFound from "./NoResultsFound";
+import { BASE_URL } from "../config/config";
 const ExAccountTable = ({
   user,
   exAccount,
@@ -34,7 +35,7 @@ const ExAccountTable = ({
     if (confirmed) {
       try {
         const res = await axios.put(
-          `http://localhost:5000/ex-account/restore/${id}`,
+          `${BASE_URL}/ex-account/restore/${id}`,
           values
         );
         if (res.status === 200) {

@@ -19,6 +19,7 @@ import EditInvoiceSummaryPage from "./page/EditInvoiceSummaryPage";
 import LoadingSpinner from "./components/LoadingSpinner";
 import {
   ADD_MEMBER_PATH,
+  BASE_URL,
   CLIENT_REPORT_PATH,
   EDIT_MEMBER_PATH,
   LICENSE_EXPIRED_REPORT_PATH,
@@ -59,7 +60,7 @@ function App() {
   useEffect(() => {
     const getLoginUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/user/profile", {
+        const res = await axios.get(`${BASE_URL}/user/profile`, {
           withCredentials: true,
         });
         if (res.data.user) {
@@ -77,7 +78,7 @@ function App() {
 
   useEffect(() => {
     const getAvatar = async () => {
-      const res = await axios.get(`http://localhost:5000/avatar/${user?.id}`);
+      const res = await axios.get(`${BASE_URL}/avatar/${user?.id}`);
       setAvatar(res.data.avatar);
     };
     getAvatar();
