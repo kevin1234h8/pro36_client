@@ -53,6 +53,8 @@ const AddUser = ({ user }: any) => {
                   type="text"
                   name=""
                   required
+                  minLength={3}
+                  maxLength={20}
                   className="dark:text-white"
                   onChange={(e) => setUsername(e.target.value)}
                 />
@@ -61,6 +63,8 @@ const AddUser = ({ user }: any) => {
               <div className="input-box">
                 <input
                   type="text"
+                  minLength={8}
+                  maxLength={20}
                   name=""
                   required
                   onChange={(e) => setPassword(e.target.value)}

@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import jsPDF from "jspdf";
 import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
 import NoResultsFound from "../components/NoResultsFound";
-const LicenseExpiredReportPage = ({ user, avatar }: any) => {
+const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [licenseExpiredAccounts, setLicenseExpiredAccounts] = useState<any>([]);
   const [licenseExpiredAccountsCount, setLicenseExpiredAccountsCount] =
@@ -30,7 +30,6 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
     endDate: null,
   });
   const handleEndDateValueChange = (newValue: any) => {
-    console.log("newValue:", newValue);
     setEndDateValue(newValue);
   };
   const startedDateParts = startDateValue.startDate?.split("-");
@@ -38,16 +37,12 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
   if (startedDateParts !== undefined) {
     startDate = `${startedDateParts[2]}-${startedDateParts[1]}-${startedDateParts[0]}`;
   }
-  console.log(startDate);
   const endDateParts = endDateValue.startDate?.split("-");
   let endDate = "";
   if (endDateParts !== undefined) {
     endDate = `${endDateParts[2]}-${endDateParts[1]}-${endDateParts[0]}`;
   }
-  console.log(endDate);
   const totalPages = Math.ceil(licenseExpiredAccountsCount / pageSize);
-  console.log(licenseExpiredAccountsCount);
-  console.log("totalPages : ", totalPages);
   const [showSearchModal, setShowSearchModal] = useState<boolean>(true);
 
   const getPaginateData = async (newPage: number, newPageSize: number) => {
@@ -56,7 +51,6 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
         `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}`
       );
       setLicenseExpiredAccounts(res.data.licenseExpiredAccounts);
-      console.log(res.data);
       setPage(newPage);
     } catch (err) {
       console.log(err);
@@ -263,7 +257,8 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
       return;
     }
     const res = await axios.get(
-      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}`
+      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}`,
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {
       setShowSearchModal(false);
@@ -273,7 +268,6 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
   };
 
   const handleValueChange = (newValue: any) => {
-    console.log("newValue:", newValue);
     setStartDateValue(newValue);
   };
 
@@ -294,32 +288,39 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
 
       <Navbar user={user} avatar={avatar} />
       <Breadcrumb />
-      <div className="w-full lg:mx-auto lg:px-24 ">
+      <div className="w-full dark:bg-[#0e1011] lg:mx-auto lg:px-24 ">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between px-4 lg:px-0">
+          <div className="flex items-center justify-between px-4 md:px-8 lg:px-0">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white">
               License Expired Report
             </h2>
-            <div className="flex items-center gap-2" onClick={previewPDF}>
-              <button className="add-member-btn">
+            <div className="items-center hidden gap-2 md:flex lg:flex">
+              <button
+                className="add-member-btn"
+                onClick={getLicenseExpiredAccountsByStartDateAndEndDate}
+              >
                 <i className="fa-fa-solid add"></i>
                 <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
-                  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                  <span className="relative text-xs">Search</span>
+                </a>
+              </button>
+              <button className="add-member-btn" onClick={previewPDF}>
+                <i className="fa-fa-solid add"></i>
+                <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
                   <span className="relative text-xs">Preview</span>
                 </a>
               </button>
               <button className="add-member-btn" onClick={generatePDF}>
                 <i className="fa-fa-solid add"></i>
                 <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
-                  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                   <span className="relative text-xs">Print</span>
                 </a>
               </button>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-4 lg:px-4 ">
-            <div className="flex items-center gap-4">
-              <div className="w-[300px]">From Date : </div>
+          <div className="flex items-center justify-between px-4 mt-4 md:px-8 lg:px-0 ">
+            <div className="flex flex-col gap-4 md:flex-row lg:flex-row md:items-center lg:items-center">
+              <div className="w-[300px] dark:text-white">From Date : </div>
               <Datepicker
                 showShortcuts={true}
                 primaryColor={"indigo"}
@@ -328,7 +329,7 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
                 onChange={handleValueChange}
                 displayFormat={"DD-MM-YYYY"}
               />
-              <div>to</div>
+              <div className="text-white">to</div>
               <Datepicker
                 showShortcuts={true}
                 primaryColor={"indigo"}
@@ -337,20 +338,32 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
                 onChange={handleEndDateValueChange}
                 displayFormat={"DD-MM-YYYY"}
               />
-              <div
-                className="cursor-pointer"
-                onClick={getLicenseExpiredAccountsByStartDateAndEndDate}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4 text-gray-500 fill-current"
-                >
-                  <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"></path>
-                </svg>
-              </div>
             </div>
           </div>
-          <div className="flex flex-col px-4 my-2 mt-10 sm:flex-row lg:px-0">
+          <div className="flex items-center gap-2 px-4 mt-10 md:hidden lg:hidden ">
+            <button
+              className="add-member-btn"
+              onClick={getLicenseExpiredAccountsByStartDateAndEndDate}
+            >
+              <i className="fa-fa-solid add"></i>
+              <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                <span className="relative text-xs">Search</span>
+              </a>
+            </button>
+            <button className="add-member-btn" onClick={previewPDF}>
+              <i className="fa-fa-solid add"></i>
+              <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                <span className="relative text-xs">Preview</span>
+              </a>
+            </button>
+            <button className="add-member-btn" onClick={generatePDF}>
+              <i className="fa-fa-solid add"></i>
+              <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                <span className="relative text-xs">Print</span>
+              </a>
+            </button>
+          </div>
+          <div className="flex flex-col px-4 my-2 mt-10 sm:flex-row md:px-8 lg:px-0">
             <div className="flex flex-row mb-1 sm:mb-0">
               <div className="relative">
                 <select
@@ -362,11 +375,36 @@ const LicenseExpiredReportPage = ({ user, avatar }: any) => {
                     getPaginateData(1, selectedPageSize);
                   }}
                 >
-                  <option value="20">20</option>
-                  <option value="40">40</option>
-                  <option value="60">60</option>
-                  <option value="80">80</option>
-                  <option value="100">100</option>
+                  <option
+                    value="20"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    20
+                  </option>
+                  <option
+                    value="40"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    40
+                  </option>
+                  <option
+                    value="60"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    60
+                  </option>
+                  <option
+                    value="80"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    80
+                  </option>
+                  <option
+                    value="100"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    100
+                  </option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
                   <svg

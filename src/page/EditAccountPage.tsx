@@ -48,9 +48,19 @@ const EditAccountPage = ({ user }: any) => {
   const [registDate, setRegistDate] = useState<string>("");
   const [isSuccessModelIsVisible, setIsSuccessModelIsVisible] =
     useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showInvPassword, setShowInvPassword] = useState<boolean>(false);
 
   const handleSubmit = async (e: SyntheticEvent) => {
     try {
+      const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
+      if (!dateRegex.test(registDate) || !dateRegex.test(expiredDate)) {
+        alert(
+          "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
+        );
+        return;
+      }
+
       e.preventDefault();
       const values = {
         client_name: clientName,
@@ -111,24 +121,50 @@ const EditAccountPage = ({ user }: any) => {
                 />
                 <label>Account No</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   name="password"
                   required
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <div className="absolute top-0 right-0">
+                  {showPassword ? (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>MT4 / MT5 Pass</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="password"
+                  type={showInvPassword ? "text" : "password"}
+                  name=""
                   value={invPassword}
-                  name="inv_pass"
                   required
                   onChange={(e) => setInvPassword(e.target.value)}
                 />
+                <div className="absolute top-0 right-0">
+                  {showInvPassword ? (
+                    <i
+                      onClick={() => setShowInvPassword(!showInvPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowInvPassword(!showInvPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>Inv Pass</label>
               </div>
               <div className="input-box">

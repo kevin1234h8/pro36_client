@@ -14,7 +14,8 @@ const AddMember = ({ setNotificationCount, user }: any) => {
   oneYearLaterDate.setFullYear(date.getFullYear() + 1);
   let uuidv4: string;
   uuidv4 = v4();
-
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showInvPassword, setShowInvPassword] = useState<boolean>(false);
   const [registDate, setRegistDate] = useState<any>(
     date
       .toLocaleDateString("en-GB", {
@@ -52,6 +53,15 @@ const AddMember = ({ setNotificationCount, user }: any) => {
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
+      const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
+      if (!dateRegex.test(registDate) || !dateRegex.test(expiredDate)) {
+        // Display an error message if the date format is incorrect
+        alert(
+          "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
+        );
+        return;
+      }
+
       const values = {
         id,
         client_name: clientName,
@@ -120,6 +130,8 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 <input
                   type="text"
                   required
+                  minLength={3}
+                  maxLength={20}
                   onChange={(e) => setClientName(e.target.value)}
                 />
                 <label>Client Name</label>
@@ -133,22 +145,48 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 />
                 <label>Account No</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name=""
                   required
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <div className="absolute top-0 right-0">
+                  {showPassword ? (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>MT4 / MT5 Pass</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="password"
+                  type={showInvPassword ? "text" : "password"}
                   name=""
                   required
                   onChange={(e) => setInvPassword(e.target.value)}
                 />
+                <div className="absolute top-0 right-0">
+                  {showInvPassword ? (
+                    <i
+                      onClick={() => setShowInvPassword(!showInvPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowInvPassword(!showInvPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>Inv Pass</label>
               </div>
               <div className="input-box">
@@ -186,7 +224,9 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                   id="RegistDate"
                   type="text"
                   defaultValue={expiredDate}
-                  onChange={(e) => setExpiredDate(e.target.value)}
+                  onChange={(e) => {
+                    setExpiredDate(e.target.value);
+                  }}
                 />
                 <label>Expired Date</label>
               </div>

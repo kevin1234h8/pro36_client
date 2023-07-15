@@ -21,10 +21,10 @@ const MainPage = ({ user }: any) => {
         <div className="flex flex-col-reverse items-center justify-center mx-auto bg lg:flex-row lg:px-48 lg:py-10">
           <div className="w-full lg:w-1/2">
             <div className="flex flex-col gap-12">
-              <div className="flex-col hidden gap-4 lg:flex ">
+              <div className="flex-col hidden gap-4 lg:flex">
                 <div
                   data-aos="fade-right"
-                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
+                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl dark:text-white"
                 >
                   Organize
                 </div>
@@ -32,20 +32,20 @@ const MainPage = ({ user }: any) => {
                 <div
                   data-aos="fade-right"
                   data-aos-duration="1150"
-                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
+                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl dark:text-white"
                 >
                   Data
                 </div>
                 <div
                   data-aos="fade-right"
                   data-aos-duration="1300"
-                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl"
+                  className="text-xl text-center lg:text-start md:text-3xl lg:text-6xl dark:text-white"
                 >
                   Management
                 </div>
               </div>
               <div className="flex flex-col gap-2 lg:hidden">
-                <div className="mt-5 text-xl font-bold text-center md:text-2xl">
+                <div className="mt-5 text-xl font-bold text-center md:text-2xl dark:text-white">
                   Organize Simplify Your Account Data Management
                 </div>
                 <div className="text-xs text-center md:text-base text-[#727272]">

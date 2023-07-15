@@ -66,6 +66,13 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
 
   const handleUpdate = async (id: string) => {
     try {
+      const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
+      if (!dateRegex.test(date)) {
+        alert(
+          "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
+        );
+        return;
+      }
       const values = {
         clientName: clientNameRef.current,
         serviceFee: serviceFeeRef.current,

@@ -15,7 +15,7 @@ import jsPDF from "jspdf";
 import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
 import SearchClientReportFromDateToEndDateModal from "../components/SearchClientReportFromDateToEndDateModal";
 import NoResultsFound from "../components/NoResultsFound";
-const ClientReportPage = ({ user, avatar }: any) => {
+const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [ClientReportAccounts, setClientReportAccounts] = useState<any>([]);
   const [ClientReportAccountsCount, setClientReportAccountsCount] =
@@ -60,7 +60,6 @@ const ClientReportPage = ({ user, avatar }: any) => {
         `${BASE_URL}/client-report?page=${newPage}&pageSize=${newPageSize}&clientName=${clientName}&startDate=${startDate}&endDate=${endDate}`
       );
       setClientReportAccounts(res.data.licenseExpiredAccounts);
-      console.log(res.data);
       setPage(newPage);
     } catch (err) {
       console.log(err);
@@ -95,7 +94,8 @@ const ClientReportPage = ({ user, avatar }: any) => {
       return;
     }
     const res = await axios.get(
-      `${BASE_URL}/client-report?startDate=${startDate}&endDate=${endDate}&clientName=${clientName}`
+      `${BASE_URL}/client-report?startDate=${startDate}&endDate=${endDate}&clientName=${clientName}`,
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     setClientReportAccountsCount(res.data.totalCount);
     setClientReportAccounts(res.data.clientReportAccounts);
@@ -115,26 +115,84 @@ const ClientReportPage = ({ user, avatar }: any) => {
   ).toLocaleString("id-ID");
   const generatePDF = () => {
     const doc = new jsPDF();
+    const startY = 60; // Initial Y-coordinate for the table
+    const rowHeight = 10; // Adjust the row height as needed
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => [
           index + 1,
           account.date,
           account.no_invoice,
-          account.total_amount,
+          "Rp " + account.total_amount.toLocaleString("id-ID"),
         ]
       );
-      const totalRow = ["Total", "", "", "", "", "Rp" + grandTotal];
-      rows.push(totalRow);
-      autoTable(doc, {
-        head: [["No", "Invoice Date", "No Invoice", "Total Amount"]],
+
+      const tableHeaders = ["No", "Invoice Date", "No Invoice", "Total Amount"];
+      const tableData = [tableHeaders, ...rows];
+
+      const tableConfig = {
+        startY: startY,
+        head: [tableHeaders],
         body: rows,
-      });
+      };
+
+      const tableHeight = tableData.length * rowHeight;
+      const city = ClientReportAccounts.find(
+        (ClientReportAccount: any, index: number) => {
+          return ClientReportAccount.city;
+        }
+      );
+
+      doc.setFontSize(11);
+      doc.text(`From Date : [ ${startDate} ] to [ ${endDate} ] `, 15, 30);
+      doc.text(`Client Name`, 15, 40);
+      doc.text(`:`, 40, 40);
+      doc.text(clientName, 50, 40);
+      doc.text(`City`, 15, 45);
+      doc.text(`:`, 40, 45);
+      doc.text(city.city, 50, 45);
+      autoTable(doc, tableConfig);
+
+      doc.text(
+        `Grand Total P/L Rp ${grandTotal.toString()}`,
+        75,
+        startY + tableHeight + 20
+      );
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text(`Client P/L Report`, 15, 20);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "italic");
+      doc.text(
+        "Nb. Sort berdasarkan tanggal Invoice",
+        15,
+        startY + tableHeight + 30
+      );
     } else {
       autoTable(doc, {
+        startY: startY,
         head: [["No", "Invoice Date", "No Invoice", "Total Amount"]],
         body: [["No results found"]],
       });
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "italic");
+      doc.text(
+        "Nb. Sort berdasarkan tanggal Invoice",
+        15,
+        startY + rowHeight + 20
+      );
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text("Client P/L Report", 15, 20);
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0); //
+      doc.text(`From Date : [  ] to [  ] `, 15, 30);
+      doc.text(`Client Name`, 15, 40);
+      doc.text(`:`, 40, 40);
+      doc.text("", 50, 40);
+      doc.text(`City`, 15, 45);
+      doc.text(`:`, 40, 45);
+      doc.text("", 50, 45);
     }
 
     doc.save(
@@ -244,10 +302,10 @@ const ClientReportPage = ({ user, avatar }: any) => {
 
       <Navbar user={user} avatar={avatar} />
       <Breadcrumb />
-      <div className="w-full h-screen lg:mx-auto lg:px-24 ">
+      <div className="w-full h-screen lg:mx-auto dark:bg-[#0e1011] lg:px-24 ">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between px-4 lg:px-0">
-            <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white">
+          <div className="flex items-center justify-between px-4 md:px-8 lg:px-0">
+            <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white ">
               Client P/L Report
             </h2>
           </div>
@@ -313,9 +371,11 @@ const ClientReportPage = ({ user, avatar }: any) => {
           />
         </div>
       </div> */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-10">
-              <div className="w-24 dark:text-[#e4e4e4]">Client's Name:</div>
+          <div className="flex flex-col justify-between gap-6 px-4 md:px-8 md:flex-row md:items-center lg:px-0 lg:flex-row lg:items-center">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-row lg:items-center md:gap-10 lg:gap-10">
+              <div className="w-auto dark:text-[#e4e4e4] md:w-24 lg:w-24">
+                Client's Name:
+              </div>
               <div>
                 <input
                   type="text"
@@ -325,7 +385,7 @@ const ClientReportPage = ({ user, avatar }: any) => {
                 />
               </div>
             </div>
-            <div className="flex gap-4 item-center">
+            <div className="hidden gap-4 item-center md:flex lg:flex">
               <button
                 className="add-member-btn"
                 onClick={getClientReportAccounts}
@@ -335,24 +395,26 @@ const ClientReportPage = ({ user, avatar }: any) => {
                   <span className="relative text-xs">Search</span>
                 </a>
               </button>
-              <div className="flex items-center gap-2">
-                <button className="add-member-btn" onClick={previewPDF}>
-                  <i className="fa-fa-solid add"></i>
-                  <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
-                    <span className="relative text-xs">Preview</span>
-                  </a>
-                </button>
-                <button className="add-member-btn" onClick={generatePDF}>
-                  <i className="fa-fa-solid add"></i>
-                  <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
-                    <span className="relative text-xs">Print</span>
-                  </a>
-                </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <button className="add-member-btn" onClick={previewPDF}>
+                    <i className="fa-fa-solid add"></i>
+                    <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                      <span className="relative text-xs">Preview</span>
+                    </a>
+                  </button>
+                  <button className="add-member-btn" onClick={generatePDF}>
+                    <i className="fa-fa-solid add"></i>
+                    <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                      <span className="relative text-xs">Print</span>
+                    </a>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-between my-4">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between px-4 my-4 md:px-8 lg:px-0">
+            <div className="flex flex-col gap-4 md:items-center lg:items-center md:flex-row lg:flex-row">
               <div className="w-[300px] dark:text-[#e4e4e4]">From Date : </div>
               <Datepicker
                 showShortcuts={true}
@@ -362,7 +424,7 @@ const ClientReportPage = ({ user, avatar }: any) => {
                 onChange={handleValueChange}
                 displayFormat={"DD-MM-YYYY"}
               />
-              <div>to</div>
+              <div className="dark:text-white text-start">to</div>
               <Datepicker
                 showShortcuts={true}
                 primaryColor={"indigo"}
@@ -384,6 +446,34 @@ const ClientReportPage = ({ user, avatar }: any) => {
               </div> */}
             </div>
           </div>
+          <div className="flex gap-4 px-4 mt-10 item-center md:hidden lg:hidden">
+            <button
+              className="add-member-btn"
+              onClick={getClientReportAccounts}
+            >
+              <i className="fa-fa-solid add"></i>
+              <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                <span className="relative text-xs">Search</span>
+              </a>
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <button className="add-member-btn" onClick={previewPDF}>
+                  <i className="fa-fa-solid add"></i>
+                  <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                    <span className="relative text-xs">Preview</span>
+                  </a>
+                </button>
+                <button className="add-member-btn" onClick={generatePDF}>
+                  <i className="fa-fa-solid add"></i>
+                  <a className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300">
+                    <span className="relative text-xs">Print</span>
+                  </a>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* <div className="flex items-center gap-16">
             <div className="w-24">Client's Name:</div>
             <div>
@@ -404,6 +494,7 @@ const ClientReportPage = ({ user, avatar }: any) => {
               />
             </div>
           </div> */}
+
           {ClientReportAccounts?.length > 0 ? (
             <div
               className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
@@ -444,8 +535,8 @@ const ClientReportPage = ({ user, avatar }: any) => {
                                   data-column="Client Name"
                                   className="table-row__td "
                                 >
-                                  <div className="table-row__info">
-                                    <p className="table-row text-center">
+                                  <div className="table-row__info  w-[75px]">
+                                    <p className="table-row text-center w-[75px]">
                                       {user.date}
                                     </p>
                                   </div>
@@ -464,7 +555,7 @@ const ClientReportPage = ({ user, avatar }: any) => {
                                   data-column="Server"
                                   className="table-row__td"
                                 >
-                                  <p className="table-row__info ">
+                                  <p className="table-row__info w-[100px]">
                                     Rp{" "}
                                     {(user.total_amount / 1000).toLocaleString(
                                       undefined,

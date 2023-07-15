@@ -8,7 +8,7 @@ const SuccessModal = ({ text, redirectLink }: any) => {
       id="modal-id"
     >
       <div className="absolute inset-0 z-0 bg-black opacity-80"></div>
-      <div className="relative w-full max-w-lg p-5 mx-auto my-auto bg-white shadow-lg rounded-xl ">
+      <div className="relative w-full max-w-lg p-5 mx-auto my-auto bg-white dark:bg-[#1e293b] shadow-lg rounded-xl ">
         <div className="relative">
           <div className="items-center justify-center flex-auto p-5 text-center">
             <Lottie
@@ -17,7 +17,7 @@ const SuccessModal = ({ text, redirectLink }: any) => {
               width={100}
               height={100}
             />
-            <h2 className="py-4 text-xl font-bold ">Success</h2>
+            <h2 className="py-4 text-xl font-bold dark:text-white ">Success</h2>
             <p className="px-8 text-sm text-gray-500">{text}</p>
           </div>
           <div className="p-3 mt-2 space-x-4 text-center md:block">

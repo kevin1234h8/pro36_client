@@ -96,7 +96,13 @@ const HomePage = ({
         "Are you sure you want to delete this account ?"
       );
       if (confirmed) {
-        const res = await axios.put(`${BASE_URL}/account/delete/${id}`, values);
+        const res = await axios.put(
+          `${BASE_URL}/account/delete/${id}`,
+          values,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
+        );
         if (res.status === 200) {
           setIsSuccessModalVisible(true);
         } else {
@@ -111,7 +117,7 @@ const HomePage = ({
   return isLoading ? (
     <LoadingSpinner />
   ) : (
-    <div className="relative bg-[#fafafa]   dark:bg-[#0e1011]">
+    <div className="relative bg-[#fafafa]   dark:bg-[#0e1011] ">
       {showToast === "true" ? (
         <ToastContainer
           position="top-right"
@@ -143,7 +149,7 @@ const HomePage = ({
             <div className="member-list">
               <div className={`member-list-container`}></div>
             </div>
-            <div className="lg:px-24">
+            <div className="lg:px-24 dark:bg-[#0e1011]">
               <NewAccountTable
                 account={account}
                 pageSize={pageSize}

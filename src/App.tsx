@@ -137,7 +137,7 @@ function App() {
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <div className="dark:bg-[#0e1011]">
+    <div className="dark:bg-[#0e1011] h-screen ">
       <Router>
         <Routes>
           <Route
@@ -192,7 +192,11 @@ function App() {
             path="/input-invoice"
             element={
               user != undefined ? (
-                <InputInvoicePage user={user} avatar={avatar} />
+                <InputInvoicePage
+                  user={user}
+                  avatar={avatar}
+                  parsedUserData={parsedUserData}
+                />
               ) : (
                 <UnAuthorizedPage user={user} />
               )
@@ -266,7 +270,10 @@ function App() {
             path="/add-invoice"
             element={
               user != undefined ? (
-                <AddInputInvoicePage user={user} />
+                <AddInputInvoicePage
+                  user={user}
+                  parsedUserData={parsedUserData}
+                />
               ) : (
                 <UnAuthorizedPage user={user} />
               )
@@ -275,11 +282,23 @@ function App() {
           <Route path="/" element={<MainPage user={user} avatar={avatar} />} />
           <Route
             path={LICENSE_EXPIRED_REPORT_PATH}
-            element={<LicenseExpiredReportPage user={user} avatar={avatar} />}
+            element={
+              <LicenseExpiredReportPage
+                parsedUserData={parsedUserData}
+                user={user}
+                avatar={avatar}
+              />
+            }
           />
           <Route
             path={CLIENT_REPORT_PATH}
-            element={<ClientReportPage user={user} avatar={avatar} />}
+            element={
+              <ClientReportPage
+                parsedUserData={parsedUserData}
+                user={user}
+                avatar={avatar}
+              />
+            }
           />
           <Route
             path={"/report"}

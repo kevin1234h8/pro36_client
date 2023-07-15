@@ -72,30 +72,31 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
   return (
     <div>
       <ToastContainer />
-      <div className="flex h-screen">
-        <div className="items-center justify-around hidden w-full lg:flex lg:w-1/2 login_img_section">
+      <div className="flex h-screen dark:bg-[#303037]">
+        <div className="items-center justify-around hidden w-full bg-white lg:flex lg:w-1/2 login_img_section">
           <Lottie animationData={animationData} height={500} width={500} />
         </div>
-        <div className="flex items-center justify-center w-full space-y-8 bg-white lg:w-1/2">
-          <div className="w-full px-8 md:px-32 lg:px-24">
+        <div className="flex items-center justify-center w-full space-y-8 lg:w-1/2">
+          <div className="w-full px-8 md:px-32 lg:px-24 bg-white dark:bg-[#303037]">
             <form
               onSubmit={handleSubmit}
-              className="p-5 bg-white rounded-md shadow-2xl"
+              className="p-5 bg-white dark:bg-[#101010] rounded-md shadow-2xl"
             >
-              <h1 className="my-10 mb-1 text-2xl font-bold text-center text-gray-800">
+              <h1 className="my-10 mb-1 text-2xl font-bold text-center text-gray-800 dark:text-white">
                 Hello Again!
               </h1>
-              <p className="my-4 mb-8 text-sm font-normal text-center text-gray-600">
+              <p className="my-4 mb-8 text-sm font-normal text-center text-gray-600 dark:text-[#8b8b8b]">
                 Welcome Back to Pro 36
               </p>
               <div
-                className={`flex items-center  mb-4 border-2  py-2 px-3 rounded-2xl ${
-                  usernameErrorMessage
-                    ? "border-red-500 text-red-500"
-                    : username.length > 0
-                    ? "border-green-500 text-green-500"
-                    : "border-gray-300"
-                }`}
+                // className={`flex items-center  mb-4 border-2  py-2 px-3 rounded-2xl ${
+                //   usernameErrorMessage
+                //     ? "border-red-500 text-red-500"
+                //     : username.length > 0
+                //     ? "border-green-500 text-green-500"
+                //     : "border-gray-300"
+                // }`}
+                className={`flex items-center  mb-4 border-2  py-2 px-3 rounded-2xl `}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -113,7 +114,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                 </svg>
                 <input
                   id="username"
-                  className={`pl-2 w-full outline-none border-none my ${
+                  className={`pl-2 w-full outline-none border-none my dark:bg-[#101010] dark:text-white ${
                     usernameErrorMessage ? "border-red-500" : "border-gray-300"
                   }`}
                   type="username"
@@ -123,17 +124,17 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                   pattern="^[a-z_-]{3,15}$"
                   onChange={(e) => {
                     setUsername(e.target.value);
-                    if (!/^[a-z_-]{3,15}$/.test(username)) {
-                      setUsernameErrorMessage(
-                        "Invalid username. Username should  be 3-15 characters long and not consist any number or special character."
-                      );
-                    } else {
-                      setUsernameErrorMessage("");
-                    }
+                    // if (!/^[a-z_-]{3,15}$/.test(username)) {
+                    //   setUsernameErrorMessage(
+                    //     "Invalid username. Username should  be 3-15 characters long and not consist any number or special character."
+                    //   );
+                    // } else {
+                    //   setUsernameErrorMessage("");
+                    // }
                   }}
                 />
               </div>
-              {usernameErrorMessage ? (
+              {/* {usernameErrorMessage ? (
                 <div className="my-8 mt-1 text-sm text-red-500">
                   {usernameErrorMessage}
                 </div>
@@ -142,15 +143,16 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                 <div className="my-8 mt-1 text-sm text-green-500">
                   Success! Username is valid.
                 </div>
-              )}
+              )} */}
               <div
-                className={`flex items-center border-2 mb-6 py-2 px-3 rounded-2xl ${
-                  passwordErrorMessage
-                    ? "border-red-500 text-red-500"
-                    : password.length > 0
-                    ? "border-green-500 text-green-500"
-                    : "border-gray-300"
-                }`}
+                // className={`flex items-center border-2 mb-6 py-2 px-3 rounded-2xl ${
+                //   passwordErrorMessage
+                //     ? "border-red-500 text-red-500"
+                //     : password.length > 0
+                //     ? "border-green-500 text-green-500"
+                //     : "border-gray-300"
+                // }`}
+                className={`flex items-center border-2 mb-6 py-2 px-3 rounded-2xl `}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +170,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                   className={`w-full outline-none border-none flex items-center justify-center  `}
                 >
                   <input
-                    className={`pl-2 w-full outline-none border-none my ${
+                    className={`pl-2 w-full outline-none border-none my bg-white dark:bg-[#101010] dark:text-white ${
                       passwordErrorMessage
                         ? "border-red-500"
                         : "border-gray-300"
@@ -181,17 +183,17 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                     required
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      if (
-                        !/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#_?!@$%^&*-]).{7,20}$/.test(
-                          password
-                        )
-                      ) {
-                        setPasswordErrorMessage(
-                          "Invalid password. Password should be 8-20 characters long and have at least a number, one special character, one capital letter."
-                        );
-                      } else {
-                        setPasswordErrorMessage("");
-                      }
+                      // if (
+                      //   !/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#_?!@$%^&*-]).{7,20}$/.test(
+                      //     password
+                      //   )
+                      // ) {
+                      //   setPasswordErrorMessage(
+                      //     "Invalid password. Password should be 8-20 characters long and have at least a number, one special character, one capital letter."
+                      //   );
+                      // } else {
+                      //   setPasswordErrorMessage("");
+                      // }
                     }}
                   />
 
@@ -208,7 +210,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                   )}
                 </div>
               </div>
-              {passwordErrorMessage ? (
+              {/* {passwordErrorMessage ? (
                 <div className="my-8 mt-1 text-sm text-red-500">
                   {passwordErrorMessage}
                 </div>
@@ -222,7 +224,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
                 <div className="text-sm text-center text-red-500">
                   Wrong Username and Password Combination
                 </div>
-              ) : null}
+              ) : null} */}
 
               <button
                 type="submit"

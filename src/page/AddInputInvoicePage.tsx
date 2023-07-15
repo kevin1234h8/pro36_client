@@ -11,7 +11,7 @@ import { BASE_URL } from "../config/config";
 import datas from "../data/datas.json";
 import { DetailRow } from "../interface/DetailRowInterface";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
-
+import { v4 } from "uuid";
 const Summary = ({
   setInvoiceNo,
   setServiceFee,
@@ -267,6 +267,7 @@ interface DetailProps {
 const Detail: React.FC<any> = ({
   details,
   serviceFee,
+  addInputInvoiceDetails,
   onAddDetailRow,
   onDetailChange,
   rate,
@@ -275,6 +276,7 @@ const Detail: React.FC<any> = ({
   onRemoveDetailRow,
   setIsImportModalIsVisible,
   setImportMemberAccountModalVisible,
+  user,
 }) => {
   const widthStyle = useContainerWidthUtils();
   const handleInputChange = (
@@ -310,13 +312,15 @@ const Detail: React.FC<any> = ({
         <div className="flex items-end justify-end"></div>
       </div>
       <div className="flex justify-end w-full gap-4 px-4 lg:px-20">
-        <button
-          onClick={() => setImportMemberAccountModalVisible(true)}
-          className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-xs">Import Existing Account</span>
-        </button>
+        {user?.level === 3 ? null : (
+          <button
+            onClick={() => setImportMemberAccountModalVisible(true)}
+            className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-xs">Import Existing Account</span>
+          </button>
+        )}
 
         <button
           onClick={() => setImportAccountModalVisible(true)}
@@ -324,6 +328,13 @@ const Detail: React.FC<any> = ({
         >
           <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
           <span className="relative text-xs">Import Existing Details</span>
+        </button>
+        <button
+          onClick={addInputInvoiceDetails}
+          className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-xs">Add</span>
         </button>
       </div>
       <div className="flex items-center justify-between w-full px-4">
@@ -390,7 +401,7 @@ const Detail: React.FC<any> = ({
                             <p className="flex items-center justify-center gap-2">
                               <input
                                 type="number"
-                                className="text-center border-none appearance-none cursor-pointer"
+                                className="text-center border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                 placeholder="0"
                                 min={1}
                                 value={detail.accountNo}
@@ -406,7 +417,7 @@ const Detail: React.FC<any> = ({
                           >
                             <p className="flex items-center justify-center gap-2">
                               <input
-                                className="text-center"
+                                className="text-center  dark:bg-[#0e1011] "
                                 type="text"
                                 value={detail.broker}
                                 placeholder="broker name"
@@ -419,7 +430,7 @@ const Detail: React.FC<any> = ({
                           <td data-column="Profit" className="table-row__td ">
                             <p className="flex items-center justify-center ">
                               <input
-                                className="text-center"
+                                className="text-center  dark:bg-[#0e1011] "
                                 type="number"
                                 placeholder="0"
                                 value={detail.profit}
@@ -433,7 +444,7 @@ const Detail: React.FC<any> = ({
                           <td data-column="Service" className="table-row__td">
                             <p className="flex items-center justify-center ">
                               <input
-                                className="text-center outline-none"
+                                className="text-center outline-none  dark:bg-[#0e1011] "
                                 type="number"
                                 step="0.01"
                                 placeholder="0"
@@ -478,8 +489,10 @@ const Detail: React.FC<any> = ({
           </div>
         </div>
       ) : (
-        <div className="px-5 py-4 mt-4 text-center text-gray-600 bg-gray-100">
-          <p className="text-sm font-semibold">No Invoice Added </p>
+        <div className="px-5 py-4 text-center text-gray-600 bg-gray-100 dark:bg-[#0e1011]">
+          <p className="text-xs md:text-base lg:text-xl font-semibold dark:text-[#e4e4e4]">
+            No Invoice Added
+          </p>
         </div>
       )}
     </div>
@@ -502,13 +515,15 @@ const InvoiceDocument = ({
   setIsSuccessModalVisible,
   invoiceNoDate,
 }: any) => {
-  const [totalAmountInRupiah, setTotalAmountInRupiah] = useState();
+  const [totalAmountInRupiah, setTotalAmountInRupiah] = useState(0);
   const [totalServiceFee, setTotalServiceFee] = useState(0);
-  console.log("details : ", details);
   useEffect(() => {
     if (details) {
     }
   }, [details]);
+  let uuidv4: string;
+  uuidv4 = v4();
+  const [id] = useState<string>(uuidv4);
 
   const generatePDF = async () => {
     const doc = new jsPDF();
@@ -530,6 +545,7 @@ const InvoiceDocument = ({
     ]);
 
     const values = details?.map((detail: any, index: number) => [
+      detail.id,
       invoiceNo,
       detail.periodFrom,
       detail.periodTo,
@@ -541,7 +557,6 @@ const InvoiceDocument = ({
       user?.id,
       user?.id,
     ]);
-    console.log("values :", values);
     try {
       const res = await axios.post(
         `${BASE_URL}/input-invoice/input-invoice-details/create`,
@@ -550,6 +565,14 @@ const InvoiceDocument = ({
     } catch (error) {
       console.error(error);
     }
+    const totalAmount = details.reduce((sum: number, detail: any) => {
+      const amount = detail.rupiah
+        ? detail.rupiah
+        : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+      return sum + parseFloat(amount);
+    }, 0);
+    setTotalAmountInRupiah(totalAmount.toFixed(2));
+
     const summaryValues = {
       invoiceNo: invoiceNoDate,
       date: date
@@ -567,7 +590,7 @@ const InvoiceDocument = ({
       bankName,
       beneficiaryName,
       accountNumber,
-      totalAmountInRupiah,
+      totalAmountInRupiah: totalAmount,
       created_by: user?.id,
       owner: user?.id,
     };
@@ -737,8 +760,8 @@ const InvoiceDocument = ({
       "",
       "",
       "",
-      "$" + totalServiceFee,
-      "Rp" + totalAmountInRupiah,
+      "$" + totalFee.toFixed(2),
+      "Rp" + totalAmount.toFixed(2),
     ];
     rows.push(totalRow);
     // Set table properties
@@ -814,7 +837,7 @@ const InvoiceDocument = ({
     doc.text("Total", 120, 57);
     doc.setFont("helvetica", "normal");
 
-    doc.text("Rp" + totalAmountInRupiah, 170, 57);
+    doc.text("Rp" + totalAmount.toFixed(2), 170, 57);
     doc.setFontSize(10);
     doc.text(
       "Payment By Transfer To (Full amount in Rupiah)",
@@ -885,7 +908,7 @@ export interface InvoiceDocumentRef {
   print: () => void;
 }
 
-const AddInputInvoicePage = ({ user }: any) => {
+const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
   const [invoiceNo, setInvoiceNo] = useState("");
 
   const [date, setDate] = useState(new Date());
@@ -927,15 +950,37 @@ const AddInputInvoicePage = ({ user }: any) => {
   const [memberAccounts, setMemberAccounts] = useState<any>([]);
   const getImportAccount = async () => {
     const res = await axios.get(
-      `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`
+      `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     setSearchResults(res.data.inputInvoiceSummary);
   };
 
-  const options: any = { day: "2-digit", month: "2-digit", year: "numeric" };
+  const addInputInvoiceDetails = () => {
+    const newDetail: DetailRow = {
+      id: id,
+      periodFrom: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
+      periodTo: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
+      accountNo: 0,
+      broker: "",
+      profit: Number(0),
+      service: calculateService(Number(profit), rate),
+      rupiah: Number(0),
+    };
+    setDetails((prevDetails) => [...prevDetails, newDetail]);
+  };
 
+  const options: any = { day: "2-digit", month: "2-digit", year: "numeric" };
+  let uuidv4: string;
+  uuidv4 = v4();
+  const [id] = useState<string>(uuidv4);
   const addDetailRow = () => {
     const newDetail: DetailRow = {
+      id: id,
       periodFrom: new Date()
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
@@ -964,7 +1009,6 @@ const AddInputInvoicePage = ({ user }: any) => {
         `${BASE_URL}/input-invoice/input-invoice-details/${res.data.inputInvoiceSummary.no_invoice}`
       );
 
-      console.log("response : ", response.data);
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
       setClientName(inputInvoiceSummary.client_name);
       setServiceFee(inputInvoiceSummary.service_fee);
@@ -990,13 +1034,13 @@ const AddInputInvoicePage = ({ user }: any) => {
     }
   };
 
-  const handleImportInvoiceDetails = async (accountNo: number) => {
+  const handleImportInvoiceDetails = async (invoiceDetailsId: string) => {
     const res = await axios.get(
-      `${BASE_URL}/input-invoice/input-invoice-details?${user?.id}/${accountNo}`
+      `${BASE_URL}/input-invoice/input-invoice-details/${invoiceDetailsId}`
     );
     const inputInvoiceDetailsObject = res.data.inputInvoiceDetails;
-    console.log("inputInvoiceDetailsObject : ", inputInvoiceDetailsObject);
     const newDetail: DetailRow = {
+      id: id,
       periodFrom: inputInvoiceDetailsObject.period_from,
       periodTo: inputInvoiceDetailsObject.period_to,
       accountNo: inputInvoiceDetailsObject.account_no,
@@ -1013,6 +1057,7 @@ const AddInputInvoicePage = ({ user }: any) => {
     const res = await axios.get(`${BASE_URL}/account/${id}`);
     const memberAccounts = res.data.account;
     const newDetail: DetailRow = {
+      id: id,
       periodFrom: new Date()
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
@@ -1032,7 +1077,8 @@ const AddInputInvoicePage = ({ user }: any) => {
   const getMemberAccounts = async () => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`
+        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setMemberAccounts(res.data.accounts);
     } catch (err) {
@@ -1042,13 +1088,10 @@ const AddInputInvoicePage = ({ user }: any) => {
 
   const getInvoiceDetails = async () => {
     let res = await axios.get(
-      `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&owner=${user?.id}&createdDate=${createdDateInvoiceDetails}`
+      `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`,
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
-    if (user.level === 1) {
-      res = await axios.get(
-        `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`
-      );
-    }
+
     setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
   };
 
@@ -1071,7 +1114,7 @@ const AddInputInvoicePage = ({ user }: any) => {
   };
 
   return (
-    <div>
+    <div className="dark:bg-[#0e1011] ">
       <Navbar user={user} />
       {isImportMemberAccountModalVisible ? (
         <ImportMemberAccountModal
@@ -1145,6 +1188,8 @@ const AddInputInvoicePage = ({ user }: any) => {
         setAccountNumber={setAccountNumber}
       />
       <Detail
+        addInputInvoiceDetails={addInputInvoiceDetails}
+        user={user}
         setImportAccountModalVisible={setImportAccountModalVisible}
         setIsImportModalIsVisible={setIsImportModalIsVisible}
         setProfit={setProfit}

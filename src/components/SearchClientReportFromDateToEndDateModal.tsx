@@ -14,16 +14,16 @@ const SearchClientReportFromDateToEndDateModal = ({
       id="modal-id"
     >
       <div className="absolute inset-0 z-0 bg-black opacity-80"></div>
-      <div className="relative w-full max-w-lg p-5 mx-auto my-auto bg-white shadow-lg rounded-xl ">
+      <div className="relative w-full dark:bg-[#1e293b] max-w-lg p-5 mx-auto my-auto bg-white shadow-lg rounded-xl ">
         <div className="relative flex flex-col gap-8 ">
-          <div className="lg:text-xl ">Select Date Range</div>
-          <div>
+          <div className="lg:text-xl dark:text-white">Select Date Range</div>
+          <div className="dark:text-white">
             Please enter the start date and end date values to retrieve the
             data. The data will be filtered based on the selected date range.
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <div className="w-[200px]">Start Date: </div>
+              <div className="w-[200px] dark:text-white">Start Date: </div>
               <Datepicker
                 showShortcuts={true}
                 primaryColor={"indigo"}
@@ -34,7 +34,7 @@ const SearchClientReportFromDateToEndDateModal = ({
               />
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-[200px]">End Date: </div>
+              <div className="w-[200px] dark:text-white">End Date: </div>
               <Datepicker
                 showShortcuts={true}
                 primaryColor={"indigo"}

@@ -1,4 +1,5 @@
 export interface DetailRow {
+  id: string;
   periodFrom: string;
   periodTo: string;
   accountNo: number;

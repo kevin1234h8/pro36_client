@@ -20,7 +20,6 @@ const ExAccountPage = ({ user, parsedUserData }: any) => {
       const res = await axios.get(`${BASE_URL}/ex-account`, {
         headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
       });
-      console.log(res);
       if (res.status === 200) {
         setIsLoading(false);
         setExAccount(res.data.exAccounts);

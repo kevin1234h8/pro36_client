@@ -20,6 +20,7 @@ const Navbar = ({ user }: any) => {
   const [avatar, setAvatar] = useState<any>({});
   const [isUploadPhotoModal, setIsUploadPhotoModal] = useState<boolean>(false);
   const [showDropdownMenu, setShowDropdownMenu] = useState<boolean>(false);
+  const [openReportMenu, setOpenReportMenu] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   useEffect(() => {
@@ -62,6 +63,10 @@ const Navbar = ({ user }: any) => {
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleOpenReportMenu = () => {
+    setOpenReportMenu(!openReportMenu);
+  };
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -106,7 +111,7 @@ const Navbar = ({ user }: any) => {
         <UploadPhotoModal setIsUploadPhotoModal={setIsUploadPhotoModal} />
       ) : null}
       <div className="sticky top-0 w-full bg-white backdrop-blur  dark:bg-[#0e1011] dark:border-gray-700 z-50">
-        <div className="px-4 mx-auto max-w-7xl sm:px-8">
+        <div className="px-2 mx-auto max-w-7xl lg:px-4">
           <div className="flex items-center justify-between py-6 border-gray-100 md:justify-start md:space-x-10">
             <div className="flex justify-start lg:w-0 lg:flex-1">
               <a href="/">
@@ -115,7 +120,7 @@ const Navbar = ({ user }: any) => {
                   <i className="fa-solid fa-chart-simple text-[#055ef9] text-lg md:text-xl lg:text-2xl "></i>
                   <div
                     onClick={() => handleClick("")}
-                    className="text-base md:text-xl lg:text-xl dark:text-white"
+                    className="text-sm md:text-base lg:text-xl dark:text-white"
                   >
                     Pro36
                   </div>
@@ -153,7 +158,7 @@ const Navbar = ({ user }: any) => {
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/new-account"
-                    className={`text-base  font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
+                    className={`text-base md:text-xs  font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
                       activeMenu === "New Account"
                         ? " text-gray-900 dark:text-red-500"
                         : ""
@@ -168,7 +173,7 @@ const Navbar = ({ user }: any) => {
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/ex-account"
-                    className={`text-base  font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
+                    className={`text-base md:text-xs    font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
                       activeMenu === "Ex Account"
                         ? " text-gray-900 dark:text-red-500"
                         : ""
@@ -184,9 +189,9 @@ const Navbar = ({ user }: any) => {
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/input-invoice"
-                    className={`text-base  font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
+                    className={`text-base md:text-xs   font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
                       activeMenu === "Input Invoice"
-                        ? " text-gray-900 dark:text-red-500"
+                        ? " text-gray-900 dark:text-red-500 "
                         : ""
                     }`}
                     onClick={() => handleClick("Input Invoice")}
@@ -208,74 +213,77 @@ const Navbar = ({ user }: any) => {
                   Report
                 </a>
               </div> */}
-              <div
-                className="relative inline-block text-left"
-                onClick={handleShowDropdownMenu}
-              >
-                <div>
-                  <button
-                    type="button"
-                    className={`inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-400   ring-inset ring-gray-300 hover:text-black  dark:bg-[#0e1011] dark:hover:text-red-500 dark:hover:border-b-red-500 dark :hover:border-b-2 ${
-                      activeMenu === "Report"
-                        ? " text-gray-900 dark:text-red-500"
-                        : ""
-                    }`}
-                    id="menu-button"
-                    aria-expanded="true"
-                    aria-haspopup="true"
-                  >
-                    Report
-                    <svg
-                      className="w-5 h-5 -mr-1 text-gray-400"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
+              {user != undefined ? (
+                <div
+                  className="relative inline-block text-left"
+                  onClick={handleShowDropdownMenu}
+                >
+                  <div>
+                    <button
+                      type="button"
+                      className={`inline-flex w-full md:text-xs  justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-400   ring-inset ring-gray-300 hover:text-black  dark:bg-[#0e1011] dark:hover:text-red-500 dark:hover:border-b-red-500 dark :hover:border-b-2 ${
+                        activeMenu === "Report"
+                          ? " text-gray-900 dark:text-red-500"
+                          : ""
+                      }`}
+                      id="menu-button"
+                      aria-expanded="true"
+                      aria-haspopup="true"
                     >
-                      <path
-                        fill-rule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                {showDropdownMenu ? (
-                  <div
-                    className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="menu-button"
-                  >
-                    <div className="py-1 hover:bg-gray-200" role="none">
-                      <a
-                        href={LICENSE_EXPIRED_REPORT_PATH}
-                        onClick={() => handleClick("Report")}
-                        className="block px-4 py-2 text-sm text-gray-700"
-                        role="menuitem"
-                        id="menu-item-0"
+                      Report
+                      <svg
+                        className="w-5 h-5 -mr-1 text-gray-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
                       >
-                        License Expired Report
-                      </a>
-                    </div>
-                    <div className="py-1 hover:bg-gray-200" role="none">
-                      <a
-                        href={CLIENT_REPORT_PATH}
-                        className="block px-4 py-2 text-sm text-gray-700"
-                        role="menuitem"
-                        id="menu-item-3"
-                        onClick={() => handleClick("Report")}
-                      >
-                        Client P/L Report
-                      </a>
-                    </div>
+                        <path
+                          fill-rule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                ) : null}
-              </div>
+                  {showDropdownMenu ? (
+                    <div
+                      className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white dark:bg-[#1e293b]  divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                      role="menu"
+                      aria-orientation="vertical"
+                      aria-labelledby="menu-button"
+                    >
+                      <div className="py-1 hover:bg-gray-200" role="none">
+                        <a
+                          href={LICENSE_EXPIRED_REPORT_PATH}
+                          onClick={() => handleClick("Report")}
+                          className="block px-4 py-2 text-gray-700 dark:text-white md:text-xs"
+                          role="menuitem"
+                          id="menu-item-0"
+                        >
+                          License Expired Report
+                        </a>
+                      </div>
+                      <div className="py-1 hover:bg-gray-200" role="none">
+                        <a
+                          href={CLIENT_REPORT_PATH}
+                          className="block px-4 py-2 text-gray-700 dark:text-white md:text-xs"
+                          role="menuitem"
+                          id="menu-item-3"
+                          onClick={() => handleClick("Report")}
+                        >
+                          Client P/L Report
+                        </a>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
               {user != undefined && user?.level === 1 ? (
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/add-user"
-                    className={`text-base   font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
+                    className={`text-base md:text-xs font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
                       activeMenu === "Add User"
                         ? " text-gray-900 dark:text-red-500"
                         : ""
@@ -422,7 +430,7 @@ const Navbar = ({ user }: any) => {
                         onChange={handleSubmitPhoto}
                       />
                     </form>
-                    <div>{user?.username}</div>
+                    <div className="dark:text-white">{user?.username}</div>
                   </div>
                   {user != undefined &&
                   (user?.level === 1 || user?.level === 2) ? (
@@ -453,7 +461,7 @@ const Navbar = ({ user }: any) => {
                       href="/input-invoice"
                       className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]"
                     >
-                      <div className="text-indigo-600 fa-solid fa-user navigation-sidebar-icon"></div>
+                      <div className="text-indigo-600 fa-solid fa-file-invoice navigation-sidebar-icon"></div>
                       <span className="ml-3 text-base font-medium text-gray-900 dark:text-white">
                         Input Invoice
                       </span>
@@ -469,6 +477,46 @@ const Navbar = ({ user }: any) => {
                         Add User
                       </span>
                     </a>
+                  ) : null}
+                  {user != undefined ? (
+                    <div
+                      className="flex items-center gap-4"
+                      onClick={handleOpenReportMenu}
+                    >
+                      <div className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]">
+                        <i className="text-indigo-600 fa-solid fa-file"></i>
+                        <span className="ml-3 text-base font-medium text-gray-900 dark:text-white">
+                          Report
+                        </span>
+                      </div>
+                      <div>
+                        {openReportMenu ? (
+                          <i className="fa-solid fa-chevron-up dark:text-white"></i>
+                        ) : (
+                          <i className="fa-solid fa-chevron-down dark:text-white"></i>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                  {openReportMenu ? (
+                    <ul id="dropdown-example" className="space-y-2 ">
+                      <li>
+                        <a
+                          href={LICENSE_EXPIRED_REPORT_PATH}
+                          className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
+                        >
+                          License Expired Report
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href={CLIENT_REPORT_PATH}
+                          className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
+                        >
+                          Client P/L Report
+                        </a>
+                      </li>
+                    </ul>
                   ) : null}
                 </nav>
               </div>

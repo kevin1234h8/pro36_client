@@ -13,7 +13,7 @@ import autoTable from "jspdf-autotable";
 import Breadcrumb from "../components/Breadcrumb";
 import NoResultsFound from "../components/NoResultsFound";
 
-const InputInvoicePage = ({ user }: any) => {
+const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [inputDetails, setInputDetails] = useState<InputInvoiceSummary[]>([]);
   const [totalInvoiceSummary, setTotalInvoiceSummary] = useState<number>(1);
@@ -67,16 +67,13 @@ const InputInvoicePage = ({ user }: any) => {
       `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
     );
     setInputInvoice(res.data.inputInvoiceSummary);
-    console.log("inputInvoice: ", res.data.inputInvoiceSummary);
     const data = res.data.inputInvoiceSummary;
-    console.log("data", data.client_name);
     const inputInvoiceDetailsRes = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
     );
     setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceSummary);
     const inputInvoiceDataDetails =
       inputInvoiceDetailsRes.data.inputInvoiceSummary;
-    console.log(inputInvoiceDataDetails);
 
     const totalUSDProfit = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
@@ -249,13 +246,12 @@ const InputInvoicePage = ({ user }: any) => {
     try {
       const getInputInvoiceDetails = async () => {
         let res = await axios.get(
-          `${BASE_URL}/input-invoice/input-invoice-summary?owner=${user.id}`
+          `${BASE_URL}/input-invoice/input-invoice-summary`,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
         );
-        if (user.level === 1) {
-          res = await axios.get(
-            `${BASE_URL}/input-invoice/input-invoice-summary`
-          );
-        }
+
         if (res.status === 200) {
           setIsLoading(false);
         }
@@ -323,7 +319,7 @@ const InputInvoicePage = ({ user }: any) => {
       <Navbar user={user} />
       <Breadcrumb />
       <div className="w-full h-screen lg:mx-auto">
-        <div className="mx-auto max-w-7xl lg:px-24 ">
+        <div className="mx-auto max-w-7xl lg:px-24 dark:bg-[#0e1011]">
           <div className="flex items-center justify-between px-4 lg:px-0 ">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white">
               Input Invoice
@@ -334,7 +330,6 @@ const InputInvoicePage = ({ user }: any) => {
                 href={`/add-invoice`}
                 className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
               >
-                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative text-xs"> Add Invoice</span>
               </a>
             </button>

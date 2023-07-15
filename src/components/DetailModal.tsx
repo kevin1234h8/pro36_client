@@ -8,9 +8,7 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
   useEffect(() => {
     try {
       const getAccount = async () => {
-        const res = await axios.get(
-          `${BASE_URL}/account/${accountId}`
-        );
+        const res = await axios.get(`${BASE_URL}/account/${accountId}`);
         setExAccount(res.data.account);
       };
       getAccount();

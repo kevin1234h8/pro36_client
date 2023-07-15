@@ -193,6 +193,23 @@
       "name": "Action"
     }
   ],
+  "importAccount": [
+    {
+      "name": "No"
+    },
+    {
+      "name": "Date"
+    },
+    {
+      "name": "Account No"
+    },
+    {
+      "name": "Client Name"
+    },
+    {
+      "name": "Action"
+    }
+  ],
   "licenseExpiredAccounts": [
     {
       "name": "No"
