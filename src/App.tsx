@@ -60,6 +60,7 @@ function App() {
   const parsedUserData = JSON.parse(userData);
 
   useEffect((): any => {
+    setLoading(true);
     const getLoginUser = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/user/profile`, {

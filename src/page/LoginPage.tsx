@@ -56,7 +56,6 @@ const LoginPage = ({
           localStorage.setItem("activeMenu", "New Account");
           navigate("/new-account");
         }
-        window.location.reload();
       }
     } catch (err) {
       toast.error("Login unsuccessful", {
