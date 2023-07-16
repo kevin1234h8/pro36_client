@@ -6,10 +6,15 @@ import animationData from "../lottie/63787-secure-login.json";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../config/config";
-const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
+const LoginPage = ({
+  setUser,
+  setLoginInfo,
+  setShowToast,
+  setLoading,
+}: any) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
@@ -23,6 +28,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
   };
 
   const handleSubmit = async (e: SyntheticEvent) => {
+    setLoading(true);
     try {
       e.preventDefault();
       const values = {
@@ -43,6 +49,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
           document.cookie = `jwt=${res.data.accessToken}; max-age=${
             3 * 24 * 60 * 60
           }; path=/;`;
+          setLoading(false);
           localStorage.setItem("activeMenu", "Input Invoice");
           navigate("/input-invoice");
         } else {
@@ -51,6 +58,7 @@ const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
           }; path=/;`;
           localStorage.setItem("activeMenu", "New Account");
           navigate("/new-account");
+          setLoading(false);
         }
         window.location.reload();
       }

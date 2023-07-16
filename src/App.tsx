@@ -230,6 +230,7 @@ function App() {
             path="/login"
             element={
               <LoginPage
+                setLoading={setLoading}
                 setUser={setUser}
                 setLoginInfo={setLoginInfo}
                 setShowToast={setShowToast}

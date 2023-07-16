@@ -9,6 +9,7 @@ const AddUser = ({ user, parsedUserData }: any) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [level, setLevel] = useState<number>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
@@ -60,15 +61,28 @@ const AddUser = ({ user, parsedUserData }: any) => {
                 />
                 <label className="dark:text-white">Username</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="text"
+                  type={showPassword ? "text" : "password"}
                   minLength={8}
                   maxLength={20}
                   name=""
                   required
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <div className="absolute top-0 right-0">
+                  {showPassword ? (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>Password</label>
               </div>
               <div className="input-box">
