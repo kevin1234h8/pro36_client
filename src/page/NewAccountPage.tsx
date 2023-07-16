@@ -18,15 +18,13 @@ const HomePage = ({
   setShowToast,
   avatar,
   parsedUserData,
-  setIsLoading,
-  isLoading,
 }: any) => {
   const [account, setAccount] = useState<AccountInterface>();
   const [totalAccount, setTotalAccount] = useState<number>();
   const [pageSize, setPageSize] = useState<number>(20);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  // const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
