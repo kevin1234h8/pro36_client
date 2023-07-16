@@ -28,7 +28,6 @@ const LoginPage = ({
   };
 
   const handleSubmit = async (e: SyntheticEvent) => {
-    setLoading(true);
     try {
       e.preventDefault();
       const values = {
@@ -39,7 +38,6 @@ const LoginPage = ({
         withCredentials: true,
       });
       setLoginInfo(res.data);
-      console.log(res.data);
       if (res.status === 200) {
         setShowErrorMessage(false);
         setCookie("isLogin", true, 7);
@@ -49,16 +47,15 @@ const LoginPage = ({
           document.cookie = `jwt=${res.data.accessToken}; max-age=${
             3 * 24 * 60 * 60
           }; path=/;`;
-          setLoading(false);
           localStorage.setItem("activeMenu", "Input Invoice");
           navigate("/input-invoice");
         } else {
           document.cookie = `jwt=${res.data.accessToken}; max-age=${
             3 * 24 * 60 * 60
           }; path=/;`;
+          setLoading(true);
           localStorage.setItem("activeMenu", "New Account");
           navigate("/new-account");
-          setLoading(false);
         }
         window.location.reload();
       }

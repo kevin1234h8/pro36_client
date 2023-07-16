@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NewAccountPage from "./page/NewAccountPage";
@@ -39,6 +39,7 @@ function App() {
   const apiKey = "38a4000d2421d3f8cf6b913c32d87aeb";
   const formattedDate = currentDate.toISOString().split("T")[0];
   const [loading, setLoading] = useState(true); // Add a loading state
+  const effectRun = useRef(false);
   axios.defaults.withCredentials = true;
   const getCookie = (name: string) => {
     const cookieName = name + "=";
@@ -54,12 +55,11 @@ function App() {
     }
     return null;
   };
-
   const jwtCookie = getCookie("jwt");
   const userData: any = sessionStorage.getItem("userData");
   const parsedUserData = JSON.parse(userData);
-  console.log("loginInfo ; ", parsedUserData);
-  useEffect(() => {
+
+  useEffect((): any => {
     const getLoginUser = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/user/profile`, {
@@ -68,14 +68,15 @@ function App() {
         if (res.data.user) {
           setUser(res.data.user);
         }
-        setLoading(false);
-        console.log(res.data);
+        if (res.status === 200) {
+          setLoading(false);
+        }
       } catch (err) {
         console.log(err);
         setLoading(false);
       }
     };
-    getLoginUser();
+    return () => getLoginUser();
   }, [jwtCookie]);
 
   useEffect(() => {
@@ -130,8 +131,6 @@ function App() {
   }
 
   onWindowMatch();
-  // Whenever the user explicitly chooses light mode
-
   // Whenever the user explicitly chooses to respect the OS preference
 
   return loading ? (
@@ -148,6 +147,8 @@ function App() {
                   notificationCount={notificationCount}
                   isOpen={isOpen}
                   user={user}
+                  isLoading={loading}
+                  setIsLoading={setLoading}
                   parsedUserData={parsedUserData}
                   isLoggedIn={isLoggedIn}
                   toggleNavigationSidebar={toggleNavigationSidebar}
