@@ -53,7 +53,6 @@ const LoginPage = ({
           document.cookie = `jwt=${res.data.accessToken}; max-age=${
             3 * 24 * 60 * 60
           }; path=/;`;
-          setLoading(true);
           localStorage.setItem("activeMenu", "New Account");
           navigate("/new-account");
         }
