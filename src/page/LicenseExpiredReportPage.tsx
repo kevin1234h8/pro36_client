@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import jsPDF from "jspdf";
 import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
 import NoResultsFound from "../components/NoResultsFound";
+
 const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [licenseExpiredAccounts, setLicenseExpiredAccounts] = useState<any>([]);
@@ -270,7 +271,6 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const handleValueChange = (newValue: any) => {
     setStartDateValue(newValue);
   };
-
   return (
     <div>
       <ToastContainer />
@@ -290,7 +290,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       <Breadcrumb />
       <div className="w-full dark:bg-[#0e1011] lg:mx-auto lg:px-24 ">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between px-4 md:px-8 lg:px-0">
+          <div className="flex items-center justify-between px-0 md:px-8 lg:px-0">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white">
               License Expired Report
             </h2>
@@ -318,29 +318,64 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
               </button>
             </div>
           </div>
-          <div className="flex items-center justify-between px-4 mt-4 md:px-8 lg:px-0 ">
-            <div className="flex flex-col gap-4 md:flex-row lg:flex-row md:items-center lg:items-center">
-              <div className="w-[300px] dark:text-white">From Date : </div>
-              <Datepicker
-                showShortcuts={true}
-                primaryColor={"indigo"}
-                asSingle={true}
-                value={startDateValue}
-                onChange={handleValueChange}
-                displayFormat={"DD-MM-YYYY"}
-              />
-              <div className="text-white">to</div>
-              <Datepicker
-                showShortcuts={true}
-                primaryColor={"indigo"}
-                asSingle={true}
-                value={endDateValue}
-                onChange={handleEndDateValueChange}
-                displayFormat={"DD-MM-YYYY"}
-              />
+          <div className="flex items-center justify-between w-full px-0 mt-4 md:px-8 lg:px-0 ">
+            <div
+              className={`flex flex-col gap-4 md:flex-row lg:flex-row md:items-center lg:items-center w-full`}
+            >
+              <div className="w-[300px] px-0 dark:text-white lg:px-0 md:px-0 md:w-[120px] lg:w-[120px]">
+                From Date :{" "}
+              </div>
+              {widthStyle < "600px" ? (
+                <div className={`w-[${widthStyle}] md:w-auto`}>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={startDateValue}
+                    onChange={handleValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={startDateValue}
+                    onChange={handleValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              )}
+
+              <div className="px-0 dark:text-white lg:px-0 md:px-0">to</div>
+              {widthStyle < "600px" ? (
+                <div className={`w-[${widthStyle}] md:w-auto`}>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={endDateValue}
+                    onChange={handleEndDateValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={endDateValue}
+                    onChange={handleEndDateValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-2 px-4 mt-10 md:hidden lg:hidden ">
+          <div className="flex items-center gap-2 px-0 mt-10 md:hidden lg:hidden ">
             <button
               className="add-member-btn"
               onClick={getLicenseExpiredAccountsByStartDateAndEndDate}
@@ -363,7 +398,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
               </a>
             </button>
           </div>
-          <div className="flex flex-col px-4 my-2 mt-10 sm:flex-row md:px-8 lg:px-0">
+          <div className="flex flex-col px-0 my-2 mt-10 sm:flex-row md:px-8 lg:px-0">
             <div className="flex flex-row mb-1 sm:mb-0">
               <div className="relative">
                 <select

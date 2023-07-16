@@ -304,7 +304,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       <Breadcrumb />
       <div className="w-full h-screen lg:mx-auto dark:bg-[#0e1011] lg:px-24 ">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between px-4 md:px-8 lg:px-0">
+          <div className="flex items-center justify-between px-0 md:px-8 lg:px-0">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white ">
               Client P/L Report
             </h2>
@@ -371,7 +371,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
           />
         </div>
       </div> */}
-          <div className="flex flex-col justify-between gap-6 px-4 md:px-8 md:flex-row md:items-center lg:px-0 lg:flex-row lg:items-center">
+          <div className="flex flex-col justify-between gap-6 px-0 md:px-8 md:flex-row md:items-center lg:px-0 lg:flex-row lg:items-center">
             <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-row lg:items-center md:gap-10 lg:gap-10">
               <div className="w-auto dark:text-[#e4e4e4] md:w-24 lg:w-24">
                 Client's Name:
@@ -413,26 +413,60 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-between px-4 my-4 md:px-8 lg:px-0">
-            <div className="flex flex-col gap-4 md:items-center lg:items-center md:flex-row lg:flex-row">
-              <div className="w-[300px] dark:text-[#e4e4e4]">From Date : </div>
-              <Datepicker
-                showShortcuts={true}
-                primaryColor={"indigo"}
-                asSingle={true}
-                value={startDateValue}
-                onChange={handleValueChange}
-                displayFormat={"DD-MM-YYYY"}
-              />
+          <div className="flex items-center justify-between px-0 my-4 md:px-8 lg:px-0">
+            <div className="flex flex-col w-full gap-4 md:items-center lg:items-center md:flex-row lg:flex-row">
+              <div className="w-[300px] px-0 dark:text-white lg:px-0 md:px-0 md:w-[120px] lg:w-[120px]">
+                From Date :{" "}
+              </div>
+              {widthStyle < "600px" ? (
+                <div className={`w-[${widthStyle}] md:w-auto`}>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={startDateValue}
+                    onChange={handleValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={startDateValue}
+                    onChange={handleValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              )}
+
               <div className="dark:text-white text-start">to</div>
-              <Datepicker
-                showShortcuts={true}
-                primaryColor={"indigo"}
-                asSingle={true}
-                value={endDateValue}
-                onChange={handleEndDateValueChange}
-                displayFormat={"DD-MM-YYYY"}
-              />
+              {widthStyle < "600px" ? (
+                <div className={`w-[${widthStyle}] md:w-auto`}>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={endDateValue}
+                    onChange={handleEndDateValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Datepicker
+                    showShortcuts={true}
+                    primaryColor={"indigo"}
+                    asSingle={true}
+                    value={endDateValue}
+                    onChange={handleEndDateValueChange}
+                    displayFormat={"DD-MM-YYYY"}
+                  />
+                </div>
+              )}
+
               {/* <div
                 className="cursor-pointer"
                 onClick={getLicenseExpiredAccountsByStartDateAndEndDate}
@@ -446,7 +480,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
               </div> */}
             </div>
           </div>
-          <div className="flex gap-4 px-4 mt-10 item-center md:hidden lg:hidden">
+          <div className="flex gap-4 px-0 mt-10 item-center md:hidden lg:hidden">
             <button
               className="add-member-btn"
               onClick={getClientReportAccounts}

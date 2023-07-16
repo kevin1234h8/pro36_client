@@ -5,7 +5,7 @@ import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
 
-const AddUser = ({ user }: any) => {
+const AddUser = ({ user, parsedUserData }: any) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [level, setLevel] = useState<number>();
@@ -23,7 +23,7 @@ const AddUser = ({ user }: any) => {
         modifiedBy: user?.id,
       };
       const res = await axios.post(`${BASE_URL}/user/create`, values, {
-        withCredentials: true,
+        headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
       });
       if (res.status === 200) {
         setShowErrorMessage(false);

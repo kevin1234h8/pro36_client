@@ -8,7 +8,7 @@ const Breadcrumb = () => {
     .filter((pathname) => pathname !== "");
 
   return (
-    <div className=" dark:bg-[#0e1011] px-4 lg:px-24">
+    <div className=" dark:bg-[#0e1011] px-4 md:px-4 lg:px-24">
       <div className="container flex items-center py-4 mx-auto overflow-x-auto whitespace-nowrap">
         <Link to="/" className="text-gray-600 dark:text-gray-200">
           <svg

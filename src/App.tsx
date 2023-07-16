@@ -206,7 +206,11 @@ function App() {
             path="/add-user"
             element={
               user != undefined && user?.level === 1 ? (
-                <AddUser user={user} avatar={avatar} />
+                <AddUser
+                  user={user}
+                  avatar={avatar}
+                  parsedUserData={parsedUserData}
+                />
               ) : (
                 <UnAuthorizedPage user={user} />
               )
