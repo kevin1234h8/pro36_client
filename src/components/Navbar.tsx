@@ -154,7 +154,8 @@ const Navbar = ({ user }: any) => {
               </button>
             </div>
             <nav className="hidden space-x-10 md:flex">
-              {user != undefined && (user?.level === 1 || user?.level === 2) ? (
+              {user != undefined &&
+              (user?.level === 1 || user?.level === 2 || user?.level === 3) ? (
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/new-account"
@@ -169,7 +170,8 @@ const Navbar = ({ user }: any) => {
                   </a>
                 </div>
               ) : null}
-              {user != undefined && (user?.level === 1 || user?.level === 2) ? (
+              {user != undefined &&
+              (user?.level === 1 || user?.level === 2 || user?.level === 3) ? (
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/ex-account"
@@ -279,7 +281,7 @@ const Navbar = ({ user }: any) => {
                 </div>
               ) : null}
 
-              {user != undefined && user?.level === 1 ? (
+              {user != undefined && (user?.level === 1 || user?.level === 2) ? (
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/add-user"
@@ -433,7 +435,9 @@ const Navbar = ({ user }: any) => {
                     <div className="dark:text-white">{user?.username}</div>
                   </div>
                   {user != undefined &&
-                  (user?.level === 1 || user?.level === 2) ? (
+                  (user?.level === 1 ||
+                    user?.level === 2 ||
+                    user?.level === 3) ? (
                     <a
                       href="/new-account"
                       className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50 dark:hover:bg-[#161b22]"
@@ -445,7 +449,9 @@ const Navbar = ({ user }: any) => {
                     </a>
                   ) : null}
                   {user != undefined &&
-                  (user?.level === 1 || user?.level === 2) ? (
+                  (user?.level === 1 ||
+                    user?.level === 2 ||
+                    user?.level === 3) ? (
                     <a
                       href="/ex-account"
                       className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]"
@@ -467,7 +473,8 @@ const Navbar = ({ user }: any) => {
                       </span>
                     </a>
                   ) : null}
-                  {user != undefined && user?.level === 1 ? (
+                  {user != undefined &&
+                  (user?.level === 1 || user?.level === 2) ? (
                     <a
                       href="/add-user"
                       className="flex items-center p-3 -m-3 rounded-md hover:bg-gray-50  dark:hover:bg-[#161b22]"

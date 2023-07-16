@@ -143,7 +143,8 @@ function App() {
           <Route
             path="/new-account"
             element={
-              user != undefined && (user?.level === 1 || user?.level === 2) ? (
+              user != undefined &&
+              (user?.level === 1 || user?.level === 2 || user?.level === 3) ? (
                 <NewAccountPage
                   notificationCount={notificationCount}
                   isOpen={isOpen}
@@ -176,7 +177,8 @@ function App() {
           <Route
             path="/ex-account"
             element={
-              user != undefined && (user?.level === 1 || user?.level === 2) ? (
+              user != undefined &&
+              (user?.level === 1 || user?.level === 2 || user?.level === 3) ? (
                 <ExAccountPage
                   isOpen={isOpen}
                   user={user}
@@ -207,7 +209,7 @@ function App() {
           <Route
             path="/add-user"
             element={
-              user != undefined && user?.level === 1 ? (
+              user != undefined && (user?.level === 1 || user?.level === 2) ? (
                 <AddUser
                   user={user}
                   avatar={avatar}

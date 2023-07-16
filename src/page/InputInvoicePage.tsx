@@ -71,9 +71,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     const inputInvoiceDetailsRes = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
     );
-    setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceSummary);
+    setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceDetails);
     const inputInvoiceDataDetails =
-      inputInvoiceDetailsRes.data.inputInvoiceSummary;
+      inputInvoiceDetailsRes.data.inputInvoiceDetails;
 
     const totalUSDProfit = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
@@ -82,6 +82,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       },
       0
     );
+    console.log(inputInvoiceDataDetails);
 
     const totalAmount = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
@@ -95,7 +96,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       0
     );
     const totalAmountInRupiah = totalAmount.toLocaleString("id-ID");
-
+    console.log(totalAmountInRupiah);
     const totalFee = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
         // const fee = Number(detail.service) ;
@@ -145,7 +146,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
         "",
         "$" + totalUSDProfit.toLocaleString("id-ID"),
         "$" + totalFee.toLocaleString("id-ID"),
-        "Rp" + totalAmountInRupiah,
+        "Rp" + totalAmount.toLocaleString("id-ID"),
       ];
       rows.push(totalRow);
       // Set table properties
@@ -208,7 +209,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       doc.text("Total", 120, 57);
       doc.setFont("helvetica", "normal");
 
-      doc.text("Rp" + totalAmountInRupiah, 170, 57);
+      doc.text("Rp" + totalAmount.toLocaleString("id-ID"), 170, 57);
       doc.setFontSize(10);
       doc.text(
         "Payment By Transfer To (Full amount in Rupiah)",
