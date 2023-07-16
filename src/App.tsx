@@ -76,7 +76,7 @@ function App() {
         setLoading(false);
       }
     };
-    return () => getLoginUser();
+    getLoginUser();
   }, [jwtCookie]);
 
   useEffect(() => {
