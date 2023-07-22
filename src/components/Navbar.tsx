@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { format } from "timeago.js";
 import "react-toastify/dist/ReactToastify.css";
 import {
   BASE_URL,
@@ -14,22 +15,94 @@ import UploadPhotoModal from "./UploadPhotoModal";
 import LicenseExpiredReportPage from "../page/LicenseExpiredReportPage";
 import ClientReportPage from "../page/ClientReportPage";
 import Breadcrumb from "./Breadcrumb";
-const Navbar = ({ user }: any) => {
+import { NotificationInterface } from "../interface/NotifactionInterface";
+import { relative } from "path";
+
+const Navbar = ({ user, parsedUserData }: any) => {
   const [open, setOpen] = React.useState(false);
   const [activeMenu, setActiveMenu] = useState<string>("");
   const [avatar, setAvatar] = useState<any>({});
   const [isUploadPhotoModal, setIsUploadPhotoModal] = useState<boolean>(false);
   const [showDropdownMenu, setShowDropdownMenu] = useState<boolean>(false);
   const [openReportMenu, setOpenReportMenu] = useState<boolean>(false);
+  const [showNotification, setShowNotification] = useState<boolean>(false);
+  const [showLessNotification, setShowLessNotification] =
+    useState<boolean>(true);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
-  useEffect(() => {
-    const getAvatar = async () => {
-      const res = await axios.get(`${BASE_URL}/avatar/${user?.id}`);
-      setAvatar(res.data.avatar);
-    };
+  const [accountNotifications, setAccountNotifications] = useState<
+    NotificationInterface[]
+  >([]);
+  const [accountNotificationsCount, setAccountNotificationsCount] =
+    useState<number>(0);
 
-    getAvatar();
+  const markAllAsRead = async () => {
+    const res = await axios.put(`${BASE_URL}/notifications/${user?.id}`);
+    if (res.status === 200) {
+      window.location.reload();
+    }
+    // setAccountNotifications([]);
+  };
+  const seeLessNotification = async () => {
+    try {
+      const getNotifications = async () => {
+        const res = await axios.get(`${BASE_URL}/notifications/${user?.id}`, {
+          // headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+        });
+        setAccountNotifications(res.data.notifications);
+        setAccountNotificationsCount(res.data.count);
+      };
+      getNotifications();
+      setShowLessNotification(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const seeAllNotification = async () => {
+    try {
+      const getNotifications = async () => {
+        const res = await axios.get(
+          `${BASE_URL}/notifications/${user?.id}?pageSize=100`,
+          {
+            // headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
+        );
+        setAccountNotifications(res.data.notifications);
+        setAccountNotificationsCount(res.data.count);
+      };
+      getNotifications();
+      setShowLessNotification(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    try {
+      const getNotifications = async () => {
+        const res = await axios.get(`${BASE_URL}/notifications/${user?.id}`, {
+          // headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+        });
+        setAccountNotifications(res.data.notifications);
+        setAccountNotificationsCount(res.data.count);
+      };
+      getNotifications();
+    } catch (err) {
+      throw err;
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const getAvatar = async () => {
+        const res = await axios.get(`${BASE_URL}/avatar/${user?.id}`);
+        setAvatar(res.data.avatar);
+      };
+
+      getAvatar();
+    } catch (err) {
+      console.log(err);
+    }
   }, [user?.id]);
 
   const logout = async () => {
@@ -159,7 +232,7 @@ const Navbar = ({ user }: any) => {
                 <div className="flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500">
                   <a
                     href="/new-account"
-                    className={`text-base md:text-xs  font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
+                    className={`relative text-base md:text-xs  font-medium text-gray-400 hover:text-gray-900 dark:hover:text-red-500 dark:text-gray-500 ${
                       activeMenu === "New Account"
                         ? " text-gray-900 dark:text-red-500"
                         : ""
@@ -168,6 +241,23 @@ const Navbar = ({ user }: any) => {
                   >
                     New Account
                   </a>
+                  {/* {accountNotificationsCount > 0 ? (
+                    <span className="inline-flex items-center justify-center px-2 py-1 mx-3 mr-2 text-xs font-bold leading-none text-red-100 bg-red-500 rounded-full">
+                      {accountNotificationsCount}
+                    </span>
+                  ) : null}
+                  <div>
+                    {accountNotifications.map(
+                      (
+                        accountNotification: NotificationInterface,
+                        index: number
+                      ) => {
+                        return (
+                          <div key={index}>{accountNotification.message}</div>
+                        );
+                      }
+                    )}
+                  </div> */}
                 </div>
               ) : null}
               {user != undefined &&
@@ -338,9 +428,127 @@ const Navbar = ({ user }: any) => {
                 <div className="text-base font-medium text-gray-500 whitespace-nowrap hover:text-gray-900 dark:hover:text-red-500 ">
                   {user?.username}
                 </div>
+
+                <div className="flex justify-center ">
+                  <div className="relative ">
+                    <div
+                      onClick={() => setShowNotification(!showNotification)}
+                      className="flex flex-wrap items-center justify-center p-4 bg-white dark:bg-[#0e1011]  cursor-pointer "
+                    >
+                      <span className="relative inline-block">
+                        <svg
+                          className="w-6 h-6 dark:text-blue-500"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                        </svg>
+
+                        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                          {accountNotifications.length > 0
+                            ? accountNotificationsCount
+                            : "0"}
+                        </span>
+                      </span>
+                    </div>
+                    {showNotification ? (
+                      <div
+                        className="absolute dark:bg-[#1f2937]  right-0 z-20 mt-2 overflow-hidden bg-white rounded-md shadow-lg"
+                        style={{ width: "20rem" }}
+                      >
+                        <div className="flex items-center justify-between px-4 py-2">
+                          <div className="font-semibold dark:text-white">
+                            Notifications
+                          </div>
+                          <div
+                            onClick={markAllAsRead}
+                            className="text-sm text-blue-500 cursor-pointer"
+                          >
+                            Mark All as Read
+                          </div>
+                        </div>
+
+                        {accountNotifications.length > 0 ? (
+                          <div className="py-2 overflow-y-scroll h-[300px] overflow-x-hidden notification-container">
+                            {accountNotifications.map(
+                              (
+                                accountNotification: NotificationInterface,
+                                index: number
+                              ) => {
+                                return (
+                                  <a
+                                    key={index}
+                                    className="flex items-center px-4 py-3 -mx-2 border-b hover:bg-gray-100 dark:hover:bg-[#27374D]"
+                                  >
+                                    {accountNotification.path === null ||
+                                    accountNotification.path === undefined ? (
+                                      <div className="object-cover w-8 h-8 mx-1 bg-blue-500 rounded-full">
+                                        <i className="fa fa-user"></i>
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <img
+                                          className="object-cover w-8 h-8 mx-1 rounded-full"
+                                          src={`${BASE_URL}/uploads/${accountNotification?.path}`}
+                                          alt="avatar"
+                                        />
+                                        {/* <div className="absolute top-[-2px] left-[-2px] flex items-center justify-center w-16 h-16 rounded-full blur-sm bg-gradient-to-r from-pink-600 to-purple-600"></div> */}
+                                      </div>
+                                    )}
+
+                                    <div className="mx-2 text-sm text-gray-600">
+                                      <span className="font-bold dark:text-white">
+                                        {accountNotification.created_by ===
+                                        user?.id
+                                          ? "You"
+                                          : accountNotification.name}
+                                      </span>{" "}
+                                      <span className="dark:text-[#E8E8E8]">
+                                        {accountNotification.message}
+                                      </span>{" "}
+                                      <span className="font-bold text-blue-500">
+                                        {accountNotification.part}
+                                      </span>{" "}
+                                      <span className="dark:text-[#D8D8D8]">
+                                        page .
+                                      </span>{" "}
+                                      <span className="dark:text-[#D8D8D8]">
+                                        {format(accountNotification.created_at)}
+                                      </span>
+                                    </div>
+                                  </a>
+                                );
+                              }
+                            )}
+                          </div>
+                        ) : (
+                          <div className="px-4 py-2 text-xs dark:text-white md:text-base lg:text-base">
+                            No notifications
+                          </div>
+                        )}
+                        {showLessNotification ? (
+                          <a
+                            onClick={seeAllNotification}
+                            className="block py-2 font-bold text-center text-white bg-gray-800 cursor-pointer dark:bg-[#9DB2BF] dark:text-[#27374D] text-xs md:text-base lg:text-base"
+                          >
+                            See all notifications
+                          </a>
+                        ) : (
+                          <a
+                            onClick={seeLessNotification}
+                            className="block py-2 font-bold text-center text-white bg-gray-800 cursor-pointer dark:bg-[#9DB2BF] dark:text-[#27374D] text-xs md:text-base lg:text-base"
+                          >
+                            See less notifications
+                          </a>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
                 <div
                   onClick={logout}
-                  className="inline-flex items-center justify-center px-4 py-2 ml-8 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm whitespace-nowrap hover:bg-indigo-700"
+                  className="inline-flex items-center justify-center px-4 py-2 ml-8 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm cursor-pointer whitespace-nowrap hover:bg-indigo-700"
                 >
                   logout
                 </div>
@@ -397,43 +605,167 @@ const Navbar = ({ user }: any) => {
                   </button>
                 </div>
               </div>
+
               <div className="mt-6">
                 <nav className="grid gap-y-8">
-                  <div className="flex items-center gap-4">
-                    <form
-                      ref={formRef}
-                      className="relative"
-                      onSubmit={handleSubmitPhoto}
-                    >
-                      <label
-                        htmlFor="file-input"
-                        className="cursor-pointer"
-                        onClick={handleImageClick}
+                  <div className="flex items-center justify-between ">
+                    <div className="flex items-center gap-4">
+                      <form
+                        ref={formRef}
+                        className="relative"
+                        onSubmit={handleSubmitPhoto}
                       >
-                        {avatar === null || avatar === undefined ? (
-                          <div className="relative flex items-center justify-center w-12 h-12 m-1 mr-2 text-xl text-white uppercase bg-blue-500 rounded-full ">
-                            <i className="fa fa-user"></i>
-                          </div>
-                        ) : (
-                          <img
-                            className="object-cover rounded-full w-14 h-14"
-                            src={`${BASE_URL}/uploads/${avatar?.path}`}
-                            alt="image"
-                          />
-                        )}
-                      </label>
+                        <label
+                          htmlFor="file-input"
+                          className="cursor-pointer"
+                          onClick={handleImageClick}
+                        >
+                          {avatar === null || avatar === undefined ? (
+                            <div className="relative flex items-center justify-center w-12 h-12 m-1 mr-2 text-xl text-white uppercase bg-blue-500 rounded-full ">
+                              <i className="fa fa-user"></i>
+                            </div>
+                          ) : (
+                            <img
+                              className="object-cover rounded-full w-14 h-14"
+                              src={`${BASE_URL}/uploads/${avatar?.path}`}
+                              alt="image"
+                            />
+                          )}
+                        </label>
 
-                      <input
-                        type="file"
-                        id="file-input"
-                        accept="image/*"
-                        className="hidden"
-                        name="uploaded_file"
-                        onChange={handleSubmitPhoto}
-                      />
-                    </form>
-                    <div className="dark:text-white">{user?.username}</div>
+                        <input
+                          type="file"
+                          id="file-input"
+                          accept="image/*"
+                          className="hidden"
+                          name="uploaded_file"
+                          onChange={handleSubmitPhoto}
+                        />
+                      </form>
+                      <div className="dark:text-white">{user?.username}</div>
+                    </div>
+                    <div className="flex justify-center ">
+                      <div className="relative ">
+                        <div
+                          onClick={() => setShowNotification(!showNotification)}
+                          className="flex flex-wrap items-center justify-center p-4 bg-white dark:bg-[#0e1011]  cursor-pointer "
+                        >
+                          <span className="relative inline-block">
+                            <svg
+                              className="w-6 h-6 dark:text-blue-500"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                            </svg>
+
+                            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                              {accountNotifications.length > 0
+                                ? accountNotificationsCount
+                                : "0"}
+                            </span>
+                          </span>
+                        </div>
+                        {showNotification ? (
+                          <div
+                            className="absolute dark:bg-[#1f2937]  right-0 z-20 mt-2 overflow-hidden bg-white rounded-md shadow-lg"
+                            style={{ width: "19rem" }}
+                          >
+                            <div className="flex items-center justify-between px-4 py-2">
+                              <div className="font-semibold dark:text-white">
+                                Notifications
+                              </div>
+                              <div
+                                onClick={markAllAsRead}
+                                className="text-sm text-blue-500 cursor-pointer"
+                              >
+                                Mark All as Read
+                              </div>
+                            </div>
+
+                            {accountNotifications.length > 0 ? (
+                              <div className="py-2 overflow-y-scroll h-[300px] overflow-x-hidden  notification-container">
+                                {accountNotifications.map(
+                                  (
+                                    accountNotification: NotificationInterface,
+                                    index: number
+                                  ) => {
+                                    return (
+                                      <a
+                                        key={index}
+                                        className="flex items-center px-4 py-3 -mx-2 border-b hover:bg-gray-100 dark:hover:bg-[#27374D]"
+                                      >
+                                        {accountNotification.path === null ||
+                                        accountNotification.path ===
+                                          undefined ? (
+                                          <div className="object-cover w-8 h-8 mx-1 bg-blue-500 rounded-full">
+                                            <i className="fa fa-user"></i>
+                                          </div>
+                                        ) : (
+                                          <div>
+                                            <img
+                                              className="object-cover w-8 h-8 mx-1 rounded-full"
+                                              src={`${BASE_URL}/uploads/${accountNotification?.path}`}
+                                              alt="avatar"
+                                            />
+                                            {/* <div className="absolute top-[-2px] left-[-2px] flex items-center justify-center w-16 h-16 rounded-full blur-sm bg-gradient-to-r from-pink-600 to-purple-600"></div> */}
+                                          </div>
+                                        )}
+
+                                        <div className="mx-2 text-sm text-gray-600">
+                                          <span className="font-bold dark:text-white">
+                                            {accountNotification.created_by ===
+                                            user?.id
+                                              ? "You"
+                                              : accountNotification.name}
+                                          </span>{" "}
+                                          <span className="dark:text-[#E8E8E8]">
+                                            {accountNotification.message}
+                                          </span>{" "}
+                                          <span className="font-bold text-blue-500">
+                                            {accountNotification.part}
+                                          </span>{" "}
+                                          <span className="dark:text-[#D8D8D8]">
+                                            page .
+                                          </span>{" "}
+                                          <span className="dark:text-[#D8D8D8]">
+                                            {format(
+                                              accountNotification.created_at
+                                            )}
+                                          </span>
+                                        </div>
+                                      </a>
+                                    );
+                                  }
+                                )}
+                              </div>
+                            ) : (
+                              <div className="px-4 py-2 text-xs dark:text-white md:text-base lg:text-base">
+                                No notifications
+                              </div>
+                            )}
+                            {showLessNotification ? (
+                              <a
+                                onClick={seeAllNotification}
+                                className="block py-2 font-bold text-center text-white bg-gray-800 cursor-pointer dark:bg-[#9DB2BF] dark:text-[#27374D]"
+                              >
+                                See all notifications
+                              </a>
+                            ) : (
+                              <a
+                                onClick={seeLessNotification}
+                                className="block py-2 font-bold text-center text-white bg-gray-800 cursor-pointer dark:bg-[#9DB2BF] dark:text-[#27374D]"
+                              >
+                                See less notifications
+                              </a>
+                            )}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
+
                   {user != undefined &&
                   (user?.level === 1 ||
                     user?.level === 2 ||

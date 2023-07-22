@@ -271,6 +271,83 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const handleValueChange = (newValue: any) => {
     setStartDateValue(newValue);
   };
+
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const handleSort = (columnName: any) => {
+    // If the clicked column is the current sort column, toggle the sort direction
+    if (columnName === sortColumn) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // If the clicked column is a different column, set it as the new sort column
+      setSortColumn(columnName);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedAccount = [...licenseExpiredAccounts].sort((a, b) => {
+    if (sortColumn === "No") {
+      return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
+    } else if (sortColumn === "User ID") {
+      const userIdA = a.id;
+      const userIdB = b.id;
+
+      if (userIdA < userIdB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (userIdA > userIdB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Account No") {
+      const accountNoA = a.account_no;
+      const accountNoB = b.account_no;
+      if (accountNoA < accountNoB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (accountNoA > accountNoB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Expired Date") {
+      const dateA = a.expired_date;
+      const dateB = b.expired_date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Recruit By") {
+      const recruitByA = a.recruit_by.toUpperCase();
+      const recruitByB = b.recruit_by.toUpperCase();
+      if (recruitByA < recruitByB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (recruitByA > recruitByB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "VPS") {
+      const VPSA = a.vps?.toUpperCase();
+      const VPSB = b.vps?.toUpperCase();
+      if (VPSA < VPSB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (VPSA > VPSB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Bot Name") {
+      const remarkA = a.ea_name.toUpperCase();
+      const remarkB = b.ea_name.toUpperCase();
+      if (remarkA < remarkB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (remarkA > remarkB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    }
+    return 0;
+  });
+
   return (
     <div>
       <ToastContainer />
@@ -479,7 +556,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
-                    getPaginateData(1, pageSize);
+                    getLicenseExpiredAccountsByStartDateAndEndDate();
                   }
                 }}
               />
@@ -498,22 +575,47 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                     <table className="table">
                       <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                         <tr>
-                          {datas.licenseExpiredAccounts.map(
-                            (data, index: number) => {
-                              return (
-                                <th
-                                  key={index}
-                                  className="text-center table__th dark:text-white "
-                                >
-                                  {data.name}
-                                </th>
-                              );
-                            }
-                          )}
+                          {datas.licenseExpiredAccounts.map((data, index) => {
+                            const columnName = data.name;
+                            const isSortableColumn =
+                              columnName !== "No" && columnName !== "Action";
+                            const isSortedColumn = sortColumn === columnName;
+                            const sortClass = isSortedColumn
+                              ? sortDirection === "asc"
+                                ? "fa-solid fa-sort-down"
+                                : "fa-solid fa-sort-up"
+                              : "";
+                            console.log(
+                              "isSortableColumn : ",
+                              columnName === "No"
+                            );
+                            return (
+                              <th
+                                key={index}
+                                className={`text-center table__th  ${
+                                  columnName === "Account No" ? "w-[100px]" : ""
+                                }  dark:text-white ${
+                                  !isSortableColumn
+                                    ? "cursor-default"
+                                    : "cursor-pointer"
+                                }`}
+                                onClick={() => {
+                                  if (isSortableColumn) {
+                                    handleSort(columnName);
+                                  }
+                                }}
+                              >
+                                {data.name}
+                                {isSortableColumn && isSortedColumn && (
+                                  <i className={`fa ${sortClass} `}></i>
+                                )}
+                              </th>
+                            );
+                          })}
                         </tr>
                       </thead>
                       <tbody className="table__tbody">
-                        {licenseExpiredAccounts?.map(
+                        {sortedAccount?.map(
                           (user: AccountInterface, index: number) => {
                             return (
                               <tr

@@ -6,6 +6,7 @@ import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import { AccountInterface } from "../interface/AccountInterface";
 import { goBack } from "../utils/navigationUtils";
+import Breadcrumb from "../components/Breadcrumb";
 
 const DetailsPage = ({ user }: any) => {
   const { id } = useParams();
@@ -46,6 +47,7 @@ const DetailsPage = ({ user }: any) => {
         />
       ) : null}
       <Navbar user={user} />
+      <Breadcrumb />
       <div className="add-member-container lg:mx-[10rem] dark:text-white   ">
         <div className="add-member-form w-100">
           <h2 className="add-member-form-title">Account Details</h2>
@@ -182,14 +184,14 @@ const DetailsPage = ({ user }: any) => {
             </a>
             <div
               onClick={handleDelete}
-              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+              className="cursor-pointer rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
             >
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-xs">Delete</span>
             </div>
             <div
               onClick={goBack}
-              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+              className=" rounded cursor-pointer px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
             >
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-xs">Cancel</span>

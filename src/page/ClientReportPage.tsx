@@ -38,6 +38,19 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     startDate: null || formattedDate,
     endDate: null,
   });
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const handleSort = (columnName: any) => {
+    // If the clicked column is the current sort column, toggle the sort direction
+    if (columnName === sortColumn) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // If the clicked column is a different column, set it as the new sort column
+      setSortColumn(columnName);
+      setSortDirection("asc");
+    }
+  };
+
   // useEffect(() => {
   //   const getAccount = async() => {
   //     const res = await axios.get(`${BASE_URL}/account/${id}`);
@@ -287,6 +300,40 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     window.open(pdfUrl, "_blank");
   };
 
+  const sortedAccount = [...ClientReportAccounts].sort((a, b) => {
+    if (sortColumn === "No") {
+      return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
+    } else if (sortColumn === "Invoice Date") {
+      const dateA = a.date;
+      const dateB = b.date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Invoice No") {
+      const clientNameA = a.no_invoice.toUpperCase();
+      const clientNameB = b.no_invoice.toUpperCase();
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Total P/L") {
+      const accountNoA = a.total_amount;
+      const accountNoB = b.total_amount;
+      if (accountNoA < accountNoB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (accountNoA > accountNoB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    }
+    return 0;
+  });
   return (
     <div>
       <ToastContainer />
@@ -382,6 +429,11 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                   className="relative transition-all duration-300 py-2.5 pl-4 pr-14 w-full border-gray-300 dark:bg-slate-800 dark:text-white/80 dark:border-slate-600 rounded-lg tracking-wide font-light text-sm placeholder-gray-400 bg-white focus:ring disabled:opacity-40 disabled:cursor-not-allowed focus:border-indigo-500 focus:ring-indigo-500/20"
                   placeholder="Search Client's Name"
                   onChange={(e) => setClientName(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      getClientReportAccounts();
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -531,7 +583,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
 
           {ClientReportAccounts?.length > 0 ? (
             <div
-              className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+              className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
               style={{ width: widthStyle }}
             >
               <div className="row row--top-40"></div>
@@ -541,20 +593,47 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                     <table className="table">
                       <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                         <tr>
-                          {datas.clientReport.map((data, index: number) => {
+                          {datas.clientReport.map((data, index) => {
+                            const columnName = data.name;
+                            const isSortableColumn =
+                              columnName !== "No" && columnName !== "Action";
+                            const isSortedColumn = sortColumn === columnName;
+                            const sortClass = isSortedColumn
+                              ? sortDirection === "asc"
+                                ? "fa-solid fa-sort-down"
+                                : "fa-solid fa-sort-up"
+                              : "";
+                            console.log(
+                              "isSortableColumn : ",
+                              columnName === "No"
+                            );
                             return (
                               <th
                                 key={index}
-                                className="text-center table__th dark:text-white "
+                                className={`text-center table__th  ${
+                                  columnName === "Account No" ? "w-[100px]" : ""
+                                }  dark:text-white ${
+                                  !isSortableColumn
+                                    ? "cursor-default"
+                                    : "cursor-pointer"
+                                }`}
+                                onClick={() => {
+                                  if (isSortableColumn) {
+                                    handleSort(columnName);
+                                  }
+                                }}
                               >
                                 {data.name}
+                                {isSortableColumn && isSortedColumn && (
+                                  <i className={`fa ${sortClass} `}></i>
+                                )}
                               </th>
                             );
                           })}
                         </tr>
                       </thead>
                       <tbody className="table__tbody">
-                        {ClientReportAccounts?.map(
+                        {sortedAccount?.map(
                           (user: InputInvoiceSummary, index: number) => {
                             return (
                               <tr

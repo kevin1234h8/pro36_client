@@ -8,7 +8,6 @@ const ImportAccountModal = ({
   handleImportInvoiceDetails,
   setCreatedDateInvoiceDetails,
 }: any) => {
-  console.log("invoiceDetailsSearchResults : ", invoiceDetailsSearchResults);
   var currentDate = new Date();
   var yesterday = new Date(currentDate);
   yesterday.setDate(currentDate.getDate() - 1);
@@ -148,7 +147,7 @@ const ImportAccountModal = ({
                 </table>
               </div>
             ) : (
-              <div className="px-5 py-4 text-center text-gray-600 bg-gray-100">
+              <div className="w-full px-5 py-4 text-center text-gray-600 dark:bg-[#1e293b] dark:text-white bg-gray-100">
                 <p className="text-lg font-semibold">No Results Found</p>
               </div>
             )}

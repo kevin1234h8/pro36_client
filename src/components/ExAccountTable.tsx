@@ -25,6 +25,9 @@ const ExAccountTable = ({
     useState<boolean>(false);
   const [isDetailModalVisible, setIsDetailModalVisible] =
     useState<boolean>(false);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+
   const restoreUser = async (id: string) => {
     const values = {
       restored_by: user?.id,
@@ -41,12 +44,112 @@ const ExAccountTable = ({
         if (res.status === 200) {
           setIsSuccessModalVisible(true);
         }
-        console.log(res);
       } catch (error) {
         console.error(error);
       }
     }
   };
+
+  const handleSort = (columnName: any) => {
+    // If the clicked column is the current sort column, toggle the sort direction
+    if (columnName === sortColumn) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // If the clicked column is a different column, set it as the new sort column
+      setSortColumn(columnName);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedExAccount = [...exAccount].sort((a, b) => {
+    if (sortColumn === "No") {
+      return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
+    } else if (sortColumn === "Regist Date") {
+      const dateA = a.regist_date;
+      const dateB = b.regist_date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Client Name") {
+      const clientNameA = a.client_name.toUpperCase();
+      const clientNameB = b.client_name.toUpperCase();
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Account No") {
+      const accountNoA = a.account_no;
+      const accountNoB = b.account_no;
+      if (accountNoA < accountNoB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (accountNoA > accountNoB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Server") {
+      const serverA = a.server.toUpperCase();
+      const serverB = b.server.toUpperCase();
+      if (serverA < serverB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (serverA > serverB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Expired Date") {
+      const dateA = a.expired_date;
+      const dateB = b.expired_date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "EA Name") {
+      const eaNameA = a.ea_name.toUpperCase();
+      const eaNameB = b.ea_name.toUpperCase();
+      if (eaNameA < eaNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (eaNameA > eaNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Remark") {
+      const remarkA = a.remark.toUpperCase();
+      const remarkB = b.remark.toUpperCase();
+      if (remarkA < remarkB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (remarkA > remarkB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "VPS") {
+      const VPSA = a.vps?.toUpperCase();
+      const VPSB = b.vps?.toUpperCase();
+      if (VPSA < VPSB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (VPSA > VPSB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Recruit By") {
+      const recruitByA = a.recruit_by.toUpperCase();
+      const recruitByB = b.recruit_by.toUpperCase();
+      if (recruitByA < recruitByB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (recruitByA > recruitByB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    }
+    return 0;
+  });
 
   return (
     <div className="w-full lg:mx-auto ">
@@ -167,17 +270,42 @@ const ExAccountTable = ({
                   <table className="table">
                     <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                       <tr>
-                        {datas.account_table_head.map((data) => {
+                        {datas.account_table_head.map((data, index) => {
+                          const columnName = data.name;
+                          const isSortableColumn =
+                            columnName !== "No" && columnName !== "Action";
+                          const isSortedColumn = sortColumn === columnName;
+                          const sortClass = isSortedColumn
+                            ? sortDirection === "asc"
+                              ? "fa-solid fa-sort-down"
+                              : "fa-solid fa-sort-up"
+                            : "";
+
                           return (
-                            <th className="text-center table__th dark:text-white">
+                            <th
+                              key={index}
+                              className={`text-center table__th ${
+                                columnName === "Account No" ? "w-[100px]" : ""
+                              } dark:text-white  ${
+                                !isSortableColumn ? "" : "cursor-pointer"
+                              }`}
+                              onClick={() => {
+                                if (isSortableColumn) {
+                                  handleSort(columnName);
+                                }
+                              }}
+                            >
                               {data.name}
+                              {isSortableColumn && isSortedColumn && (
+                                <i className={`fa ${sortClass} `}></i>
+                              )}
                             </th>
                           );
                         })}
                       </tr>
                     </thead>
                     <tbody className="table__tbody">
-                      {exAccount?.map(
+                      {sortedExAccount?.map(
                         (user: AccountInterface, index: number) => {
                           return (
                             <tr
@@ -274,11 +402,11 @@ const ExAccountTable = ({
                                         setAccountId(user.id);
                                         setIsDetailModalVisible(true);
                                       }}
-                                      className="fa-solid fa-eye text-[#3fd2ea]"
+                                      className="fa-solid fa-eye text-[#3fd2ea] cursor-pointer"
                                     ></i>
                                     <i
                                       onClick={() => restoreUser(user.id)}
-                                      className="fa-solid fa-arrow-rotate-right text-[#3fd2ea]"
+                                      className="fa-solid fa-arrow-rotate-right text-[#3fd2ea] cursor-pointer"
                                     ></i>
                                   </div>
                                 </p>

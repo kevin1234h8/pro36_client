@@ -90,7 +90,7 @@ const EditAccountPage = ({ user }: any) => {
     <div className="dark:bg-[#0e1011] ">
       {isSuccessModelIsVisible ? (
         <SuccessModal
-          redirectLink="/"
+          redirectLink="/new-account"
           text="Account has been edited successfully"
         />
       ) : null}
@@ -149,7 +149,6 @@ const EditAccountPage = ({ user }: any) => {
                   type={showInvPassword ? "text" : "password"}
                   name=""
                   value={invPassword}
-                  required
                   onChange={(e) => setInvPassword(e.target.value)}
                 />
                 <div className="absolute top-0 right-0">
@@ -213,7 +212,6 @@ const EditAccountPage = ({ user }: any) => {
                   type="text"
                   name=""
                   value={serialKey}
-                  required
                   onChange={(e) => setSerialKey(parseInt(e.target.value))}
                 />
                 <label>Serial Key</label>
@@ -223,7 +221,6 @@ const EditAccountPage = ({ user }: any) => {
                   type="text"
                   value={remark}
                   name=""
-                  required
                   onChange={(e) => setRemark(e.target.value)}
                 />
                 <label>Remark</label>
@@ -233,7 +230,6 @@ const EditAccountPage = ({ user }: any) => {
                   type="text"
                   value={vps}
                   name=""
-                  required
                   onChange={(e) => setVps(e.target.value)}
                 />
                 <label>VPS</label>
@@ -242,7 +238,6 @@ const EditAccountPage = ({ user }: any) => {
                 <input
                   type="text"
                   name=""
-                  required
                   value={recruitBy}
                   onChange={(e) => setRecruitBy(e.target.value)}
                 />
@@ -252,7 +247,7 @@ const EditAccountPage = ({ user }: any) => {
             <div className="form-footer">
               <button
                 type="submit"
-                className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+                className="cursor-pointer  rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
               >
                 <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative text-xs">Save</span>
@@ -260,9 +255,9 @@ const EditAccountPage = ({ user }: any) => {
 
               <div
                 onClick={goBack}
-                className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+                className=" cursor-pointer rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
               >
-                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white cursor-pointer opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative text-xs">Cancel</span>
               </div>
             </div>

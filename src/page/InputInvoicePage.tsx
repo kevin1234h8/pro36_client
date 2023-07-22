@@ -264,20 +264,18 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   }, []);
-
   const getInvoiceSummaryPaginateData = async (
     newPage: number,
     newPageSize: number
   ) => {
     try {
       let res = await axios.get(
-        `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}&owner=${user.id}`
+        `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}`,
+        {
+          headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+        }
       );
-      if (user.level === 1) {
-        res = await axios.get(
-          `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}`
-        );
-      }
+
       if (res.status === 200) {
         setIsLoading(false);
       }
@@ -288,16 +286,21 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
-
-  const deleteInvoiceSummary = async (id: string) => {
+  console.log(user?.id);
+  const deleteInvoiceSummary = async (id: string, invoiceNo: string) => {
     try {
+      const values: any = {
+        deleted_by: user?.id,
+      };
       const confirmed = window.confirm(
         "Are you sure you want to delete this invoice ?"
       );
       if (confirmed) {
         const res = await axios.delete(
-          `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
+          `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${user.id}/${invoiceNo}`,
+          values
         );
+        console.log(res.data);
         if (res.status === 200) {
           setIsSuccessModalVisible(true);
         }
@@ -306,6 +309,82 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
+
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const handleSort = (columnName: any) => {
+    // If the clicked column is the current sort column, toggle the sort direction
+    if (columnName === sortColumn) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // If the clicked column is a different column, set it as the new sort column
+      setSortColumn(columnName);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedAccount = [...inputDetails].sort((a: any, b: any) => {
+    if (sortColumn === "No") {
+      return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
+    } else if (sortColumn === "Invoice Date") {
+      const dateA = a.date;
+      const dateB = b.date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Invoice No") {
+      const noInvoiceA = a.no_invoice;
+      const noInvoiceB = b.no_invoice;
+      if (noInvoiceA < noInvoiceB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (noInvoiceA > noInvoiceB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Client Name") {
+      const clientNameA = a.client_name;
+      const clientNameB = b.client_name;
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "City") {
+      const cityA = a.city.toUpperCase();
+      const cityB = b.city.toUpperCase();
+      if (cityA < cityB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (cityA > cityB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Country") {
+      const countryA = a.country.toUpperCase();
+      const countryB = b.country.toUpperCase();
+
+      if (countryA < countryB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (countryA > countryB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Total (Rp)") {
+      const totalAmountA = a.total_amount;
+      const totalAmountB = b.total_amount;
+      if (totalAmountA < totalAmountB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (totalAmountA > totalAmountB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    }
+    return 0;
+  });
 
   return isLoading ? (
     <LoadingSpinner />
@@ -433,22 +512,39 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                     <table className="table w-full">
                       <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                         <tr>
-                          {datas.inputInvoiceSummary.map(
-                            (data, index: number) => {
-                              return (
-                                <th
-                                  key={index}
-                                  className="text-center table__th dark:text-white"
-                                >
-                                  {data.name}
-                                </th>
-                              );
-                            }
-                          )}
+                          {datas.inputInvoiceSummary.map((data, index) => {
+                            const columnName = data.name;
+                            const isSortableColumn = columnName !== "No";
+                            const isSortedColumn = sortColumn === columnName;
+                            const sortClass = isSortedColumn
+                              ? sortDirection === "asc"
+                                ? "fa-solid fa-sort-down"
+                                : "fa-solid fa-sort-up"
+                              : "";
+
+                            return (
+                              <th
+                                key={index}
+                                className={`text-center table__th dark:text-white ${
+                                  !isSortableColumn ? "cursor-default" : ""
+                                }`}
+                                onClick={() => {
+                                  if (isSortableColumn) {
+                                    handleSort(columnName);
+                                  }
+                                }}
+                              >
+                                {data.name}
+                                {isSortableColumn && isSortedColumn && (
+                                  <i className={`fa ${sortClass} mx-2`}></i>
+                                )}
+                              </th>
+                            );
+                          })}
                         </tr>
                       </thead>
                       <tbody className="table__tbody">
-                        {inputDetails?.map(
+                        {sortedAccount?.map(
                           (details: InputInvoiceSummary, index: number) => {
                             return (
                               <tr
@@ -460,13 +556,11 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                 </td>
 
                                 <td
-                                  data-column="INVOICE DATE	"
-                                  className="table-row__td "
+                                  data-column="CLIENT NAME"
+                                  className=" table-row__td"
                                 >
-                                  <div className="table-row__info w-[100px]">
-                                    <div className="table-row text-center ">
-                                      {details.date}
-                                    </div>
+                                  <div className="table-row__info">
+                                    {details.date}
                                   </div>
                                 </td>
                                 <td
@@ -527,11 +621,14 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                       <a
                                         href={`/edit-input-invoice/${details.id}`}
                                       >
-                                        <i className="fa-solid fa-pen text-[#3fd2ea]"></i>
+                                        <i className="fa-solid fa-pen text-[#3fd2ea] cursor-pointer"></i>
                                       </a>
                                       <i
                                         onClick={() =>
-                                          deleteInvoiceSummary(details.id)
+                                          deleteInvoiceSummary(
+                                            details.id,
+                                            details.no_invoice
+                                          )
                                         }
                                         className="cursor-pointer fa-solid fa-trash"
                                       ></i>

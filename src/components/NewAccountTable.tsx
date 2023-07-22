@@ -17,6 +17,109 @@ const NewAccountTable = ({
 }: any) => {
   const totalPages = Math.ceil(totalAccount / pageSize);
   const widthStyle = useContainerWidthUtils();
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+  const handleSort = (columnName: any) => {
+    // If the clicked column is the current sort column, toggle the sort direction
+    if (columnName === sortColumn) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      // If the clicked column is a different column, set it as the new sort column
+      setSortColumn(columnName);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedAccount = [...account].sort((a, b) => {
+    if (sortColumn === "No") {
+      return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
+    } else if (sortColumn === "Regist Date") {
+      const dateA = a.regist_date;
+      const dateB = b.regist_date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Client Name") {
+      const clientNameA = a.client_name.toUpperCase();
+      const clientNameB = b.client_name.toUpperCase();
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Account No") {
+      const accountNoA = a.account_no;
+      const accountNoB = b.account_no;
+      if (accountNoA < accountNoB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (accountNoA > accountNoB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Server") {
+      const serverA = a.server.toUpperCase();
+      const serverB = b.server.toUpperCase();
+      if (serverA < serverB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (serverA > serverB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Expired Date") {
+      const dateA = a.expired_date;
+      const dateB = b.expired_date;
+
+      if (dateA < dateB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (dateA > dateB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "EA Name") {
+      const eaNameA = a.ea_name.toUpperCase();
+      const eaNameB = b.ea_name.toUpperCase();
+      if (eaNameA < eaNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (eaNameA > eaNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Remark") {
+      const remarkA = a.remark.toUpperCase();
+      const remarkB = b.remark.toUpperCase();
+      if (remarkA < remarkB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (remarkA > remarkB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "VPS") {
+      const VPSA = a.vps?.toUpperCase();
+      const VPSB = b.vps?.toUpperCase();
+      if (VPSA < VPSB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (VPSA > VPSB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Recruit By") {
+      const recruitByA = a.recruit_by.toUpperCase();
+      const recruitByB = b.recruit_by.toUpperCase();
+      if (recruitByA < recruitByB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (recruitByA > recruitByB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    }
+    return 0;
+  });
+
   return (
     <div className="w-full lg:mx-auto ">
       <div className="mx-auto max-w-7xl">
@@ -133,110 +236,154 @@ const NewAccountTable = ({
                   <table className="table">
                     <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                       <tr>
-                        {datas.account_table_head.map((data, index: number) => {
+                        {datas.account_table_head.map((data, index) => {
+                          const columnName = data.name;
+                          const isSortableColumn =
+                            columnName !== "No" && columnName !== "Action";
+                          const isSortedColumn = sortColumn === columnName;
+                          const sortClass = isSortedColumn
+                            ? sortDirection === "asc"
+                              ? "fa-solid fa-sort-down"
+                              : "fa-solid fa-sort-up"
+                            : "";
+
                           return (
                             <th
                               key={index}
-                              className="text-center table__th dark:text-white "
+                              className={`text-center table__th  ${
+                                columnName === "Account No" ? "w-[100px]" : ""
+                              }  dark:text-white ${
+                                !isSortableColumn
+                                  ? "cursor-default"
+                                  : "cursor-pointer"
+                              }`}
+                              onClick={() => {
+                                if (isSortableColumn) {
+                                  handleSort(columnName);
+                                }
+                              }}
                             >
                               {data.name}
+                              {isSortableColumn && isSortedColumn && (
+                                <i className={`fa ${sortClass} `}></i>
+                              )}
                             </th>
                           );
                         })}
                       </tr>
                     </thead>
                     <tbody className="table__tbody">
-                      {account?.map((user: AccountInterface, index: number) => {
-                        return (
-                          <tr
-                            key={index}
-                            className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
-                          >
-                            <td data-column="No" className="table-row__td">
-                              {index + 1}
-                            </td>
-                            <td
-                              data-column="Regist Date"
-                              className="table-row__td"
+                      {sortedAccount?.map(
+                        (user: AccountInterface, index: number) => {
+                          return (
+                            <tr
+                              key={index}
+                              className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
                             >
-                              <div className="table-row__info">
-                                <p className="table-row__name w-[100px] ">
-                                  {user.regist_date}
-                                </p>
-                              </div>
-                            </td>
-
-                            <td
-                              data-column="Client Name"
-                              className="table-row__td "
-                            >
-                              <div className="table-row__info">
-                                <p className="table-row text-center">
-                                  {user.client_name}
-                                </p>
-                              </div>
-                            </td>
-                            <td
-                              data-column="Account No"
-                              className="table-row__td"
-                            >
-                              <a
-                                href={`/account-details/${user.id}`}
-                                className="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline hover:text-blue-600"
+                              <td data-column="No" className="table-row__td">
+                                {index + 1}
+                              </td>
+                              <td
+                                data-column="Regist Date"
+                                className="table-row__td"
                               >
-                                {user.account_no}
-                              </a>
-                            </td>
-                            <td data-column="Server" className="table-row__td">
-                              <p className="table-row__info ">{user.server}</p>
-                            </td>
-                            <td
-                              data-column="Expired Date"
-                              className="table-row__td "
-                            >
-                              <p className="table-row__info w-[100px] ">
-                                {user.expired_date}
-                              </p>
-                            </td>
-                            <td data-column="EA Name" className="table-row__td">
-                              <p className="table-row__info ">{user.ea_name}</p>
-                            </td>
-
-                            <td data-column="Remark" className="table-row__td ">
-                              <p className="table-row__info ">{user.remark}</p>
-                            </td>
-                            <td data-column="VPS" className="table-row__td ">
-                              <p className="table-row__info ">{user.vps}</p>
-                            </td>
-                            <td
-                              data-column="Recruit By"
-                              className=" table-row__td"
-                            >
-                              <p className="table-row__info">
-                                {user.recruit_by}
-                              </p>
-                            </td>
-                            <td data-column="Action" className="table-row__td">
-                              <p className="table-row__progress status--blue status">
-                                <div className="action">
-                                  <a
-                                    href={EDIT_MEMBER_PATH.replace(
-                                      ":id",
-                                      user.id
-                                    )}
-                                  >
-                                    <i className="fa-solid fa-pen text-[#3fd2ea]"></i>
-                                  </a>
-                                  <i
-                                    onClick={() => deleteAccount(user.id)}
-                                    className="fa-solid fa-trash"
-                                  ></i>
+                                <div className="table-row__info">
+                                  <p className="table-row__name w-[100px] ">
+                                    {user.regist_date}
+                                  </p>
                                 </div>
-                              </p>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                              </td>
+
+                              <td
+                                data-column="Client Name"
+                                className="table-row__td "
+                              >
+                                <div className="table-row__info">
+                                  <p className="table-row text-center">
+                                    {user.client_name}
+                                  </p>
+                                </div>
+                              </td>
+                              <td
+                                data-column="Account No"
+                                className="table-row__td"
+                              >
+                                <a
+                                  href={`/account-details/${user.id}`}
+                                  className="font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline hover:text-blue-600"
+                                >
+                                  {user.account_no}
+                                </a>
+                              </td>
+                              <td
+                                data-column="Server"
+                                className="table-row__td"
+                              >
+                                <p className="table-row__info ">
+                                  {user.server}
+                                </p>
+                              </td>
+                              <td
+                                data-column="Expired Date"
+                                className="table-row__td "
+                              >
+                                <p className="table-row__info w-[100px] ">
+                                  {user.expired_date}
+                                </p>
+                              </td>
+                              <td
+                                data-column="EA Name"
+                                className="table-row__td"
+                              >
+                                <p className="table-row__info ">
+                                  {user.ea_name}
+                                </p>
+                              </td>
+
+                              <td
+                                data-column="Remark"
+                                className="table-row__td "
+                              >
+                                <p className="table-row__info ">
+                                  {user.remark}
+                                </p>
+                              </td>
+                              <td data-column="VPS" className="table-row__td ">
+                                <p className="table-row__info ">{user.vps}</p>
+                              </td>
+                              <td
+                                data-column="Recruit By"
+                                className=" table-row__td"
+                              >
+                                <p className="table-row__info">
+                                  {user.recruit_by}
+                                </p>
+                              </td>
+                              <td
+                                data-column="Action"
+                                className="table-row__td"
+                              >
+                                <p className="table-row__progress status--blue status">
+                                  <div className="action">
+                                    <a
+                                      href={EDIT_MEMBER_PATH.replace(
+                                        ":id",
+                                        user.id
+                                      )}
+                                    >
+                                      <i className="fa-solid fa-pen text-[#3fd2ea] cursor-pointer"></i>
+                                    </a>
+                                    <i
+                                      onClick={() => deleteAccount(user.id)}
+                                      className="cursor-pointer fa-solid fa-trash"
+                                    ></i>
+                                  </div>
+                                </p>
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
                     </tbody>
                   </table>
                 </div>

@@ -7,7 +7,7 @@ import tradingAnimation from "../lottie/114986-ultimate-trading-experience.json"
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import Breadcrumb from "../components/Breadcrumb";
 
-const MainPage = ({ user }: any) => {
+const MainPage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   useEffect(() => {
     AOS.init({
@@ -17,7 +17,7 @@ const MainPage = ({ user }: any) => {
   return (
     <div>
       <div>
-        <Navbar user={user} />
+        <Navbar parsedUserData={parsedUserData} user={user} />
         <div className="flex flex-col-reverse items-center justify-center mx-auto bg lg:flex-row lg:px-48 lg:py-10">
           <div className="w-full lg:w-1/2">
             <div className="flex flex-col gap-12">

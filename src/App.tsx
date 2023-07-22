@@ -39,8 +39,9 @@ function App() {
   const apiKey = "38a4000d2421d3f8cf6b913c32d87aeb";
   const formattedDate = currentDate.toISOString().split("T")[0];
   const [loading, setLoading] = useState(false); // Add a loading state
-  const effectRun = useRef(false);
+
   axios.defaults.withCredentials = true;
+
   const getCookie = (name: string) => {
     const cookieName = name + "=";
     const cookies = document.cookie.split(";");
@@ -78,7 +79,7 @@ function App() {
       }
     };
     getLoginUser();
-  }, [jwtCookie]);
+  }, [parsedUserData?.accessToken]);
 
   useEffect(() => {
     const getAvatar = async () => {
@@ -168,6 +169,7 @@ function App() {
             path={ADD_MEMBER_PATH}
             element={
               <AddMember
+                parsedUserData={parsedUserData}
                 notificationCount={notificationCount}
                 setNotificationCount={setNotificationCount}
                 user={user}
@@ -288,7 +290,16 @@ function App() {
               )
             }
           />
-          <Route path="/" element={<MainPage user={user} avatar={avatar} />} />
+          <Route
+            path="/"
+            element={
+              <MainPage
+                parsedUserData={parsedUserData}
+                user={user}
+                avatar={avatar}
+              />
+            }
+          />
           <Route
             path={LICENSE_EXPIRED_REPORT_PATH}
             element={

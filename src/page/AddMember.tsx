@@ -8,7 +8,7 @@ import "../scss/addmember.css";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
 
-const AddMember = ({ setNotificationCount, user }: any) => {
+const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
   const date = new Date();
   const oneYearLaterDate = new Date(date);
   oneYearLaterDate.setFullYear(date.getFullYear() + 1);
@@ -49,7 +49,6 @@ const AddMember = ({ setNotificationCount, user }: any) => {
 
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
-
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -78,6 +77,7 @@ const AddMember = ({ setNotificationCount, user }: any) => {
         recruit_by: recruitBy,
         created_by: user?.id,
         owner: user?.id,
+        createdName: user?.username,
       };
       const res = await axios.post(`${BASE_URL}/account/create`, values, {
         withCredentials: true,
@@ -103,7 +103,7 @@ const AddMember = ({ setNotificationCount, user }: any) => {
 
   return (
     <div className="dark:bg-[#0e1011] ">
-      <Navbar user={user} />
+      <Navbar parsedUserData={parsedUserData} user={user} />
       <Breadcrumb />
       {isSuccessModalVisible ? (
         <SuccessModal
@@ -171,7 +171,6 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 <input
                   type={showInvPassword ? "text" : "password"}
                   name=""
-                  required
                   onChange={(e) => setInvPassword(e.target.value)}
                 />
                 <div className="absolute top-0 right-0">
@@ -234,7 +233,6 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 <input
                   type="number"
                   name=""
-                  required
                   min={1}
                   onChange={(e) => setSerialKey(parseInt(e.target.value))}
                 />
@@ -244,7 +242,6 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 <input
                   type="text"
                   name=""
-                  required
                   onChange={(e) => setRemark(e.target.value)}
                 />
                 <label>Remark</label>
@@ -253,7 +250,6 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 <input
                   type="text"
                   name=""
-                  required
                   onChange={(e) => setVps(e.target.value)}
                 />
                 <label>VPS</label>
@@ -262,7 +258,6 @@ const AddMember = ({ setNotificationCount, user }: any) => {
                 <input
                   type="text"
                   name=""
-                  required
                   onChange={(e) => setRecruitBy(e.target.value)}
                 />
                 <label>Recruit By</label>

@@ -312,23 +312,6 @@ const Detail: React.FC<any> = ({
         <div className="flex items-end justify-end"></div>
       </div>
       <div className="flex justify-end w-full gap-4 px-4 lg:px-20">
-        {user?.level === 3 ? null : (
-          <button
-            onClick={() => setImportMemberAccountModalVisible(true)}
-            className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-          >
-            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-            <span className="relative text-xs">Import Existing Account</span>
-          </button>
-        )}
-
-        <button
-          onClick={() => setImportAccountModalVisible(true)}
-          className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-        >
-          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-          <span className="relative text-xs">Import Existing Details</span>
-        </button>
         <button
           onClick={addInputInvoiceDetails}
           className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
@@ -336,19 +319,35 @@ const Detail: React.FC<any> = ({
           <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
           <span className="relative text-xs">Add</span>
         </button>
+        <button
+          onClick={() => setImportAccountModalVisible(true)}
+          className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-xs">Import Details</span>
+        </button>
+        {user?.level === 3 ? null : (
+          <button
+            onClick={() => setImportMemberAccountModalVisible(true)}
+            className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+          >
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative text-xs">Import Account</span>
+          </button>
+        )}
       </div>
       <div className="flex items-center justify-between w-full px-4">
         <div className="flex justify-end w-full"></div>
       </div>
       {details.length > 0 ? (
         <div
-          className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
+          className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
           style={{ width: widthStyle }}
         >
           <div className="row row--top-40"></div>
           <div className="row row--top-20">
             <div className="col-md-12">
-              <div className="table-container  dark:bg-[#0e1011]">
+              <div className="table-container  da rk:bg-[#0e1011]">
                 <table className="table">
                   <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                     <tr>
@@ -489,7 +488,7 @@ const Detail: React.FC<any> = ({
           </div>
         </div>
       ) : (
-        <div className="px-5 py-4 text-center text-gray-600 bg-gray-100 dark:bg-[#0e1011]">
+        <div className="px-5 mt-4 py-4 text-center text-gray-600 bg-gray-100 dark:bg-[#0e1011]">
           <p className="text-xs md:text-base lg:text-xl font-semibold dark:text-[#e4e4e4]">
             No Invoice Added
           </p>
@@ -913,8 +912,8 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
 
   const [date, setDate] = useState(new Date());
   const [clientName, setClientName] = useState("");
-  const [serviceFee, setServiceFee] = useState<number>(1);
-  const [rate, setRate] = useState<number>(1);
+  const [serviceFee, setServiceFee] = useState<number>(10);
+  const [rate, setRate] = useState<number>(15000);
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
 

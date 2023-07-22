@@ -5,9 +5,11 @@ import Navbar from "../components/Navbar";
 import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
+import Breadcrumb from "../components/Breadcrumb";
 
 const EditInvoiceSummaryPage = ({ user }: any) => {
   const { id }: any = useParams();
+  console.log(id);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [invoiceNo, setInvoiceNo] = useState("");
@@ -37,8 +39,9 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
       const res = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
       );
+      console.log(res.data);
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
-      setInvoiceNo(inputInvoiceSummary.invoiceNo);
+      setInvoiceNo(inputInvoiceSummary.no_invoice);
       setDate(inputInvoiceSummary.date);
       setClientName(inputInvoiceSummary.client_name);
       setServiceFee(inputInvoiceSummary.service_fee);
@@ -64,7 +67,9 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
     getInvoiceSummary();
   }, [id]);
 
-  const handleUpdate = async (id: string) => {
+  console.log(invoiceNo);
+
+  const handleUpdate = async (id: string, invoiceNo: string) => {
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
       if (!dateRegex.test(date)) {
@@ -85,7 +90,7 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
         modifiedBy: user.id,
       };
       const res = await axios.put(
-        `${BASE_URL}/input-invoice/input-invoice-summary/${id}`,
+        `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${invoiceNo}`,
         values
       );
       if (res.status === 200) {
@@ -105,6 +110,7 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
         />
       ) : null}
       <Navbar user={user} />
+      <Breadcrumb />
       <div className="add-member-container lg:mx-[10rem] dark:text-white   ">
         <div className="add-member-form w-100">
           <h2 className="font-medium add-member-form-title">
@@ -239,15 +245,15 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
           </form>
           <div className="form-footer">
             <div
-              onClick={() => handleUpdate(id)}
-              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+              onClick={() => handleUpdate(id, invoiceNo)}
+              className=" cursor-pointer rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
             >
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-xs">Save</span>
             </div>
             <div
               onClick={goBack}
-              className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+              className="cursor-pointer  rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
             >
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
               <span className="relative text-xs">Cancel</span>

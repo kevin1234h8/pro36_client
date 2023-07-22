@@ -45,7 +45,7 @@ const HomePage = ({
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }, [parsedUserData?.accessToken]);
 
   useEffect(() => {
     const showToasts = () => {
@@ -74,11 +74,13 @@ const HomePage = ({
     try {
       let res = await axios.get(
         `${BASE_URL}/account?page=${newPage}&pageSize=${newPageSize}&search=${search}`,
-        { withCredentials: true }
+        {
+          headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+        }
       );
       if (res.status === 200) {
         setIsLoading(false);
-      }
+      } 
       setAccount(res.data.accounts);
       setTotalAccount(res.data.totalAccount);
       setPage(newPage);
@@ -140,7 +142,7 @@ const HomePage = ({
       ) : null}
 
       <div className="dark:bg-[#0e1011]">
-        <Navbar user={user} avatar={avatar} />
+        <Navbar parsedUserData={parsedUserData} user={user} avatar={avatar} />
         <Breadcrumb />
         <div className="main">
           <div
