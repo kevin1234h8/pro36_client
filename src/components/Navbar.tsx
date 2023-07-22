@@ -26,6 +26,7 @@ const Navbar = ({ user, parsedUserData }: any) => {
   const [showDropdownMenu, setShowDropdownMenu] = useState<boolean>(false);
   const [openReportMenu, setOpenReportMenu] = useState<boolean>(false);
   const [showNotification, setShowNotification] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [showLessNotification, setShowLessNotification] =
     useState<boolean>(true);
   const formRef = useRef<HTMLFormElement>(null);
@@ -37,11 +38,12 @@ const Navbar = ({ user, parsedUserData }: any) => {
     useState<number>(0);
 
   const markAllAsRead = async () => {
+    setLoading(true);
     const res = await axios.put(`${BASE_URL}/notifications/${user?.id}`);
     if (res.status === 200) {
+      setLoading(false);
       window.location.reload();
     }
-    // setAccountNotifications([]);
   };
   const seeLessNotification = async () => {
     try {
