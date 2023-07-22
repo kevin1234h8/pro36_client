@@ -7,8 +7,10 @@ import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
+import LoadingSpinner from "../components/LoadingSpinner";
 const EditAccountPage = ({ user }: any) => {
   const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     try {
       const getAccount = async () => {
@@ -77,8 +79,10 @@ const EditAccountPage = ({ user }: any) => {
         recruit_by: recruitBy,
         modified_by: user?.id,
       };
+      setLoading(true);
       const res = await axios.put(`${BASE_URL}/account/${id}`, values);
       if (res.status === 200) {
+        setLoading(false);
         setIsSuccessModelIsVisible(true);
       }
     } catch (error) {
@@ -86,7 +90,9 @@ const EditAccountPage = ({ user }: any) => {
     }
   };
 
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     <div className="dark:bg-[#0e1011] ">
       {isSuccessModelIsVisible ? (
         <SuccessModal

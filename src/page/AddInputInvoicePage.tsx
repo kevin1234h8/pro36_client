@@ -502,6 +502,7 @@ const InvoiceDocument = ({
   details,
   clientName,
   rate,
+  setLoading,
   serviceFee,
   invoiceNo,
   date,
@@ -602,6 +603,7 @@ const InvoiceDocument = ({
     } catch (err) {
       console.log(err);
     }
+    setLoading(true);
     const totalRow = [
       "Total",
       "",
@@ -713,6 +715,7 @@ const InvoiceDocument = ({
       12,
       startY + tableHeight + 70
     );
+    setLoading(false);
 
     setIsSuccessModalVisible(true);
   };
@@ -947,6 +950,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
   const [createdDateMemberAccount, setCreatedDateMemberAccount] =
     useState<string>("");
   const [memberAccounts, setMemberAccounts] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
   const getImportAccount = async () => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
@@ -1214,6 +1218,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
         country={country}
         bankName={bankName}
         beneficiaryName={beneficiaryName}
+        setLoading={setLoading}
         accountNumber={accountNumber}
         invoiceNoDate={invoiceNoDate}
       />

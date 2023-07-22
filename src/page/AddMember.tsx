@@ -7,8 +7,10 @@ import { BASE_URL } from "../config/config";
 import "../scss/addmember.css";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
+  const [loading, setLoading] = useState(false);
   const date = new Date();
   const oneYearLaterDate = new Date(date);
   oneYearLaterDate.setFullYear(date.getFullYear() + 1);
@@ -79,6 +81,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
         owner: user?.id,
         createdName: user?.username,
       };
+      setLoading(true);
       const res = await axios.post(`${BASE_URL}/account/create`, values, {
         withCredentials: true,
       });
@@ -92,7 +95,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
         const newCount = currentCount + 1;
 
         localStorage.setItem("notificationCount", newCount.toString());
-
+        setLoading(false);
         setNotificationCount(newCount);
         setIsSuccessModalVisible(true);
       }
@@ -101,7 +104,9 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
     }
   };
 
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     <div className="dark:bg-[#0e1011] ">
       <Navbar parsedUserData={parsedUserData} user={user} />
       <Breadcrumb />

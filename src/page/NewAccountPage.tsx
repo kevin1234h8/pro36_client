@@ -80,7 +80,7 @@ const HomePage = ({
       );
       if (res.status === 200) {
         setIsLoading(false);
-      } 
+      }
       setAccount(res.data.accounts);
       setTotalAccount(res.data.totalAccount);
       setPage(newPage);
