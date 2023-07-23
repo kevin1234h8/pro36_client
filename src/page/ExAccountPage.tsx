@@ -34,7 +34,8 @@ const ExAccountPage = ({ user, parsedUserData }: any) => {
     newPageSize: number
   ) => {
     const res = await axios.get(
-      `${BASE_URL}/ex-account?page=${newPage}&pageSize=${newPageSize}&search=${exAccountSearch}`
+      `${BASE_URL}/ex-account?page=${newPage}&pageSize=${newPageSize}&search=${exAccountSearch}`,
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {
       setIsLoading(false);

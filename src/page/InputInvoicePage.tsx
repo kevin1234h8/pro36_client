@@ -12,6 +12,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Breadcrumb from "../components/Breadcrumb";
 import NoResultsFound from "../components/NoResultsFound";
+import { formatNumberToIDR } from "../utils/numberUtils";
 
 const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -82,7 +83,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       },
       0
     );
-    console.log(inputInvoiceDataDetails);
 
     const totalAmount = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
@@ -95,14 +95,15 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       },
       0
     );
-    const totalAmountInRupiah = totalAmount.toLocaleString("id-ID");
-    console.log(totalAmountInRupiah);
+    const totalAmountInRupiah = formatNumberToIDR(
+      parseFloat(totalAmount).toFixed(2)
+    );
     const totalFee = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
         // const fee = Number(detail.service) ;
         const fee = detail.service
           ? detail.service
-          : (detail.profit * (1 - data.service_fee / 100)).toFixed(2);
+          : (detail.profit * (data.service_fee / 100)).toFixed(2);
         return sum + parseFloat(fee);
       },
       0
@@ -120,33 +121,37 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
           detail.period_to,
           detail.account_no,
           detail.broker_name,
-          "$" + detail.profit.toLocaleString("id-ID"),
+          "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
           detail.service
-            ? "$" + detail.service.toLocaleString("id-ID")
-            : "$" +
-              (detail.profit * (1 - data.service_fee / 100)).toLocaleString(
-                "id-ID"
-              ),
+            ? "$" + detail.service
+            : "$" + (detail.profit * (data.service_fee / 100)).toFixed(2),
           detail.rupiah
-            ? "Rp" + detail.rupiah.toLocaleString("id-ID")
+            ? "Rp" + detail.rupiah
             : "Rp" +
-              (
-                detail.profit *
-                (1 - data.service_fee / 100) *
-                data.rate
-              ).toLocaleString("id-ID"),
+              parseFloat(
+                (
+                  parseInt(detail.profit) *
+                  (1 - data.service_fee / 100) *
+                  data.rate
+                ).toFixed(2)
+              ).toLocaleString("id-ID", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                style: "decimal",
+                useGrouping: true,
+              }),
         ]
       );
-
+      const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
       const totalRow = [
         "Total",
         "",
         "",
         "",
         "",
-        "$" + totalUSDProfit.toLocaleString("id-ID"),
-        "$" + totalFee.toLocaleString("id-ID"),
-        "Rp" + totalAmount.toLocaleString("id-ID"),
+        "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
+        "$" + formatNumberToIDR(parseFloat(totalFee).toFixed(2)),
+        "Rp" + formatNumberToIDR(parseFloat(data.total_amount).toFixed(2)),
       ];
       rows.push(totalRow);
       // Set table properties
@@ -191,7 +196,11 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       doc.text("kurs&", 15, 64);
       doc.setFont("helvetica", "normal");
       doc.text(data.service_fee + "%", 50, 57);
-      doc.text("Rp" + data.rate, 50, 64);
+      doc.text(
+        "Rp" + formatNumberToIDR(parseFloat(data.rate).toFixed(2)),
+        50,
+        64
+      );
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
@@ -209,7 +218,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       doc.text("Total", 120, 57);
       doc.setFont("helvetica", "normal");
 
-      doc.text("Rp" + totalAmount.toLocaleString("id-ID"), 170, 57);
+      doc.text("Rp" + formattedTotalAmount, 170, 57);
       doc.setFontSize(10);
       doc.text(
         "Payment By Transfer To (Full amount in Rupiah)",
@@ -264,6 +273,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   }, []);
+
   const getInvoiceSummaryPaginateData = async (
     newPage: number,
     newPageSize: number
@@ -286,7 +296,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
-  console.log(user?.id);
   const deleteInvoiceSummary = async (id: string, invoiceNo: string) => {
     try {
       const values: any = {
@@ -300,7 +309,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
           `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${user.id}/${invoiceNo}`,
           values
         );
-        console.log(res.data);
         if (res.status === 200) {
           setIsSuccessModalVisible(true);
         }
@@ -309,6 +317,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
+  const [loadingImportMemberAccount, setLoadingImportMemberAccount] =
+    useState(false);
 
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
@@ -502,7 +512,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
           </div>
           {inputDetails.length > 0 ? (
             <div
-              className="dark:bg-[#0e1011] overflow-x-scroll px-4 md:px-8 lg:px-0 h-screen"
+              className="dark:bg-[#0e1011] overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden md:overflow-y-hidden lg:overflow-y-hidden px-4 md:px-8 lg:px-0 h-screen"
               style={{ width: widthStyle }}
             >
               <div className="row row--top-40"></div>
@@ -606,8 +616,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                 >
                                   <div className="table-row__info ">
                                     Rp
-                                    {details.total_amount.toLocaleString(
-                                      "id-ID"
+                                    {formatNumberToIDR(
+                                      details.total_amount.toFixed(2)
                                     )}
                                   </div>
                                 </td>

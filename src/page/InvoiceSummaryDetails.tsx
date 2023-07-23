@@ -7,11 +7,17 @@ import axios from "axios";
 import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
-const InvoiceSummaryDetails = ({ user }: any) => {
+import datas from "../data/datas.json";
+import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import { formatNumberToIDR } from "../utils/numberUtils";
+
+const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
   const { id } = useParams();
+  const widthStyle = useContainerWidthUtils();
   const [invoiceSummary, setInvoiceSummary] = useState<InputInvoiceSummary>();
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
+  const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
 
   useEffect(() => {
     try {
@@ -20,6 +26,19 @@ const InvoiceSummaryDetails = ({ user }: any) => {
           `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
         );
         setInvoiceSummary(res.data.inputInvoiceSummary);
+        const getInputInvoiceDetails = async () => {
+          const invoiceDetailsRes = await axios.get(
+            `${BASE_URL}/input-invoice/input-invoice-details/${res.data.inputInvoiceSummary.no_invoice}`,
+            {
+              headers: {
+                Authorization: "Bearer " + parsedUserData?.accessToken,
+              },
+            }
+          );
+          setInputInvoiceDetails(invoiceDetailsRes.data.inputInvoiceDetails);
+        };
+
+        getInputInvoiceDetails();
       };
       getInvoiceSummary();
     } catch (err) {
@@ -164,7 +183,101 @@ const InvoiceSummaryDetails = ({ user }: any) => {
               </div>
             </div>
           </form>
-          <div className="form-footer">
+        </div>
+      </div>
+      <div className="flex flex-col items-center font-bold">
+        <h2>Detail</h2>
+        <div className="flex items-end justify-end"></div>
+      </div>
+      <div
+        className={`lg:w-full  overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
+        style={{ width: widthStyle }}
+      >
+        <div className="row row--top-40"></div>
+        <div className="row row--top-20">
+          <div className="col-md-12">
+            <div className="table-container  da rk:bg-[#0e1011]">
+              <table className="table">
+                <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
+                  <tr>
+                    {datas.inputInvoice.map((data, index: number) => {
+                      return (
+                        <th
+                          key={index}
+                          className="text-center table__th dark:text-white"
+                        >
+                          {data.name}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                </thead>
+                <tbody className="table__tbody">
+                  {inputInvoiceDetails?.map((detail: any, index: number) => {
+                    return (
+                      <tr
+                        key={index}
+                        className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
+                      >
+                        <td data-column="No" className="table-row__td">
+                          {index + 1}
+                        </td>
+                        <td data-column="Period To" className="table-row__td ">
+                          <div className="table-row__info">
+                            <p className="table-row__name w-[100px]">
+                              {detail.period_from}
+                            </p>
+                          </div>
+                        </td>
+                        <td
+                          data-column="Period From"
+                          className="table-row__td "
+                        >
+                          <div className="table-row__info w-[100px]">
+                            <p className="text-center table-row__name ">
+                              {detail.period_to}
+                            </p>
+                          </div>
+                        </td>
+                        <td data-column="Account No" className="table-row__td">
+                          <p className="flex items-center justify-center gap-2">
+                            {detail.account_no}
+                          </p>
+                        </td>
+                        <td data-column="Broker Name" className="table-row__td">
+                          <p className="flex items-center justify-center gap-2">
+                            {detail.broker_name}
+                          </p>
+                        </td>
+                        <td data-column="Profit" className="table-row__td ">
+                          <p className="flex items-center justify-center ">
+                            {formatNumberToIDR(detail.profit)}
+                          </p>
+                        </td>
+
+                        <td data-column="Service" className="table-row__td">
+                          <p className="flex items-center justify-center ">
+                            {formatNumberToIDR(detail.service_cost)}
+                          </p>
+                        </td>
+
+                        <td data-column="Rupiah" className="table-row__td">
+                          {formatNumberToIDR(detail.cost_in_rupiah)}
+                        </td>
+                        <td data-column="Action" className="table-row__td">
+                          {/* <i
+                              onClick={() => onRemoveDetailRow(index)}
+                              className="text-red-500 cursor-pointer fa-solid fa-trash"
+                            ></i> */}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="my-10 form-footer">
             <a
               href={`/edit-input-invoice/${id}`}
               className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"

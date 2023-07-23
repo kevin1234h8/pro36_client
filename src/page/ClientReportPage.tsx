@@ -15,6 +15,8 @@ import jsPDF from "jspdf";
 import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
 import SearchClientReportFromDateToEndDateModal from "../components/SearchClientReportFromDateToEndDateModal";
 import NoResultsFound from "../components/NoResultsFound";
+import { formatNumberToIDR } from "../utils/numberUtils";
+
 const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [ClientReportAccounts, setClientReportAccounts] = useState<any>([]);
@@ -70,9 +72,11 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/client-report?page=${newPage}&pageSize=${newPageSize}&clientName=${clientName}&startDate=${startDate}&endDate=${endDate}`
+        `${BASE_URL}/client-report?page=${newPage}&pageSize=${newPageSize}&clientName=${clientName}&startDate=${startDate}&endDate=${endDate}`,
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
-      setClientReportAccounts(res.data.licenseExpiredAccounts);
+      console.log(res.data);
+      setClientReportAccounts(res.data.clientReportAccounts);
       setPage(newPage);
     } catch (err) {
       console.log(err);
@@ -125,18 +129,22 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const grandTotal = ClientReportAccounts.reduce(
     (total: any, user: any) => total + user.total_amount,
     0
-  ).toLocaleString("id-ID");
+  );
+  const formattedGrandTotal = formatNumberToIDR(
+    parseFloat(grandTotal).toFixed(2)
+  );
   const generatePDF = () => {
     const doc = new jsPDF();
     const startY = 60; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
+
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => [
           index + 1,
           account.date,
           account.no_invoice,
-          "Rp " + account.total_amount.toLocaleString("id-ID"),
+          "Rp " + formatNumberToIDR(account.total_amount),
         ]
       );
 
@@ -167,7 +175,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       autoTable(doc, tableConfig);
 
       doc.text(
-        `Grand Total P/L Rp ${grandTotal.toString()}`,
+        `Grand Total P/L Rp ${formattedGrandTotal.toString()}`,
         75,
         startY + tableHeight + 20
       );
@@ -207,7 +215,6 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(`:`, 40, 45);
       doc.text("", 50, 45);
     }
-
     doc.save(
       `${clientName}_Report_${startDateValue.startDate}_${endDateValue.endDate}.pdf`
     );
@@ -217,13 +224,14 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     const doc = new jsPDF();
     const startY = 60; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
+
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => [
           index + 1,
           account.date,
           account.no_invoice,
-          "Rp " + account.total_amount.toLocaleString("id-ID"),
+          "Rp " + formatNumberToIDR(account.total_amount.toFixed(2)),
         ]
       );
 
@@ -254,7 +262,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       autoTable(doc, tableConfig);
 
       doc.text(
-        `Grand Total P/L Rp ${grandTotal.toString()}`,
+        `Grand Total P/L Rp ${formattedGrandTotal.toString()}`,
         75,
         startY + tableHeight + 20
       );
@@ -603,10 +611,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                 ? "fa-solid fa-sort-down"
                                 : "fa-solid fa-sort-up"
                               : "";
-                            console.log(
-                              "isSortableColumn : ",
-                              columnName === "No"
-                            );
+
                             return (
                               <th
                                 key={index}
@@ -668,14 +673,10 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                   data-column="Server"
                                   className="table-row__td"
                                 >
-                                  <p className="table-row__info w-[100px]">
+                                  <p className="table-row__info w-[120px]">
                                     Rp{" "}
-                                    {(user.total_amount / 1000).toLocaleString(
-                                      undefined,
-                                      {
-                                        minimumFractionDigits: 3,
-                                        maximumFractionDigits: 3,
-                                      }
+                                    {formatNumberToIDR(
+                                      user.total_amount.toFixed(2)
                                     )}
                                   </p>
                                 </td>
@@ -693,17 +694,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                           <td></td>
                           <td data-column="Server" className="table-row__td">
                             <strong className="dark:text-blue-500">
-                              Rp{" "}
-                              {(
-                                ClientReportAccounts.reduce(
-                                  (total: any, user: any) =>
-                                    total + user.total_amount,
-                                  0
-                                ) / 1000
-                              ).toLocaleString(undefined, {
-                                minimumFractionDigits: 3,
-                                maximumFractionDigits: 3,
-                              })}
+                              Rp {formattedGrandTotal}
                             </strong>
                           </td>
                         </tr>

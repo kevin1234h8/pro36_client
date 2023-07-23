@@ -1,5 +1,7 @@
 import React from "react";
 import datas from "../data/datas.json";
+import transparentLoader from "../assets/transparentLoader.gif";
+
 const ImportAccountModal = ({
   getInvoiceDetails,
   setInvoiceDetailsSearchQuery,
@@ -7,6 +9,7 @@ const ImportAccountModal = ({
   setImportAccountModalVisible,
   handleImportInvoiceDetails,
   setCreatedDateInvoiceDetails,
+  loadingImportDetails,
 }: any) => {
   var currentDate = new Date();
   var yesterday = new Date(currentDate);
@@ -85,6 +88,7 @@ const ImportAccountModal = ({
                 Invoice Details
               </div>
             </header>
+
             {invoiceDetailsSearchResults.length > 0 ? (
               <div className="p-3 overflow-x-auto">
                 <table className="w-full table-auto">
@@ -101,49 +105,58 @@ const ImportAccountModal = ({
                       })}
                     </tr>
                   </thead>
+                  {loadingImportDetails ? (
+                    <div className="flex items-center justify-center w-full ">
+                      <img
+                        className="flex items-center w-20 h-20"
+                        src={transparentLoader}
+                        alt=""
+                      />
+                    </div>
+                  ) : (
+                    <tbody className="text-sm divide-y divide-gray-100">
+                      {invoiceDetailsSearchResults?.map(
+                        (result: any, index: number) => {
+                          return (
+                            <tr key={index}>
+                              <td className="p-2">
+                                <div className="font-medium text-gray-800 dark:text-white">
+                                  {index + 1}
+                                </div>
+                              </td>
+                              <td className="py-2 w-[100px]">
+                                <div className="font-medium text-gray-800 dark:text-white">
+                                  {result.period_from}
+                                </div>
+                              </td>
+                              <td className="p-2">
+                                <div className="text-left dark:text-white">
+                                  {result.no_invoice}
+                                </div>
+                              </td>
 
-                  <tbody className="text-sm divide-y divide-gray-100">
-                    {invoiceDetailsSearchResults?.map(
-                      (result: any, index: number) => {
-                        return (
-                          <tr key={index}>
-                            <td className="p-2">
-                              <div className="font-medium text-gray-800 dark:text-white">
-                                {index + 1}
-                              </div>
-                            </td>
-                            <td className="py-2 w-[100px]">
-                              <div className="font-medium text-gray-800 dark:text-white">
-                                {result.period_from}
-                              </div>
-                            </td>
-                            <td className="p-2">
-                              <div className="text-left dark:text-white">
-                                {result.no_invoice}
-                              </div>
-                            </td>
-
-                            <td className="p-2">
-                              <div className="font-medium text-left dark:text-white ">
-                                {result.broker_name}
-                              </div>
-                            </td>
-                            <td className="p-2">
-                              <div className="flex justify-center">
-                                <button
-                                  onClick={() =>
-                                    handleImportInvoiceDetails(result.id)
-                                  }
-                                >
-                                  <i className="fa-solid fa-cloud-arrow-up text-[#1E90FF]"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      }
-                    )}
-                  </tbody>
+                              <td className="p-2">
+                                <div className="font-medium text-left dark:text-white ">
+                                  {result.broker_name}
+                                </div>
+                              </td>
+                              <td className="p-2">
+                                <div className="flex justify-center">
+                                  <button
+                                    onClick={() =>
+                                      handleImportInvoiceDetails(result.id)
+                                    }
+                                  >
+                                    <i className="fa-solid fa-cloud-arrow-up text-[#1E90FF]"></i>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
+                    </tbody>
+                  )}
                 </table>
               </div>
             ) : (

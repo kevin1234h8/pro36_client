@@ -17,6 +17,7 @@ import NoResultsFound from "../components/NoResultsFound";
 const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
   const [licenseExpiredAccounts, setLicenseExpiredAccounts] = useState<any>([]);
+
   const [licenseExpiredAccountsCount, setLicenseExpiredAccountsCount] =
     useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(20);
@@ -565,7 +566,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
 
           {licenseExpiredAccounts?.length > 0 ? (
             <div
-              className={`lg:w-full overflow-x-scroll px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+              className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
               style={{ width: widthStyle }}
             >
               <div className="row row--top-40"></div>
@@ -585,10 +586,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                                 ? "fa-solid fa-sort-down"
                                 : "fa-solid fa-sort-up"
                               : "";
-                            console.log(
-                              "isSortableColumn : ",
-                              columnName === "No"
-                            );
+
                             return (
                               <th
                                 key={index}

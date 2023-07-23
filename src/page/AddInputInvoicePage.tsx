@@ -11,7 +11,9 @@ import { BASE_URL } from "../config/config";
 import datas from "../data/datas.json";
 import { DetailRow } from "../interface/DetailRowInterface";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import { formatNumberToIDR } from "../utils/numberUtils";
 import { v4 } from "uuid";
+import LoadingSpinner from "../components/LoadingSpinner";
 const Summary = ({
   setInvoiceNo,
   setServiceFee,
@@ -152,7 +154,7 @@ const Summary = ({
                     setServiceFee(value);
                   }}
                 />
-                <label>Service Fee</label>
+                <label>Service Fee (%)</label>
               </div>
               <div className="input-box">
                 <input
@@ -449,10 +451,12 @@ const Detail: React.FC<any> = ({
                                 placeholder="0"
                                 value={
                                   detail.service === 0
-                                    ? (
-                                        parseInt(detail.profit) *
-                                        (1 - serviceFee / 100)
-                                      ).toFixed(2)
+                                    ? parseFloat(
+                                        (
+                                          parseInt(detail.profit) *
+                                          (serviceFee / 100)
+                                        ).toFixed(2)
+                                      )
                                     : parseInt(detail.service)
                                 }
                                 readOnly
@@ -465,11 +469,18 @@ const Detail: React.FC<any> = ({
 
                           <td data-column="Rupiah" className="table-row__td">
                             {detail.rupiah === 0
-                              ? (
-                                  parseInt(detail.profit) *
-                                  (1 - serviceFee / 100) *
-                                  rate
-                                ).toFixed(2)
+                              ? parseFloat(
+                                  (
+                                    parseInt(detail.profit) *
+                                    (1 - serviceFee / 100) *
+                                    rate
+                                  ).toFixed(2)
+                                ).toLocaleString("id-ID", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                  style: "decimal",
+                                  useGrouping: true,
+                                })
                               : parseInt(detail.rupiah)}
                           </td>
                           <td data-column="Action" className="table-row__td">
@@ -526,6 +537,7 @@ const InvoiceDocument = ({
   const [id] = useState<string>(uuidv4);
 
   const generatePDF = async () => {
+    setLoading(true);
     const doc = new jsPDF();
     const startY = 80; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
@@ -535,25 +547,32 @@ const InvoiceDocument = ({
       detail.periodTo,
       detail.accountNo,
       detail.broker,
-      detail.profit,
+      formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
       detail.service
         ? "$" + detail.service
-        : "$" + (detail.profit * (1 - serviceFee / 100)).toFixed(2),
+        : "$" + (detail.profit * (serviceFee / 100)).toFixed(2),
       detail.rupiah
         ? "Rp" + detail.rupiah
-        : "Rp" + (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2),
+        : "Rp" +
+          parseFloat(
+            (parseInt(detail.profit) * (1 - serviceFee / 100) * rate).toFixed(2)
+          ).toLocaleString("id-ID", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            style: "decimal",
+            useGrouping: true,
+          }),
     ]);
 
     const values = details?.map((detail: any, index: number) => [
-      detail.id,
       invoiceNo,
       detail.periodFrom,
       detail.periodTo,
       detail.accountNo,
       detail.broker,
-      detail.profit,
-      (detail.profit * (1 - serviceFee / 100)).toFixed(2),
-      (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2),
+      formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
+      formatNumberToIDR((detail.profit * (serviceFee / 100)).toFixed(2)),
+      (parseInt(detail.profit) * (1 - serviceFee / 100) * rate).toFixed(2),
       user?.id,
       user?.id,
     ]);
@@ -572,6 +591,7 @@ const InvoiceDocument = ({
       return sum + parseFloat(amount);
     }, 0);
     setTotalAmountInRupiah(totalAmount.toFixed(2));
+    const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
 
     const summaryValues = {
       invoiceNo: invoiceNoDate,
@@ -603,7 +623,6 @@ const InvoiceDocument = ({
     } catch (err) {
       console.log(err);
     }
-    setLoading(true);
     const totalRow = [
       "Total",
       "",
@@ -660,7 +679,7 @@ const InvoiceDocument = ({
     doc.text("kurs&", 15, 64);
     doc.setFont("helvetica", "normal");
     doc.text(serviceFee + "%", 50, 57);
-    doc.text("Rp" + rate, 50, 64);
+    doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
@@ -736,7 +755,7 @@ const InvoiceDocument = ({
       // const fee = Number(detail.service) ;
       const fee = detail.service
         ? detail.service
-        : (detail.profit * (1 - serviceFee / 100)).toFixed(2);
+        : (detail.profit * (serviceFee / 100)).toFixed(2);
       return sum + parseFloat(fee);
     }, 0);
     setTotalServiceFee(totalFee.toFixed(2));
@@ -746,14 +765,24 @@ const InvoiceDocument = ({
       detail.periodTo,
       detail.accountNo,
       detail.broker,
-      detail.profit,
+      "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
       detail.service
         ? "$" + detail.service
-        : "$" + (detail.profit * (1 - serviceFee / 100)).toFixed(2),
+        : "$" + (detail.profit * (serviceFee / 100)).toFixed(2),
       detail.rupiah
         ? "Rp" + detail.rupiah
-        : "Rp" + (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2),
+        : "Rp" +
+          parseFloat(
+            (parseInt(detail.profit) * (1 - serviceFee / 100) * rate).toFixed(2)
+          ).toLocaleString("id-ID", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            style: "decimal",
+            useGrouping: true,
+          }),
     ]);
+
+    const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
 
     const totalRow = [
       "Total",
@@ -762,8 +791,8 @@ const InvoiceDocument = ({
       "",
       "",
       "",
-      "$" + totalFee.toFixed(2),
-      "Rp" + totalAmount.toFixed(2),
+      "$" + formatNumberToIDR(totalFee.toFixed(2)),
+      "Rp" + formattedTotalAmount,
     ];
     rows.push(totalRow);
     // Set table properties
@@ -811,7 +840,7 @@ const InvoiceDocument = ({
     doc.text("kurs&", 15, 64);
     doc.setFont("helvetica", "normal");
     doc.text(serviceFee + "%", 50, 57);
-    doc.text("Rp" + rate, 50, 64);
+    doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
@@ -839,7 +868,7 @@ const InvoiceDocument = ({
     doc.text("Total", 120, 57);
     doc.setFont("helvetica", "normal");
 
-    doc.text("Rp" + totalAmount.toFixed(2), 170, 57);
+    doc.text("Rp" + formattedTotalAmount, 170, 57);
     doc.setFontSize(10);
     doc.text(
       "Payment By Transfer To (Full amount in Rupiah)",
@@ -922,7 +951,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
 
   const [bankName, setBankName] = useState("");
   const [beneficiaryName, setBeneficiaryName] = useState("");
-  const [accountNumber, setAccountNumber] = useState<number>(1);
+  const [accountNumber, setAccountNumber] = useState<number>();
   const [invoiceNoDate, setInvoiceNoDate] = useState("");
   const [details, setDetails] = useState<DetailRow[]>([]);
 
@@ -951,6 +980,12 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     useState<string>("");
   const [memberAccounts, setMemberAccounts] = useState<any>([]);
   const [loading, setLoading] = useState(false);
+
+  const [searchMemberAccountByQuery, setSearchMemberAccountByQuery] =
+    useState("account_no");
+  const [loadingImportMemberAccount, setLoadingImportMemberAccount] =
+    useState(false);
+  const [loadingImportDetails, setLoadingImportDetails] = useState(false);
   const getImportAccount = async () => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
@@ -958,6 +993,22 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     );
     setSearchResults(res.data.inputInvoiceSummary);
   };
+  useEffect(() => {
+    try {
+      const getImportAccount = async () => {
+        const res = await axios.get(
+          `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
+        );
+        setSearchResults(res.data.inputInvoiceSummary);
+      };
+      getImportAccount();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const addInputInvoiceDetails = () => {
     const newDetail: DetailRow = {
@@ -1078,25 +1129,78 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
   };
 
   const getMemberAccounts = async () => {
+    setLoadingImportMemberAccount(true);
     try {
       const res = await axios.get(
-        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
+        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}&searchBy=${searchMemberAccountByQuery}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
+      if (res.status === 200) {
+        setLoadingImportMemberAccount(false);
+      }
       setMemberAccounts(res.data.accounts);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const getInvoiceDetails = async () => {
-    let res = await axios.get(
-      `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`,
-      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
-    );
+  useEffect(() => {
+    setLoadingImportMemberAccount(true);
+    try {
+      const getMemberAccounts = async () => {
+        const res = await axios.get(
+          `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
+        );
+        if (res.status === 200) {
+          setLoadingImportMemberAccount(false);
+          setMemberAccounts(res.data.accounts);
+        }
+      };
+      getMemberAccounts();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
-    setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
+  const getInvoiceDetails = async () => {
+    setLoadingImportDetails(true);
+    try {
+      let res = await axios.get(
+        `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`,
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+      );
+      if (res.status === 200) {
+        setLoadingImportDetails(false);
+        setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
+
+  useEffect(() => {
+    setLoadingImportDetails(true);
+    try {
+      const getInvoiceDetails = async () => {
+        let res = await axios.get(
+          `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
+        );
+        if (res.status === 200) {
+          setLoadingImportDetails(false);
+          setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
+        }
+      };
+      getInvoiceDetails();
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const handleDetailChange = (
     index: number,
@@ -1116,16 +1220,20 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     setDetails(updatedDetails);
   };
 
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     <div className="dark:bg-[#0e1011] ">
       <Navbar user={user} />
       {isImportMemberAccountModalVisible ? (
         <ImportMemberAccountModal
+          setSearchMemberAccountByQuery={setSearchMemberAccountByQuery}
           setMemberAccountSearchQuery={setMemberAccountSearchQuery}
           setCreatedDateMemberAccount={setCreatedDateMemberAccount}
           getMemberAccount={getMemberAccounts}
           handleImportMemberAccounts={handleImportMemberAccounts}
           memberAccounts={memberAccounts}
+          loadingImportMemberAccount={loadingImportMemberAccount}
           setImportMemberAccountModalVisible={
             setImportMemberAccountModalVisible
           }
@@ -1142,6 +1250,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
           setImportMemberAccountModalVisible={
             setImportMemberAccountModalVisible
           }
+          loadingImportDetails={loadingImportDetails}
           handleImportInvoiceDetails={handleImportInvoiceDetails}
           getInvoiceDetails={getInvoiceDetails}
           setInvoiceDetailsSearchQuery={setInvoiceDetailsSearchQuery}

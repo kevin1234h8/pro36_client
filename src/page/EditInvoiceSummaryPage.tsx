@@ -6,17 +6,28 @@ import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
+import datas from "../data/datas.json";
+import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import { InputInvoiceDetails } from "../interface/InputInvoiceDetailsInterface";
+import { formatNumberToIDR } from "../utils/numberUtils";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-const EditInvoiceSummaryPage = ({ user }: any) => {
+const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
+  // const handleInputChange = (
+  //   index: number,
+  //   field: keyof DetailRow,
+  //   event: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   onDetailChange(index, field, event.target.value);
+  // };
+  const widthStyle = useContainerWidthUtils();
   const { id }: any = useParams();
-  console.log(id);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [invoiceNo, setInvoiceNo] = useState("");
   const [date, setDate] = useState("");
   const [clientName, setClientName] = useState("");
-  const [serviceFee, setServiceFee] = useState<number>(1);
-  const [rate, setRate] = useState<number>(1);
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [bankName, setBankName] = useState("");
@@ -27,13 +38,20 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
   const dateRef = useRef("");
   const clientNameRef = useRef("");
   const serviceFeeRef = useRef(1);
+  const [serviceFee, setServiceFee] = useState<number>(serviceFeeRef.current);
+
   const rateRef = useRef(1);
+  const [rate, setRate] = useState<number>(rateRef.current);
   const cityRef = useRef("");
   const countryRef = useRef("");
   const bankNameRef = useRef("");
   const beneficiaryNameRef = useRef("");
   const accountNumberRef = useRef(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
+  const [invoiceDetails, setInvoiceDetails] =
+    useState<InputInvoiceDetails[]>(inputInvoiceDetails);
+
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
@@ -51,7 +69,6 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
       setBankName(inputInvoiceSummary.bank_name);
       setBeneficiaryName(inputInvoiceSummary.bank_beneficiary);
       setAccountNumber(inputInvoiceSummary.bank_no);
-
       invoiceNoRef.current = inputInvoiceSummary.no_invoice;
       dateRef.current = inputInvoiceSummary.date;
       clientNameRef.current = inputInvoiceSummary.client_name;
@@ -62,14 +79,41 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
       bankNameRef.current = inputInvoiceSummary.bank_name;
       beneficiaryNameRef.current = inputInvoiceSummary.bank_beneficiary;
       accountNumberRef.current = inputInvoiceSummary.bank_no;
+      const getInputInvoiceDetails = async () => {
+        const res = await axios.get(
+          `${BASE_URL}/input-invoice/input-invoice-details/${inputInvoiceSummary.no_invoice}`,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
+        );
+        setInputInvoiceDetails(res.data.inputInvoiceDetails);
+        setInvoiceDetails(res.data.inputInvoiceDetails);
+      };
+
+      getInputInvoiceDetails();
     };
     setIsLoading(false); // Set loading state to false after data is fetched
     getInvoiceSummary();
   }, [id]);
 
-  console.log(invoiceNo);
+  const handleAccountNoChange = (index: any, newValue: any) => {
+    // Create a new array of invoiceData and update the account_no value based on the index
+    const updatedData = invoiceDetails.map((data, i) =>
+      i === index ? { ...data, account_no: newValue } : data
+    );
 
+    // Update the state with the new array of invoiceData
+    setInvoiceDetails(updatedData);
+  };
+  const handleInputChange = (index: any, field: any, value: any) => {
+    const updatedInvoiceDetails = invoiceDetails.map((invoice, i) =>
+      i === index ? { ...invoice, [field]: value } : invoice
+    );
+
+    setInvoiceDetails(updatedInvoiceDetails);
+  };
   const handleUpdate = async (id: string, invoiceNo: string) => {
+    setLoading(true);
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
       if (!dateRegex.test(date)) {
@@ -78,30 +122,77 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
         );
         return;
       }
+      const totalAmount = invoiceDetails.reduce((sum: number, detail: any) => {
+        const amount = detail.rupiah
+          ? detail.rupiah
+          : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+        return sum + parseFloat(amount);
+      }, 0);
       const values = {
         clientName: clientNameRef.current,
-        serviceFee: serviceFeeRef.current,
-        rate: rateRef.current,
+        serviceFee: serviceFee,
+        rate: rate,
         city: cityRef.current,
         country: countryRef.current,
         bankName: bankNameRef.current,
         beneficiaryName: beneficiaryNameRef.current,
         bankNo: accountNumberRef.current,
+        totalAmount: totalAmount,
         modifiedBy: user.id,
       };
       const res = await axios.put(
         `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${invoiceNo}`,
         values
       );
+
+      const inputInvoiceDetailsData = invoiceDetails?.map(
+        (detail: any, index: number) => [
+          // detail.id,
+          // detail.no_invoice,
+          // detail.period_from,
+          // detail.period_to,
+          parseInt(detail.account_no),
+          detail.broker_name,
+          parseInt(detail.profit),
+          parseInt((detail.profit * (serviceFeeRef.current / 100)).toFixed(2)),
+          parseInt(
+            (detail.profit * (1 - serviceFeeRef.current / 100) * rate).toFixed(
+              2
+            )
+          ),
+          user?.id,
+          detail.id,
+        ]
+      );
+      const inputInvoiceDetailsRes = await axios.put(
+        `${BASE_URL}/input-invoice/input-invoice-details/${invoiceNo}`,
+        { data: inputInvoiceDetailsData }
+      );
+
       if (res.status === 200) {
+        setLoading(false);
         setIsSuccessModalVisible(true);
       }
     } catch (err) {
       console.log(err);
     }
   };
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value);
+    setRate(newValue);
+  };
+  const handleChangeServiceFee = (e: ChangeEvent<HTMLInputElement>) => {
+    let newValue = parseInt(e.target.value);
+    if (newValue > 100) {
+      newValue = 100;
+    }
+    e.target.value = newValue.toString();
+    setServiceFee(newValue);
+  };
 
-  return (
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
     <div className="dark:bg-[#0e1011]  ">
       {isSuccessModalVisible ? (
         <SuccessModal
@@ -154,28 +245,26 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
               <div className="input-box">
                 <input
                   type="number"
-                  value={serviceFeeRef.current}
+                  value={serviceFee}
+                  defaultValue={serviceFeeRef.current}
                   name=""
                   required
                   min={1}
                   max={100}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    (serviceFeeRef.current = parseInt(e.target.value))
-                  }
+                  onChange={handleChangeServiceFee}
                   // onChange={(e) => setServiceFee(parseInt(e.target.value))}
                 />
-                <label>Service Fee</label>
+                <label>Service Fee (%)</label>
               </div>
               <div className="input-box">
                 <input
                   type="number"
+                  value={rate}
                   defaultValue={rateRef.current}
                   name=""
                   required
                   min={1}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    (rateRef.current = parseInt(e.target.value))
-                  }
+                  onChange={handleChange}
                 />
                 <label>Rate</label>
               </div>
@@ -243,22 +332,169 @@ const EditInvoiceSummaryPage = ({ user }: any) => {
               </div>
             </div>
           </form>
-          <div className="form-footer">
-            <div
-              onClick={() => handleUpdate(id, invoiceNo)}
-              className=" cursor-pointer rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-            >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-              <span className="relative text-xs">Save</span>
-            </div>
-            <div
-              onClick={goBack}
-              className="cursor-pointer  rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-            >
-              <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-              <span className="relative text-xs">Cancel</span>
+        </div>
+      </div>
+      <div className="flex flex-col items-center font-bold">
+        <h2>Detail</h2>
+        <div className="flex items-end justify-end"></div>
+      </div>
+      <div
+        className={`lg:w-full  overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
+        style={{ width: widthStyle }}
+      >
+        <div className="row row--top-40"></div>
+        <div className="row row--top-20">
+          <div className="col-md-12">
+            <div className="table-container  da rk:bg-[#0e1011]">
+              <table className="table">
+                <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
+                  <tr>
+                    {datas.inputInvoice.map((data, index: number) => {
+                      return (
+                        <th
+                          key={index}
+                          className="text-center table__th dark:text-white"
+                        >
+                          {data.name}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                </thead>
+                <tbody className="table__tbody">
+                  {invoiceDetails?.map((detail: any, index: number) => {
+                    return (
+                      <tr
+                        key={index}
+                        className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
+                      >
+                        <td data-column="No" className="table-row__td">
+                          {index + 1}
+                        </td>
+                        <td data-column="Period To" className="table-row__td ">
+                          <div className="table-row__info">
+                            <p className="table-row__name w-[100px]">
+                              {detail.period_from}
+                            </p>
+                          </div>
+                        </td>
+                        <td
+                          data-column="Period From"
+                          className="table-row__td "
+                        >
+                          <div className="table-row__info w-[100px]">
+                            <p className="text-center table-row__name ">
+                              {detail.period_to}
+                            </p>
+                          </div>
+                        </td>
+                        <td data-column="Account No" className="table-row__td">
+                          <p className="flex items-center justify-center gap-2">
+                            <input
+                              type="number"
+                              className="text-center border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
+                              placeholder="0"
+                              min={1}
+                              defaultValue={detail.account_no}
+                              onChange={(e) =>
+                                handleAccountNoChange(index, e.target.value)
+                              }
+                            />
+                          </p>
+                        </td>
+                        <td data-column="Broker Name" className="table-row__td">
+                          <p className="flex items-center justify-center gap-2">
+                            <input
+                              className="text-center  dark:bg-[#0e1011] "
+                              type="text"
+                              defaultValue={detail.broker_name}
+                              placeholder="broker name"
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "broker_name",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </p>
+                        </td>
+                        <td data-column="Profit" className="table-row__td ">
+                          <p className="flex items-center justify-center ">
+                            <input
+                              className="text-center  dark:bg-[#0e1011] "
+                              type="number"
+                              placeholder="0"
+                              defaultValue={detail.profit}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "profit",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </p>
+                        </td>
+
+                        <td data-column="Service" className="table-row__td">
+                          <p className="flex items-center justify-center ">
+                            {detail.service_cost === 0
+                              ? (
+                                  parseInt(detail.profit) *
+                                  (serviceFee / 100)
+                                ).toFixed(2)
+                              : (
+                                  parseInt(detail.profit) *
+                                  (serviceFee / 100)
+                                ).toFixed(2)}
+                          </p>
+                        </td>
+
+                        <td data-column="Rupiah" className="table-row__td">
+                          {detail.rupiah === 0
+                            ? (
+                                parseInt(detail.profit) *
+                                (1 - serviceFee / 100) *
+                                rate
+                              ).toFixed(2)
+                            : formatNumberToIDR(
+                                (
+                                  parseInt(detail.profit) *
+                                  (1 - serviceFee / 100) *
+                                  rate
+                                ).toFixed(2)
+                              )}
+                        </td>
+                        <td data-column="Action" className="table-row__td">
+                          {/* <i
+                              onClick={() => onRemoveDetailRow(index)}
+                              className="text-red-500 cursor-pointer fa-solid fa-trash"
+                            ></i> */}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="my-24 form-footer">
+        <div
+          onClick={() => handleUpdate(id, invoiceNo)}
+          className=" cursor-pointer rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-xs">Save</span>
+        </div>
+        <div
+          onClick={goBack}
+          className="cursor-pointer  rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+        >
+          <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+          <span className="relative text-xs">Cancel</span>
         </div>
       </div>
     </div>

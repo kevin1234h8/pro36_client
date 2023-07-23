@@ -36,6 +36,7 @@ function App() {
   const [showToast, setShowToast] = useState<any>();
   const [avatar, setAvatar] = useState<any>();
   const currentDate = new Date();
+
   const apiKey = "38a4000d2421d3f8cf6b913c32d87aeb";
   const formattedDate = currentDate.toISOString().split("T")[0];
   const [loading, setLoading] = useState(false); // Add a loading state
@@ -261,7 +262,10 @@ function App() {
             path="/input-invoice-details/:id"
             element={
               user != undefined ? (
-                <InvoiceSummaryDetails user={user} />
+                <InvoiceSummaryDetails
+                  user={user}
+                  parsedUserData={parsedUserData}
+                />
               ) : (
                 <UnAuthorizedPage user={user} />
               )
@@ -271,7 +275,10 @@ function App() {
             path="/edit-input-invoice/:id"
             element={
               user != undefined ? (
-                <EditInvoiceSummaryPage user={user} />
+                <EditInvoiceSummaryPage
+                  user={user}
+                  parsedUserData={parsedUserData}
+                />
               ) : (
                 <UnAuthorizedPage user={user} />
               )

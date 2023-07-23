@@ -27,15 +27,53 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
           <div className="absolute top-0 right-0">
             <i
               onClick={() => setIsDetailModalVisible(false)}
-              className="fa-solid fa-xmark"
+              className="cursor-pointer fa-solid fa-xmark"
             ></i>
           </div>
           <div className="justify-center flex-auto p-5 text-center">
             <h2 className="py-4 text-xl font-bold ">Details</h2>
             <p className="px-8 text-sm text-gray-500"></p>
           </div>
-          <div className="flex items-center ">
-            <div className="flex flex-col w-2/4 gap-2 px-8">
+          <div className="flex items-center w-full">
+            <div className="w-full details-container">
+              <div className="detail-item">
+                <div className="detail-title">Regist Date</div>
+                <div className="detail-value">{exAccount?.regist_date}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Client Name</div>
+                <div className="detail-value">{exAccount?.client_name}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Account No</div>
+                <div className="detail-value">{exAccount?.account_no}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Server</div>
+                <div className="detail-value">{exAccount?.server}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Expired Date</div>
+                <div className="detail-value">{exAccount?.expired_date}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Ea Name</div>
+                <div className="detail-value">{exAccount?.regist_date}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Remark</div>
+                <div className="detail-value">{exAccount?.remark}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">VPS</div>
+                <div className="detail-value">{exAccount?.vps}</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-title">Recruit By</div>
+                <div className="detail-value">{exAccount?.recruit_by}</div>
+              </div>
+            </div>
+            {/* <div className="flex flex-col w-2/4 gap-2 px-8">
               {datas.account_detail_modal.map((data) => {
                 return <div>{data.name}</div>;
               })}
@@ -50,7 +88,7 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
               <div>{exAccount?.remark}</div>
               <div>{exAccount?.vps}</div>
               <div>{exAccount?.recruit_by}</div>
-            </div>
+            </div> */}
           </div>
           <div className="p-3 mt-2 space-x-4 text-center md:block"></div>
         </div>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { SyntheticEvent, useState } from "react";
 import { v4 } from "uuid";
+import Datepicker from "react-tailwindcss-datepicker";
 import Navbar from "../components/Navbar";
 import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
@@ -8,35 +9,26 @@ import "../scss/addmember.css";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
-  const [loading, setLoading] = useState(false);
-  const date = new Date();
-  const oneYearLaterDate = new Date(date);
-  oneYearLaterDate.setFullYear(date.getFullYear() + 1);
   let uuidv4: string;
   uuidv4 = v4();
+  const [loading, setLoading] = useState(false);
+  const date = new Date();
+
+  const oneYearLaterDate = new Date(date);
+  oneYearLaterDate.setFullYear(date.getFullYear() + 1);
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showInvPassword, setShowInvPassword] = useState<boolean>(false);
-  const [registDate, setRegistDate] = useState<any>(
-    date
-      .toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, "-")
-  );
 
-  const [expiredDate, setExpiredDate] = useState<string>(
-    oneYearLaterDate
-      .toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, "-")
-  );
+  const [showRegistDateCalendar, setShowRegistDateCalendar] =
+    useState<boolean>(false);
+  const [showExpiredDateCalendar, setShowExpiredDateCalendar] =
+    useState<boolean>(false);
+
   const [id] = useState<string>(uuidv4);
   const [clientName, setClientName] = useState<string>("");
   const [accountNo, setAccountNumber] = useState<number>(0);
@@ -44,18 +36,40 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
   const [invPassword, setInvPassword] = useState<string>("");
   const [server, setServer] = useState<string>("");
   const [eaName, setEaName] = useState<string>("");
-  const [serialKey, setSerialKey] = useState<number>(0);
+  const [serialKey, setSerialKey] = useState<string>("");
   const [remark, setRemark] = useState<string>("");
   const [vps, setVps] = useState<string>("");
   const [recruitBy, setRecruitBy] = useState<string>("");
-
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
+
+  const [value, onChange] = useState<any>(new Date());
+  const [valueExpiredDate, onchange] = useState<any>(oneYearLaterDate);
+
+  const formattedRegistDate = value
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\//g, "-");
+
+  const formattedExpiredDate = valueExpiredDate
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\//g, "-");
+
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
-      if (!dateRegex.test(registDate) || !dateRegex.test(expiredDate)) {
+      if (
+        !dateRegex.test(formattedRegistDate) ||
+        !dateRegex.test(formattedExpiredDate)
+      ) {
         // Display an error message if the date format is incorrect
         alert(
           "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
@@ -71,8 +85,8 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
         inv_pass: invPassword,
         server,
         ea_name: eaName,
-        regist_date: registDate,
-        expired_date: expiredDate,
+        regist_date: formattedRegistDate,
+        expired_date: formattedExpiredDate,
         serial_key: serialKey,
         remark,
         vps,
@@ -129,7 +143,6 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
                   defaultValue={id}
                   readOnly
                 />
-                {/* <label>No ID</label> */}
               </div>
               <div className="input-box">
                 <input
@@ -212,34 +225,56 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
                 <label>EA Name</label>
               </div>
             </div>
-            <div className="w-full">
-              <div className="input-box">
-                <input
-                  id="RegistDate"
-                  type="text"
-                  defaultValue={registDate}
-                  onChange={(e) => setRegistDate(e.target.value)}
-                />
-                <label>Regist Date</label>
+            <div className="w-full ">
+              <div className="relative input-box">
+                <div className="flex items-start text-xs text-[#ffb226]">
+                  Regist Date
+                </div>
+                <input value={formattedRegistDate} readOnly />
+                <div
+                  onClick={() =>
+                    setShowRegistDateCalendar(!showRegistDateCalendar)
+                  }
+                  className="absolute top-0 right-0 cursor-pointer"
+                >
+                  <i className="fa-solid fa-calendar"></i>
+                </div>
               </div>
+              {showRegistDateCalendar ? (
+                <div className="flex justify-end">
+                  <Calendar onChange={onChange} value={value} />
+                </div>
+              ) : null}
 
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
                   id="RegistDate"
                   type="text"
-                  defaultValue={expiredDate}
-                  onChange={(e) => {
-                    setExpiredDate(e.target.value);
-                  }}
+                  value={formattedExpiredDate}
+                  readOnly
                 />
+                <div
+                  onClick={() =>
+                    setShowExpiredDateCalendar(!showExpiredDateCalendar)
+                  }
+                  className="absolute top-0 right-0 cursor-pointer"
+                >
+                  <i className="fa-solid fa-calendar"></i>
+                </div>
+
                 <label>Expired Date</label>
               </div>
+              {showExpiredDateCalendar ? (
+                <div className="flex justify-end">
+                  <Calendar onChange={onchange} value={valueExpiredDate} />
+                </div>
+              ) : null}
               <div className="input-box">
                 <input
-                  type="number"
+                  type="text"
                   name=""
                   min={1}
-                  onChange={(e) => setSerialKey(parseInt(e.target.value))}
+                  onChange={(e) => setSerialKey(e.target.value)}
                 />
                 <label>Serial Key</label>
               </div>

@@ -102,3 +102,35 @@ input[type="number"] {
     transform: rotate(360deg);
   }
 }
+
+.custom-date-input {
+  /* Add your custom styles here */
+  /* For example, to change the font size and color of the input text: */
+  font-size: 16px;
+  color: #333;
+}
+
+/* Additional styles for the formatted date */
+p {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+}
+
+.detail-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10rem;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.detail-title {
+  font-weight: bold;
+}
+
+.detail-value {
+}

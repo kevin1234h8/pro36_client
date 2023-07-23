@@ -8,6 +8,9 @@ import { BASE_URL } from "../config/config";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+
 const EditAccountPage = ({ user }: any) => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -53,6 +56,48 @@ const EditAccountPage = ({ user }: any) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showInvPassword, setShowInvPassword] = useState<boolean>(false);
 
+  const [showRegistDateCalendar, setShowRegistDateCalendar] =
+    useState<boolean>(false);
+  const [showExpiredDateCalendar, setShowExpiredDateCalendar] =
+    useState<boolean>(false);
+
+  const date = new Date();
+  const oneYearLaterDate = new Date(date);
+  oneYearLaterDate.setFullYear(date.getFullYear() + 1);
+
+  const parseDateString = (dateString: any) => {
+    const parts = dateString.split("-");
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Subtract 1 to get zero-based month
+    const year = parseInt(parts[2], 10);
+    return new Date(year, month, day);
+  };
+
+  const [value, onChange] = useState<any>(parseDateString(registDate));
+  const [valueExpiredDate, onChangeExpiredDate] = useState<any>(
+    parseDateString(expiredDate)
+  );
+  useEffect(() => {
+    onChange(parseDateString(registDate));
+    onChangeExpiredDate(parseDateString(expiredDate));
+  }, [registDate, expiredDate]);
+
+  const formattedRegistDate = value
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\//g, "-");
+
+  const formattedExpiredDate = valueExpiredDate
+    .toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\//g, "-");
+
   const handleSubmit = async (e: SyntheticEvent) => {
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
@@ -71,8 +116,8 @@ const EditAccountPage = ({ user }: any) => {
         inv_pass: invPassword,
         server,
         ea_name: eaName,
-        regist_date: registDate,
-        expired_date: expiredDate,
+        regist_date: formattedRegistDate,
+        expired_date: formattedExpiredDate,
         serial_key: serialKey,
         remark,
         vps,
@@ -194,25 +239,55 @@ const EditAccountPage = ({ user }: any) => {
               </div>
             </div>
             <div className="w-full">
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
                   id="RegistDate"
-                  value={registDate}
+                  value={formattedRegistDate}
+                  defaultValue={formattedRegistDate}
                   type="text"
                   required
-                  onChange={(e) => setRegistDate(e.target.value)}
+                  // onChange={(e) => setRegistDate(e.target.value)}
                 />
+                <div
+                  onClick={() =>
+                    setShowRegistDateCalendar(!showRegistDateCalendar)
+                  }
+                  className="absolute top-0 right-0 cursor-pointer"
+                >
+                  <i className="fa-solid fa-calendar"></i>
+                </div>
                 <label>Regist Date</label>
               </div>
+              {showRegistDateCalendar ? (
+                <div className="flex justify-end">
+                  <Calendar onChange={onChange} value={value} />
+                </div>
+              ) : null}
               <div className="input-box">
                 <input
                   id="ExpiredDate"
-                  value={expiredDate}
+                  value={formattedExpiredDate}
                   type="text"
                   onChange={(e) => setExpiredDate(e.target.value)}
                 />
+                <div
+                  onClick={() =>
+                    setShowExpiredDateCalendar(!showExpiredDateCalendar)
+                  }
+                  className="absolute top-0 right-0 cursor-pointer"
+                >
+                  <i className="fa-solid fa-calendar"></i>
+                </div>
                 <label>Expired Date</label>
               </div>
+              {showExpiredDateCalendar ? (
+                <div className="flex justify-end">
+                  <Calendar
+                    onChange={onChangeExpiredDate}
+                    value={valueExpiredDate}
+                  />
+                </div>
+              ) : null}
               <div className="input-box">
                 <input
                   type="text"
