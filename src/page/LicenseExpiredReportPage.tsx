@@ -24,6 +24,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const [pageSize, setPageSize] = useState<number>(20);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
+
   const [startDateValue, setStartDateValue] = useState<any>({
     startDate: null,
     endDate: null,
@@ -52,7 +53,8 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}`
+        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setLicenseExpiredAccounts(res.data.licenseExpiredAccounts);
       setPage(newPage);
@@ -262,7 +264,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       return;
     }
     const res = await axios.get(
-      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}`,
+      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}&search=${search}`,
       { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {

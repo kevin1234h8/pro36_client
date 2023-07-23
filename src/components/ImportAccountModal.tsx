@@ -42,7 +42,7 @@ const ImportAccountModal = ({
               className="w-full bg-white focus:outline-none dark:bg-[#1e293b] dark:focus:bg-[#1e293b] dark:text-white "
               type="text"
               name="search"
-              placeholder="Search"
+              placeholder="Search By Broker"
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   getInvoiceDetails();
