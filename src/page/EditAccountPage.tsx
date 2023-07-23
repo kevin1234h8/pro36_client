@@ -45,7 +45,7 @@ const EditAccountPage = ({ user }: any) => {
   const [invPassword, setInvPassword] = useState<string>("");
   const [server, setServer] = useState<string>("");
   const [eaName, setEaName] = useState<string>("");
-  const [serialKey, setSerialKey] = useState<number>(0);
+  const [serialKey, setSerialKey] = useState<string>("");
   const [remark, setRemark] = useState<string>("");
   const [vps, setVps] = useState<string>("");
   const [recruitBy, setRecruitBy] = useState<string>("");
@@ -293,7 +293,7 @@ const EditAccountPage = ({ user }: any) => {
                   type="text"
                   name=""
                   value={serialKey}
-                  onChange={(e) => setSerialKey(parseInt(e.target.value))}
+                  onChange={(e) => setSerialKey(e.target.value)}
                 />
                 <label>Serial Key</label>
               </div>
