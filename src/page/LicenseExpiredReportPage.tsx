@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import jsPDF from "jspdf";
 import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
 import NoResultsFound from "../components/NoResultsFound";
+import transparentLoader from "../assets/transparentLoader.gif";
 
 const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -31,6 +32,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
     startDate: null,
     endDate: null,
   });
+  const [loadingLicenceReport, setLoadingLicenceReport] = useState(false);
   const handleEndDateValueChange = (newValue: any) => {
     setEndDateValue(newValue);
   };
@@ -232,6 +234,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   // }, []);
 
   const getLicenseExpiredAccountsByStartDateAndEndDate = async () => {
+    setLoadingLicenceReport(true);
     if (startDateValue.startDate > endDateValue.endDate) {
       toast.error("Start date cannot be greater than end date", {
         position: "top-right",
@@ -263,6 +266,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {
+      setLoadingLicenceReport(false);
       setShowSearchModal(false);
     }
     setLicenseExpiredAccountsCount(res.data.totalCount);
@@ -563,199 +567,220 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
               />
             </div>
           </div>
-
-          {licenseExpiredAccounts?.length > 0 ? (
-            <div
-              className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
-              style={{ width: widthStyle }}
-            >
-              <div className="row row--top-40"></div>
-              <div className="row row--top-20">
-                <div className="col-md-12">
-                  <div className="table-container  dark:bg-[#0e1011]">
-                    <table className="table">
-                      <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
-                        <tr>
-                          {datas.licenseExpiredAccounts.map((data, index) => {
-                            const columnName = data.name;
-                            const isSortableColumn =
-                              columnName !== "No" && columnName !== "Action";
-                            const isSortedColumn = sortColumn === columnName;
-                            const sortClass = isSortedColumn
-                              ? sortDirection === "asc"
-                                ? "fa-solid fa-sort-down"
-                                : "fa-solid fa-sort-up"
-                              : "";
-
-                            return (
-                              <th
-                                key={index}
-                                className={`text-center table__th  ${
-                                  columnName === "Account No" ? "w-[100px]" : ""
-                                }  dark:text-white ${
-                                  !isSortableColumn
-                                    ? "cursor-default"
-                                    : "cursor-pointer"
-                                }`}
-                                onClick={() => {
-                                  if (isSortableColumn) {
-                                    handleSort(columnName);
-                                  }
-                                }}
-                              >
-                                {data.name}
-                                {isSortableColumn && isSortedColumn && (
-                                  <i className={`fa ${sortClass} `}></i>
-                                )}
-                              </th>
-                            );
-                          })}
-                        </tr>
-                      </thead>
-                      <tbody className="table__tbody">
-                        {sortedAccount?.map(
-                          (user: AccountInterface, index: number) => {
-                            return (
-                              <tr
-                                key={index}
-                                className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
-                              >
-                                <td data-column="No" className="table-row__td">
-                                  {index + 1}
-                                </td>
-                                <td
-                                  data-column="Regist Date"
-                                  className="table-row__td"
-                                >
-                                  <div className="table-row__info">
-                                    <p className="table-row__name w-[100px] ">
-                                      {user.id}
-                                    </p>
-                                  </div>
-                                </td>
-
-                                <td
-                                  data-column="Client Name"
-                                  className="table-row__td "
-                                >
-                                  <div className="table-row__info">
-                                    <p className="table-row text-center">
-                                      {user.account_no}
-                                    </p>
-                                  </div>
-                                </td>
-                                <td
-                                  data-column="Client Name"
-                                  className="table-row__td "
-                                >
-                                  <div className="table-row__info">
-                                    <p className="table-row text-center">
-                                      {user.expired_date}
-                                    </p>
-                                  </div>
-                                </td>
-                                <td
-                                  data-column="Server"
-                                  className="table-row__td"
-                                >
-                                  <p className="table-row__info ">
-                                    {user.recruit_by}
-                                  </p>
-                                </td>
-                                <td
-                                  data-column="Expired Date"
-                                  className="table-row__td "
-                                >
-                                  <p className="table-row__info w-[100px] ">
-                                    {user.vps}
-                                  </p>
-                                </td>
-                                <td
-                                  data-column="EA Name"
-                                  className="table-row__td"
-                                >
-                                  <p className="table-row__info ">
-                                    {user.ea_name}
-                                  </p>
-                                </td>
-                              </tr>
-                            );
-                          }
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div className="flex items-center justify-center my-10">
-                  <ul className="inline-flex space-x-2">
-                    {page > 1 ? (
-                      <li>
-                        <button
-                          onClick={() => {
-                            getPaginateData(page - 1, pageSize);
-                          }}
-                          className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                        >
-                          <svg
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                              clip-rule="evenodd"
-                              fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    ) : null}
-                    {Array.from({ length: totalPages }, (_, index) => {
-                      const pageIndex = index + 1;
-                      return (
-                        <li key={pageIndex}>
-                          <button
-                            onClick={() => {
-                              getPaginateData(pageIndex, pageSize);
-                            }}
-                            className={`w-10 h-10 ${
-                              page === index + 1
-                                ? "bg-indigo-600 text-white"
-                                : ""
-                            } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                          >
-                            {index + 1}
-                          </button>
-                        </li>
-                      );
-                    })}
-
-                    {page < totalPages ? (
-                      <li>
-                        <button
-                          onClick={() => {
-                            getPaginateData(page + 1, pageSize);
-                          }}
-                          className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                        >
-                          <svg
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd"
-                              fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    ) : null}
-                  </ul>
-                </div>
-              </div>
+          {loadingLicenceReport ? (
+            <div className="flex items-center justify-center w-full ">
+              <img
+                className="flex items-center w-20 h-20"
+                src={transparentLoader}
+                alt=""
+              />
             </div>
           ) : (
-            <NoResultsFound />
+            <div>
+              {licenseExpiredAccounts?.length > 0 ? (
+                <div
+                  className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+                  style={{ width: widthStyle }}
+                >
+                  <div className="row row--top-40"></div>
+                  <div className="row row--top-20">
+                    ;
+                    <div className="col-md-12">
+                      <div className="table-container  dark:bg-[#0e1011]">
+                        <table className="table">
+                          <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
+                            <tr>
+                              {datas.licenseExpiredAccounts.map(
+                                (data, index) => {
+                                  const columnName = data.name;
+                                  const isSortableColumn =
+                                    columnName !== "No" &&
+                                    columnName !== "Action";
+                                  const isSortedColumn =
+                                    sortColumn === columnName;
+                                  const sortClass = isSortedColumn
+                                    ? sortDirection === "asc"
+                                      ? "fa-solid fa-sort-down"
+                                      : "fa-solid fa-sort-up"
+                                    : "";
+
+                                  return (
+                                    <th
+                                      key={index}
+                                      className={`text-center table__th  ${
+                                        columnName === "Account No"
+                                          ? "w-[100px]"
+                                          : ""
+                                      }  dark:text-white ${
+                                        !isSortableColumn
+                                          ? "cursor-default"
+                                          : "cursor-pointer"
+                                      }`}
+                                      onClick={() => {
+                                        if (isSortableColumn) {
+                                          handleSort(columnName);
+                                        }
+                                      }}
+                                    >
+                                      {data.name}
+                                      {isSortableColumn && isSortedColumn && (
+                                        <i className={`fa ${sortClass} `}></i>
+                                      )}
+                                    </th>
+                                  );
+                                }
+                              )}
+                            </tr>
+                          </thead>
+                          <tbody className="table__tbody">
+                            {sortedAccount?.map(
+                              (user: AccountInterface, index: number) => {
+                                return (
+                                  <tr
+                                    key={index}
+                                    className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
+                                  >
+                                    <td
+                                      data-column="No"
+                                      className="table-row__td"
+                                    >
+                                      {index + 1}
+                                    </td>
+                                    <td
+                                      data-column="Regist Date"
+                                      className="table-row__td"
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row__name w-[100px] ">
+                                          {user.id}
+                                        </p>
+                                      </div>
+                                    </td>
+
+                                    <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row text-center">
+                                          {user.account_no}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row text-center">
+                                          {user.expired_date}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
+                                      data-column="Server"
+                                      className="table-row__td"
+                                    >
+                                      <p className="table-row__info ">
+                                        {user.recruit_by}
+                                      </p>
+                                    </td>
+                                    <td
+                                      data-column="Expired Date"
+                                      className="table-row__td "
+                                    >
+                                      <p className="table-row__info w-[100px] ">
+                                        {user.vps}
+                                      </p>
+                                    </td>
+                                    <td
+                                      data-column="EA Name"
+                                      className="table-row__td"
+                                    >
+                                      <p className="table-row__info ">
+                                        {user.ea_name}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center my-10">
+                      <ul className="inline-flex space-x-2">
+                        {page > 1 ? (
+                          <li>
+                            <button
+                              onClick={() => {
+                                getPaginateData(page - 1, pageSize);
+                              }}
+                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                            >
+                              <svg
+                                className="w-4 h-4 fill-current"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                  clip-rule="evenodd"
+                                  fill-rule="evenodd"
+                                ></path>
+                              </svg>
+                            </button>
+                          </li>
+                        ) : null}
+                        {Array.from({ length: totalPages }, (_, index) => {
+                          const pageIndex = index + 1;
+                          return (
+                            <li key={pageIndex}>
+                              <button
+                                onClick={() => {
+                                  getPaginateData(pageIndex, pageSize);
+                                }}
+                                className={`w-10 h-10 ${
+                                  page === index + 1
+                                    ? "bg-indigo-600 text-white"
+                                    : ""
+                                } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                              >
+                                {index + 1}
+                              </button>
+                            </li>
+                          );
+                        })}
+
+                        {page < totalPages ? (
+                          <li>
+                            <button
+                              onClick={() => {
+                                getPaginateData(page + 1, pageSize);
+                              }}
+                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                            >
+                              <svg
+                                className="w-4 h-4 fill-current"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"
+                                  fill-rule="evenodd"
+                                ></path>
+                              </svg>
+                            </button>
+                          </li>
+                        ) : null}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <NoResultsFound />
+              )}
+            </div>
           )}
         </div>
       </div>

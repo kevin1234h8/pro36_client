@@ -13,6 +13,7 @@ import autoTable from "jspdf-autotable";
 import Breadcrumb from "../components/Breadcrumb";
 import NoResultsFound from "../components/NoResultsFound";
 import { formatNumberToIDR } from "../utils/numberUtils";
+import transparentLoader from "../assets/transparentLoader.gif";
 
 const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -31,6 +32,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const [totalAmountInRupiah, setTotalAmountInRupiah] = useState(0);
   const [totalServiceFee, setTotalServiceFee] = useState(0);
   const [totalProfitInUSD, setTotalProfitInUSD] = useState(0);
+  const [loadingInputInvoice, setLoadingInputInvoice] = useState(false);
   useEffect(() => {
     if (inputInvoiceDetails) {
     }
@@ -278,6 +280,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     newPage: number,
     newPageSize: number
   ) => {
+    setLoadingInputInvoice(true);
     try {
       let res = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}`,
@@ -287,6 +290,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       );
 
       if (res.status === 200) {
+        setLoadingInputInvoice(false);
         setIsLoading(false);
       }
       setInputDetails(res.data.inputInvoiceSummary);
@@ -317,8 +321,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
-  const [loadingImportMemberAccount, setLoadingImportMemberAccount] =
-    useState(false);
 
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
@@ -499,7 +501,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                 </svg>
               </span>
               <input
-                placeholder="Search"
+                placeholder="Search Client Name"
                 className="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm  md:text-base lg:text-lg placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none dark:text-white dark:bg-[#0e1011] dark:focus:bg-[#0e1011] dark:focus:text-white"
                 onChange={(e) => setSearchInvoiceSummary(e.target.value)}
                 onKeyPress={(e) => {

@@ -247,7 +247,7 @@ const ExAccountTable = ({
               </svg>
             </span>
             <input
-              placeholder="Search"
+              placeholder="Search Account No"
               className="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm  md:text-base lg:text-lg placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none dark:text-white dark:bg-[#0e1011] dark:focus:bg-[#0e1011] dark:focus:text-white"
               onChange={(e) => setExAccountSearch(e.target.value)}
               onKeyPress={(e) => {

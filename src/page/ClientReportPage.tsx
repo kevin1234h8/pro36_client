@@ -16,6 +16,7 @@ import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateM
 import SearchClientReportFromDateToEndDateModal from "../components/SearchClientReportFromDateToEndDateModal";
 import NoResultsFound from "../components/NoResultsFound";
 import { formatNumberToIDR } from "../utils/numberUtils";
+import transparentLoader from "../assets/transparentLoader.gif";
 
 const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -40,6 +41,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     startDate: null || formattedDate,
     endDate: null,
   });
+  const [loadingClientReport, setLoadingClientReport] = useState(false);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const handleSort = (columnName: any) => {
@@ -84,6 +86,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   };
 
   const getClientReportAccounts = async () => {
+    setLoadingClientReport(true);
     if (startDateValue.startDate > endDateValue.endDate) {
       toast.error("Start date cannot be greater than end date", {
         position: "top-right",
@@ -114,6 +117,9 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       `${BASE_URL}/client-report?startDate=${startDate}&endDate=${endDate}&clientName=${clientName}`,
       { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
+    if (res.status === 200) {
+      setLoadingClientReport(false);
+    }
     setClientReportAccountsCount(res.data.totalCount);
     setClientReportAccounts(res.data.clientReportAccounts);
     setShowSearchModal(false);
@@ -588,190 +594,214 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
               />
             </div>
           </div> */}
-
-          {ClientReportAccounts?.length > 0 ? (
-            <div
-              className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
-              style={{ width: widthStyle }}
-            >
-              <div className="row row--top-40"></div>
-              <div className="row row--top-20">
-                <div className="col-md-12">
-                  <div className="table-container  dark:bg-[#0e1011]">
-                    <table className="table">
-                      <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
-                        <tr>
-                          {datas.clientReport.map((data, index) => {
-                            const columnName = data.name;
-                            const isSortableColumn =
-                              columnName !== "No" && columnName !== "Action";
-                            const isSortedColumn = sortColumn === columnName;
-                            const sortClass = isSortedColumn
-                              ? sortDirection === "asc"
-                                ? "fa-solid fa-sort-down"
-                                : "fa-solid fa-sort-up"
-                              : "";
-
-                            return (
-                              <th
-                                key={index}
-                                className={`text-center table__th  ${
-                                  columnName === "Account No" ? "w-[100px]" : ""
-                                }  dark:text-white ${
-                                  !isSortableColumn
-                                    ? "cursor-default"
-                                    : "cursor-pointer"
-                                }`}
-                                onClick={() => {
-                                  if (isSortableColumn) {
-                                    handleSort(columnName);
-                                  }
-                                }}
-                              >
-                                {data.name}
-                                {isSortableColumn && isSortedColumn && (
-                                  <i className={`fa ${sortClass} `}></i>
-                                )}
-                              </th>
-                            );
-                          })}
-                        </tr>
-                      </thead>
-                      <tbody className="table__tbody">
-                        {sortedAccount?.map(
-                          (user: InputInvoiceSummary, index: number) => {
-                            return (
-                              <tr
-                                key={index}
-                                className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
-                              >
-                                <td data-column="No" className="table-row__td">
-                                  {index + 1}
-                                </td>
-
-                                <td
-                                  data-column="Client Name"
-                                  className="table-row__td "
-                                >
-                                  <div className="table-row__info  w-[75px]">
-                                    <p className="table-row text-center w-[75px]">
-                                      {user.date}
-                                    </p>
-                                  </div>
-                                </td>
-                                <td
-                                  data-column="Client Name"
-                                  className="table-row__td "
-                                >
-                                  <div className="table-row__info">
-                                    <p className="table-row text-center">
-                                      {user.no_invoice}
-                                    </p>
-                                  </div>
-                                </td>
-                                <td
-                                  data-column="Server"
-                                  className="table-row__td"
-                                >
-                                  <p className="table-row__info w-[120px]">
-                                    Rp{" "}
-                                    {formatNumberToIDR(
-                                      user.total_amount.toFixed(2)
-                                    )}
-                                  </p>
-                                </td>
-                              </tr>
-                            );
-                          }
-                        )}
-                        <tr>
-                          <td data-column="Server" className="table-row__td">
-                            <strong className="dark:text-blue-500">
-                              Grand Total P/L
-                            </strong>
-                          </td>
-                          <td></td>
-                          <td></td>
-                          <td data-column="Server" className="table-row__td">
-                            <strong className="dark:text-blue-500">
-                              Rp {formattedGrandTotal}
-                            </strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div className="flex items-center justify-center my-10">
-                  <ul className="inline-flex space-x-2">
-                    {page > 1 ? (
-                      <li>
-                        <button
-                          onClick={() => {
-                            getPaginateData(page - 1, pageSize);
-                          }}
-                          className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                        >
-                          <svg
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                              clip-rule="evenodd"
-                              fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    ) : null}
-                    {Array.from({ length: totalPages }, (_, index) => {
-                      const pageIndex = index + 1;
-                      return (
-                        <li key={pageIndex}>
-                          <button
-                            onClick={() => {
-                              getPaginateData(pageIndex, pageSize);
-                            }}
-                            className={`w-10 h-10 ${
-                              page === index + 1
-                                ? "bg-indigo-600 text-white"
-                                : ""
-                            } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                          >
-                            {index + 1}
-                          </button>
-                        </li>
-                      );
-                    })}
-
-                    {page < totalPages ? (
-                      <li>
-                        <button
-                          onClick={() => {
-                            getPaginateData(page + 1, pageSize);
-                          }}
-                          className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                        >
-                          <svg
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd"
-                              fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    ) : null}
-                  </ul>
-                </div>
-              </div>
+          {loadingClientReport ? (
+            <div className="flex items-center justify-center w-full ">
+              <img
+                className="flex items-center w-20 h-20"
+                src={transparentLoader}
+                alt=""
+              />
             </div>
           ) : (
-            <NoResultsFound />
+            <div>
+              {ClientReportAccounts?.length > 0 ? (
+                <div
+                  className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+                  style={{ width: widthStyle }}
+                >
+                  <div className="row row--top-40"></div>
+                  <div className="row row--top-20">
+                    <div className="col-md-12">
+                      <div className="table-container  dark:bg-[#0e1011]">
+                        <table className="table">
+                          <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
+                            <tr>
+                              {datas.clientReport.map((data, index) => {
+                                const columnName = data.name;
+                                const isSortableColumn =
+                                  columnName !== "No" &&
+                                  columnName !== "Action";
+                                const isSortedColumn =
+                                  sortColumn === columnName;
+                                const sortClass = isSortedColumn
+                                  ? sortDirection === "asc"
+                                    ? "fa-solid fa-sort-down"
+                                    : "fa-solid fa-sort-up"
+                                  : "";
+
+                                return (
+                                  <th
+                                    key={index}
+                                    className={`text-center table__th  ${
+                                      columnName === "Account No"
+                                        ? "w-[100px]"
+                                        : ""
+                                    }  dark:text-white ${
+                                      !isSortableColumn
+                                        ? "cursor-default"
+                                        : "cursor-pointer"
+                                    }`}
+                                    onClick={() => {
+                                      if (isSortableColumn) {
+                                        handleSort(columnName);
+                                      }
+                                    }}
+                                  >
+                                    {data.name}
+                                    {isSortableColumn && isSortedColumn && (
+                                      <i className={`fa ${sortClass} `}></i>
+                                    )}
+                                  </th>
+                                );
+                              })}
+                            </tr>
+                          </thead>
+                          <tbody className="table__tbody">
+                            {sortedAccount?.map(
+                              (user: InputInvoiceSummary, index: number) => {
+                                return (
+                                  <tr
+                                    key={index}
+                                    className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
+                                  >
+                                    <td
+                                      data-column="No"
+                                      className="table-row__td"
+                                    >
+                                      {index + 1}
+                                    </td>
+
+                                    <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info  w-[75px]">
+                                        <p className="table-row text-center w-[75px]">
+                                          {user.date}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row text-center">
+                                          {user.no_invoice}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
+                                      data-column="Server"
+                                      className="table-row__td"
+                                    >
+                                      <p className="table-row__info w-[120px]">
+                                        Rp{" "}
+                                        {formatNumberToIDR(
+                                          user.total_amount.toFixed(2)
+                                        )}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                            )}
+                            <tr>
+                              <td
+                                data-column="Server"
+                                className="table-row__td"
+                              >
+                                <strong className="dark:text-blue-500">
+                                  Grand Total P/L
+                                </strong>
+                              </td>
+                              <td></td>
+                              <td></td>
+                              <td
+                                data-column="Server"
+                                className="table-row__td"
+                              >
+                                <strong className="dark:text-blue-500">
+                                  Rp {formattedGrandTotal}
+                                </strong>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center my-10">
+                      <ul className="inline-flex space-x-2">
+                        {page > 1 ? (
+                          <li>
+                            <button
+                              onClick={() => {
+                                getPaginateData(page - 1, pageSize);
+                              }}
+                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                            >
+                              <svg
+                                className="w-4 h-4 fill-current"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                  clip-rule="evenodd"
+                                  fill-rule="evenodd"
+                                ></path>
+                              </svg>
+                            </button>
+                          </li>
+                        ) : null}
+                        {Array.from({ length: totalPages }, (_, index) => {
+                          const pageIndex = index + 1;
+                          return (
+                            <li key={pageIndex}>
+                              <button
+                                onClick={() => {
+                                  getPaginateData(pageIndex, pageSize);
+                                }}
+                                className={`w-10 h-10 ${
+                                  page === index + 1
+                                    ? "bg-indigo-600 text-white"
+                                    : ""
+                                } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                              >
+                                {index + 1}
+                              </button>
+                            </li>
+                          );
+                        })}
+
+                        {page < totalPages ? (
+                          <li>
+                            <button
+                              onClick={() => {
+                                getPaginateData(page + 1, pageSize);
+                              }}
+                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                            >
+                              <svg
+                                className="w-4 h-4 fill-current"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"
+                                  fill-rule="evenodd"
+                                ></path>
+                              </svg>
+                            </button>
+                          </li>
+                        ) : null}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <NoResultsFound />
+              )}
+            </div>
           )}
         </div>
       </div>
