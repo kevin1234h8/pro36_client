@@ -58,7 +58,7 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
               </div>
               <div className="detail-item">
                 <div className="detail-title">Ea Name</div>
-                <div className="detail-value">{exAccount?.regist_date}</div>
+                <div className="detail-value">{exAccount?.ea_name}</div>
               </div>
               <div className="detail-item">
                 <div className="detail-title">Remark</div>

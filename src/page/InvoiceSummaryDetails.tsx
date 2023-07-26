@@ -15,6 +15,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
   const { id } = useParams();
   const widthStyle = useContainerWidthUtils();
   const [invoiceSummary, setInvoiceSummary] = useState<InputInvoiceSummary>();
+  const [invoiceNumber, setInvoiceNumber] = useState<string>("");
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
@@ -25,6 +26,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
         const res = await axios.get(
           `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
         );
+        setInvoiceNumber(res.data.inputInvoiceSummary.no_invoice);
         setInvoiceSummary(res.data.inputInvoiceSummary);
         const getInputInvoiceDetails = async () => {
           const invoiceDetailsRes = await axios.get(
@@ -48,15 +50,25 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
 
   const handleDelete = async () => {
     try {
+      const values: { deleted_by: string } = {
+        deleted_by: user?.id || "", // Use a default value to avoid null/undefined errors
+      };
+
       const confirmed = window.confirm(
         "Are you sure you want to delete this invoice ?"
       );
       if (confirmed) {
-        const res = await axios.delete(
-          `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
+        const deleteInvoiceDetailsRes = await axios.delete(
+          `${BASE_URL}/input-invoice/input-invoice-details/${invoiceNumber}`
         );
+
+        const res = await axios.delete(
+          `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${user?.id}/${invoiceNumber}`,
+          { data: values } // Send the data in the request body as required by axios for DELETE requests
+        );
+
         if (res.status === 200) {
-          setIsSuccessModalVisible(true);
+          setIsSuccessModalVisible(true); // Assuming you have a function to show the success modal
         }
       }
     } catch (err) {
@@ -224,7 +236,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         </td>
                         <td data-column="Period To" className="table-row__td ">
                           <div className="table-row__info">
-                            <p className="table-row__name w-[100px]">
+                            <p className="table-row__name w-[100px]  dark:text-[#a0a1a4]">
                               {detail.period_from}
                             </p>
                           </div>
@@ -234,29 +246,29 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                           className="table-row__td "
                         >
                           <div className="table-row__info w-[100px]">
-                            <p className="text-center table-row__name ">
+                            <p className="text-center table-row__name   dark:text-[#a0a1a4]">
                               {detail.period_to}
                             </p>
                           </div>
                         </td>
                         <td data-column="Account No" className="table-row__td">
-                          <p className="flex items-center justify-center gap-2">
+                          <p className="flex items-center justify-center gap-2  dark:text-[#a0a1a4]">
                             {detail.account_no}
                           </p>
                         </td>
                         <td data-column="Broker Name" className="table-row__td">
-                          <p className="flex items-center justify-center gap-2">
+                          <p className="flex items-center justify-center gap-2  dark:text-[#a0a1a4]">
                             {detail.broker_name}
                           </p>
                         </td>
                         <td data-column="Profit" className="table-row__td ">
-                          <p className="flex items-center justify-center ">
+                          <p className="flex items-center justify-center  dark:text-[#a0a1a4] ">
                             {formatNumberToIDR(detail.profit)}
                           </p>
                         </td>
 
                         <td data-column="Service" className="table-row__td">
-                          <p className="flex items-center justify-center ">
+                          <p className="flex items-center justify-center dark:text-[#a0a1a4]">
                             {formatNumberToIDR(detail.service_cost)}
                           </p>
                         </td>

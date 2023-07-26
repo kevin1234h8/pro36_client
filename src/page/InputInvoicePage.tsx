@@ -144,7 +144,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
               }),
         ]
       );
-      const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
+      const formattedTotalAmount = formatNumberToIDR(
+        parseFloat(data.total_amount).toFixed(2)
+      );
       const totalRow = [
         "Total",
         "",
@@ -194,8 +196,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
-      doc.text("service fee", 15, 57);
-      doc.text("kurs&", 15, 64);
+      doc.text("SERVICE FEE (%)", 15, 57);
+      doc.text("Rate", 15, 64);
       doc.setFont("helvetica", "normal");
       doc.text(data.service_fee + "%", 50, 57);
       doc.text(
@@ -300,20 +302,26 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
-  const deleteInvoiceSummary = async (id: string, invoiceNo: string) => {
+  const deleteInvoiceSummary = async (
+    id: string,
+    invoiceNo: string | undefined
+  ) => {
     try {
       const values: any = {
-        deleted_by: user?.id,
+        deleted_by: user?.id || "",
       };
       const confirmed = window.confirm(
         "Are you sure you want to delete this invoice ?"
       );
       if (confirmed) {
+        const deleteInvoiceDetailsRes = await axios.delete(
+          `${BASE_URL}/input-invoice/input-invoice-details/${invoiceNo}`
+        );
         const res = await axios.delete(
           `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${user.id}/${invoiceNo}`,
           values
         );
-        if (res.status === 200) {
+        if (res.status === 200 && deleteInvoiceDetailsRes.status === 200) {
           setIsSuccessModalVisible(true);
         }
       }
@@ -325,11 +333,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const handleSort = (columnName: any) => {
-    // If the clicked column is the current sort column, toggle the sort direction
     if (columnName === sortColumn) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      // If the clicked column is a different column, set it as the new sort column
       setSortColumn(columnName);
       setSortDirection("asc");
     }
@@ -410,9 +416,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       ) : null}
       <Navbar user={user} />
       <Breadcrumb />
-      <div className="w-full h-screen lg:mx-auto">
-        <div className="mx-auto max-w-7xl lg:px-24 dark:bg-[#0e1011]">
-          <div className="flex items-center justify-between px-4 lg:px-0 ">
+      <div className="w-full lg:mx-auto dark:bg-[#0e1011] ">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between px-4 lg:px-24">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white">
               Input Invoice
             </h2>
@@ -426,7 +432,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
               </a>
             </button>
           </div>
-          <div className="flex flex-col px-4 my-2 sm:flex-row lg:px-0">
+          <div className="flex flex-col px-4 my-2 sm:flex-row lg:px-24">
             <div className="flex flex-row mb-1 sm:mb-0">
               <div className="relative">
                 <select
@@ -514,13 +520,13 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
           </div>
           {inputDetails.length > 0 ? (
             <div
-              className="dark:bg-[#0e1011] overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden md:overflow-y-hidden lg:overflow-y-hidden px-4 md:px-8 lg:px-0 h-screen"
+              className="dark:bg-[#0e1011] overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden md:overflow-y-hidden lg:overflow-y-hidden  px-4 md:px-8 lg:px-24 "
               style={{ width: widthStyle }}
             >
               <div className="row row--top-40"></div>
               <div className="row row--top-20">
                 <div className="col-md-12">
-                  <div className="max-w-7xl dark:bg-[#0e1011]">
+                  <div className="table-container  dark:bg-[#0e1011]">
                     <table className="table w-full">
                       <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
                         <tr>
@@ -739,7 +745,11 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
               </div>
             </div>
           ) : (
-            <NoResultsFound />
+            <div className="px-5 py-4 lg:mx-auto text-center text-gray-600 bg-gray-100 dark:bg-[#0e1011]">
+              <p className="text-xs md:text-base lg:text-xl font-semibold dark:text-[#e4e4e4]">
+                No Results Found
+              </p>
+            </div>
           )}
         </div>
       </div>

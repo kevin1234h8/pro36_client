@@ -380,7 +380,7 @@ const Detail: React.FC<any> = ({
                             className="table-row__td "
                           >
                             <div className="table-row__info">
-                              <p className="table-row__name w-[100px]">
+                              <p className="table-row__name w-[100px] dark:text-[#a0a1a4]">
                                 {detail.periodFrom}
                               </p>
                             </div>
@@ -390,7 +390,7 @@ const Detail: React.FC<any> = ({
                             className="table-row__td "
                           >
                             <div className="table-row__info w-[100px]">
-                              <p className="text-center table-row__name ">
+                              <p className="text-center table-row__name dark:text-[#a0a1a4]">
                                 {detail.periodTo}
                               </p>
                             </div>
@@ -402,7 +402,7 @@ const Detail: React.FC<any> = ({
                             <p className="flex items-center justify-center gap-2">
                               <input
                                 type="number"
-                                className="text-center border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
+                                className="text-center border-none appearance-none cursor-pointer  dark:text-[#a0a1a4]   dark:bg-[#0e1011] "
                                 placeholder="0"
                                 min={1}
                                 value={detail.accountNo}
@@ -418,7 +418,7 @@ const Detail: React.FC<any> = ({
                           >
                             <p className="flex items-center justify-center gap-2">
                               <input
-                                className="text-center  dark:bg-[#0e1011] "
+                                className="text-center  cursor-pointer  dark:text-[#a0a1a4]  dark:bg-[#0e1011] "
                                 type="text"
                                 value={detail.broker}
                                 placeholder="broker name"
@@ -431,7 +431,7 @@ const Detail: React.FC<any> = ({
                           <td data-column="Profit" className="table-row__td ">
                             <p className="flex items-center justify-center ">
                               <input
-                                className="text-center  dark:bg-[#0e1011] "
+                                className="text-center  cursor-pointer  dark:text-[#a0a1a4]  dark:bg-[#0e1011] "
                                 type="number"
                                 placeholder="0"
                                 value={detail.profit}
@@ -445,7 +445,7 @@ const Detail: React.FC<any> = ({
                           <td data-column="Service" className="table-row__td">
                             <p className="flex items-center justify-center ">
                               <input
-                                className="text-center outline-none  dark:bg-[#0e1011] "
+                                className="text-center outline-none  dark:text-[#a0a1a4] dark:bg-[#0e1011] "
                                 type="number"
                                 step="0.01"
                                 placeholder="0"
@@ -782,6 +782,11 @@ const InvoiceDocument = ({
           }),
     ]);
 
+    const totalUSDProfit = details.reduce((sum: number, detail: any) => {
+      const profit = detail.profit;
+      return sum + parseFloat(profit);
+    }, 0);
+
     const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
 
     const totalRow = [
@@ -790,7 +795,7 @@ const InvoiceDocument = ({
       "",
       "",
       "",
-      "",
+      "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
       "$" + formatNumberToIDR(totalFee.toFixed(2)),
       "Rp" + formattedTotalAmount,
     ];
@@ -836,8 +841,8 @@ const InvoiceDocument = ({
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text("service fee", 15, 57);
-    doc.text("kurs&", 15, 64);
+    doc.text("SERVICE FEE (%)", 15, 57);
+    doc.text("Rate", 15, 64);
     doc.setFont("helvetica", "normal");
     doc.text(serviceFee + "%", 50, 57);
     doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
@@ -986,6 +991,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
   const [loadingImportMemberAccount, setLoadingImportMemberAccount] =
     useState(false);
   const [loadingImportDetails, setLoadingImportDetails] = useState(false);
+
   const getImportAccount = async () => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
@@ -993,6 +999,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     );
     setSearchResults(res.data.inputInvoiceSummary);
   };
+
   useEffect(() => {
     try {
       const getImportAccount = async () => {
@@ -1029,6 +1036,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
   };
 
   const options: any = { day: "2-digit", month: "2-digit", year: "numeric" };
+
   let uuidv4: string;
   uuidv4 = v4();
   const [id] = useState<string>(uuidv4);
@@ -1201,7 +1209,6 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   }, []);
-
   const handleDetailChange = (
     index: number,
     field: keyof DetailRow,
@@ -1223,7 +1230,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
   return loading ? (
     <LoadingSpinner />
   ) : (
-    <div className="dark:bg-[#0e1011] ">
+    <div className="dark:bg-[#0e1011] pb-10 ">
       <Navbar user={user} />
       {isImportMemberAccountModalVisible ? (
         <ImportMemberAccountModal

@@ -57,7 +57,7 @@ const ExAccountPage = ({ user, parsedUserData }: any) => {
             <div className="member-list">
               <div className={`member-list-container`}></div>
             </div>
-            <div className="lg:px-24">
+            <div className="lg:px-24  dark:bg-[#0e1011]">
               <ExAccountTable
                 user={user}
                 exAccount={exAccount}

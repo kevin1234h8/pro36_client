@@ -49,7 +49,7 @@ const Breadcrumb = () => {
               </span>
 
               {isLast ? (
-                <span className="text-blue-600 cursor-pointer dark:text-blue-400 hover:underline">
+                <span className="text-blue-600 cursor-pointer dark:text-blue-400 hover:underline ">
                   {displayName}
                 </span>
               ) : (

@@ -312,7 +312,10 @@ const ExAccountTable = ({
                               key={index}
                               className="table-row border-b border-b-[#e4e9ea] text-black dark:text-[#c6c8ca] dark:bg-[#0e1011] dark:border-b dark:border-b-[#202125]"
                             >
-                              <td data-column="No" className="table-row__td">
+                              <td
+                                data-column="No"
+                                className="table-row__td  dark:text-[#a0a1a4] "
+                              >
                                 {index + 1}
                               </td>
                               <td
@@ -320,7 +323,7 @@ const ExAccountTable = ({
                                 className="table-row__td"
                               >
                                 <div className="table-row__info">
-                                  <p className="table-row__name w-[100px] ">
+                                  <p className="table-row__name w-[100px] dark:text-[#a0a1a4]  ">
                                     {user.regist_date}
                                   </p>
                                 </div>
@@ -330,7 +333,7 @@ const ExAccountTable = ({
                                 className="table-row__td "
                               >
                                 <div className="table-row__info">
-                                  <p className="table-row text-center">
+                                  <p className="table-row text-center  dark:text-[#a0a1a4] ">
                                     {user.client_name}
                                   </p>
                                 </div>
@@ -350,7 +353,7 @@ const ExAccountTable = ({
                                 data-column="Server"
                                 className="table-row__td"
                               >
-                                <p className="table-row__info ">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.server}
                                 </p>
                               </td>
@@ -359,7 +362,7 @@ const ExAccountTable = ({
                                 data-column="Expired Date"
                                 className="table-row__td "
                               >
-                                <p className="table-row__info w-[100px] ">
+                                <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
                                   {user.expired_date}
                                 </p>
                               </td>
@@ -367,7 +370,7 @@ const ExAccountTable = ({
                                 data-column="EA Name"
                                 className="table-row__td"
                               >
-                                <p className="table-row__info ">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.ea_name}
                                 </p>
                               </td>
@@ -376,18 +379,20 @@ const ExAccountTable = ({
                                 data-column="Remark"
                                 className="table-row__td"
                               >
-                                <p className="table-row__info ">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.remark}
                                 </p>
                               </td>
                               <td data-column="VPS" className="table-row__td">
-                                <p className="table-row__info ">{user.vps}</p>
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
+                                  {user.vps}
+                                </p>
                               </td>
                               <td
                                 data-column="Recruit By"
                                 className="table-row__td"
                               >
-                                <p className="table-row__info">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.recruit_by}
                                 </p>
                               </td>

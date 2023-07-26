@@ -183,7 +183,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(
         `Grand Total P/L Rp ${formattedGrandTotal.toString()}`,
         75,
-        startY + tableHeight + 20
+        startY + tableHeight
       );
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
@@ -270,7 +270,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(
         `Grand Total P/L Rp ${formattedGrandTotal.toString()}`,
         75,
-        startY + tableHeight + 20
+        startY + tableHeight
       );
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
@@ -363,8 +363,8 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
 
       <Navbar user={user} avatar={avatar} />
       <Breadcrumb />
-      <div className="w-full h-screen lg:mx-auto dark:bg-[#0e1011] lg:px-24 ">
-        <div className="mx-auto max-w-7xl">
+      <div className="w-full  lg:mx-auto dark:bg-[#0e1011] lg:px-24 ">
+        <div className="mx-auto dark:bg-[#0e1011]  max-w-7xl">
           <div className="flex items-center justify-between px-0 md:px-8 lg:px-0">
             <h2 className="text-lg font-semibold leading-tight md:text-xl lg:text-2xl dark:text-white ">
               Client P/L Report
@@ -676,7 +676,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                       className="table-row__td "
                                     >
                                       <div className="table-row__info  w-[75px]">
-                                        <p className="table-row text-center w-[75px]">
+                                        <p className="table-row text-center w-[75px] dark:text-[#c6c8ca]">
                                           {user.date}
                                         </p>
                                       </div>
@@ -686,7 +686,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                       className="table-row__td "
                                     >
                                       <div className="table-row__info">
-                                        <p className="table-row text-center">
+                                        <p className="table-row text-center dark:text-[#c6c8ca]">
                                           {user.no_invoice}
                                         </p>
                                       </div>
@@ -695,7 +695,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                       data-column="Server"
                                       className="table-row__td"
                                     >
-                                      <p className="table-row__info w-[120px]">
+                                      <p className="table-row__info w-[120px] dark:text-[#c6c8ca]">
                                         Rp{" "}
                                         {formatNumberToIDR(
                                           user.total_amount.toFixed(2)

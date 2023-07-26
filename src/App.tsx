@@ -177,6 +177,8 @@ function App() {
               />
             }
           />
+          <Route path={"/edit-input-invoice"} element={<PageNotFoundPage />} />
+
           <Route
             path="/ex-account"
             element={

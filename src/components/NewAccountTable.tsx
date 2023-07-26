@@ -288,7 +288,7 @@ const NewAccountTable = ({
                                 className="table-row__td"
                               >
                                 <div className="table-row__info">
-                                  <p className="table-row__name w-[100px] ">
+                                  <p className="table-row__name w-[100px]   dark:text-[#a0a1a4] ">
                                     {user.regist_date}
                                   </p>
                                 </div>
@@ -299,7 +299,7 @@ const NewAccountTable = ({
                                 className="table-row__td "
                               >
                                 <div className="table-row__info">
-                                  <p className="table-row text-center">
+                                  <p className="table-row text-center  dark:text-[#a0a1a4] ">
                                     {user.client_name}
                                   </p>
                                 </div>
@@ -319,7 +319,7 @@ const NewAccountTable = ({
                                 data-column="Server"
                                 className="table-row__td"
                               >
-                                <p className="table-row__info ">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.server}
                                 </p>
                               </td>
@@ -327,7 +327,7 @@ const NewAccountTable = ({
                                 data-column="Expired Date"
                                 className="table-row__td "
                               >
-                                <p className="table-row__info w-[100px] ">
+                                <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
                                   {user.expired_date}
                                 </p>
                               </td>
@@ -335,7 +335,7 @@ const NewAccountTable = ({
                                 data-column="EA Name"
                                 className="table-row__td"
                               >
-                                <p className="table-row__info ">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.ea_name}
                                 </p>
                               </td>
@@ -344,18 +344,20 @@ const NewAccountTable = ({
                                 data-column="Remark"
                                 className="table-row__td "
                               >
-                                <p className="table-row__info ">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.remark}
                                 </p>
                               </td>
                               <td data-column="VPS" className="table-row__td ">
-                                <p className="table-row__info ">{user.vps}</p>
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
+                                  {user.vps}
+                                </p>
                               </td>
                               <td
                                 data-column="Recruit By"
                                 className=" table-row__td"
                               >
-                                <p className="table-row__info">
+                                <p className="table-row__info  dark:text-[#a0a1a4] ">
                                   {user.recruit_by}
                                 </p>
                               </td>
@@ -363,7 +365,7 @@ const NewAccountTable = ({
                                 data-column="Action"
                                 className="table-row__td"
                               >
-                                <p className="table-row__progress status--blue status">
+                                <p className="table-row__progress status--blue status  dark:text-[#a0a1a4] ">
                                   <div className="action">
                                     <a
                                       href={EDIT_MEMBER_PATH.replace(

@@ -44,7 +44,8 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
     useState<boolean>(false);
 
   const [value, onChange] = useState<any>(new Date());
-  const [valueExpiredDate, onchange] = useState<any>(oneYearLaterDate);
+  const [valueExpiredDate, onChangeExpiredDate] =
+    useState<any>(oneYearLaterDate);
 
   const formattedRegistDate = value
     .toLocaleDateString("en-GB", {
@@ -117,6 +118,15 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
       console.log(err);
     }
   };
+  const changeDate = (e: any) => {
+    onChange(e);
+    setShowRegistDateCalendar(false); // Close the calendar after selecting a date
+  };
+
+  const changeExpiredDate = (e: any) => {
+    onChangeExpiredDate(e);
+    setShowExpiredDateCalendar(false); // Close the calendar after selecting a date
+  };
 
   return loading ? (
     <LoadingSpinner />
@@ -132,7 +142,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
       ) : null}
       <div className="add-member-container lg:mx-[10rem] dark:text-white ">
         <div className="add-member-form w-100">
-          <h2 className="add-member-form-title">Add Account</h2>
+          <h2 className="font-medium add-member-form-title">Add Account</h2>
           <form className="form" onSubmit={handleSubmit}>
             <div className="w-full">
               <div className="input-box">
@@ -241,8 +251,8 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
                 </div>
               </div>
               {showRegistDateCalendar ? (
-                <div className="flex justify-end">
-                  <Calendar onChange={onChange} value={value} />
+                <div className="flex justify-end mb-8 md:mb-8 lg:mb-0">
+                  <Calendar onChange={changeDate} value={value} />
                 </div>
               ) : null}
 
@@ -265,8 +275,11 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
                 <label>Expired Date</label>
               </div>
               {showExpiredDateCalendar ? (
-                <div className="flex justify-end">
-                  <Calendar onChange={onchange} value={valueExpiredDate} />
+                <div className="flex justify-end mb-8 md:mb-8 lg:mb-0">
+                  <Calendar
+                    onChange={changeExpiredDate}
+                    value={valueExpiredDate}
+                  />
                 </div>
               ) : null}
               <div className="input-box">
@@ -306,7 +319,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
             <div className="form-footer">
               <button
                 type="submit"
-                className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+                className=" rounded cursor-pointer px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
               >
                 <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative text-xs">Save</span>
@@ -314,7 +327,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
 
               <div
                 onClick={goBack}
-                className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
+                className=" rounded cursor-pointer px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
               >
                 <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative text-xs">Cancel</span>

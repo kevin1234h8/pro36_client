@@ -50,7 +50,7 @@ const DetailsPage = ({ user }: any) => {
       <Breadcrumb />
       <div className="add-member-container lg:mx-[10rem] dark:text-white   ">
         <div className="add-member-form w-100">
-          <h2 className="add-member-form-title">Account Details</h2>
+          <h2 className="font-medium add-member-form-title">Account Details</h2>
           <form className="form" action="#">
             <div className="w-full">
               <div className="input-box">

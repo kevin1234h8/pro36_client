@@ -101,7 +101,10 @@ const EditAccountPage = ({ user }: any) => {
   const handleSubmit = async (e: SyntheticEvent) => {
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
-      if (!dateRegex.test(registDate) || !dateRegex.test(expiredDate)) {
+      if (
+        !dateRegex.test(formattedRegistDate) ||
+        !dateRegex.test(formattedExpiredDate)
+      ) {
         alert(
           "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
         );
@@ -133,6 +136,16 @@ const EditAccountPage = ({ user }: any) => {
     } catch (error) {
       setIsSuccessModelIsVisible(false);
     }
+  };
+
+  const changeDate = (e: any) => {
+    onChange(e);
+    setShowRegistDateCalendar(false); // Close the calendar after selecting a date
+  };
+
+  const changeExpiredDate = (e: any) => {
+    onChangeExpiredDate(e);
+    setShowExpiredDateCalendar(false); // Close the calendar after selecting a date
   };
 
   return loading ? (
@@ -243,7 +256,6 @@ const EditAccountPage = ({ user }: any) => {
                 <input
                   id="RegistDate"
                   value={formattedRegistDate}
-                  defaultValue={formattedRegistDate}
                   type="text"
                   required
                   // onChange={(e) => setRegistDate(e.target.value)}
@@ -260,7 +272,7 @@ const EditAccountPage = ({ user }: any) => {
               </div>
               {showRegistDateCalendar ? (
                 <div className="flex justify-end">
-                  <Calendar onChange={onChange} value={value} />
+                  <Calendar onChange={changeDate} value={value} />
                 </div>
               ) : null}
               <div className="input-box">
@@ -283,7 +295,7 @@ const EditAccountPage = ({ user }: any) => {
               {showExpiredDateCalendar ? (
                 <div className="flex justify-end">
                   <Calendar
-                    onChange={onChangeExpiredDate}
+                    onChange={changeExpiredDate}
                     value={valueExpiredDate}
                   />
                 </div>
