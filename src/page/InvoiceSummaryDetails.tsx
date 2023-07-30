@@ -19,7 +19,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
-
+  const [date, setDate] = useState<string>("");
   useEffect(() => {
     try {
       const getInvoiceSummary = async () => {
@@ -28,6 +28,9 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
         );
         setInvoiceNumber(res.data.inputInvoiceSummary.no_invoice);
         setInvoiceSummary(res.data.inputInvoiceSummary);
+        const parts = res.data.inputInvoiceSummary.date.split("-");
+        const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        setDate(formattedDate);
         const getInputInvoiceDetails = async () => {
           const invoiceDetailsRes = await axios.get(
             `${BASE_URL}/input-invoice/input-invoice-details/${res.data.inputInvoiceSummary.no_invoice}`,
@@ -106,7 +109,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
               <div className="input-box">
                 <input
                   type="text"
-                  defaultValue={invoiceSummary?.date}
+                  defaultValue={date}
                   name=""
                   required
                   readOnly

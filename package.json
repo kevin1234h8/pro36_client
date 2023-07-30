@@ -1,6 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
+  "homepage": "http://pro36.web.id/",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.7.14",

@@ -31,14 +31,14 @@ const Navbar = ({ user, parsedUserData }: any) => {
   // const [accountNotificationsCount, setAccountNotificationsCount] =
   //   useState<number>(0);
 
-  const markAllAsRead = async () => {
-    setLoading(true);
-    const res = await axios.put(`${BASE_URL}/notifications/${user?.id}`);
-    if (res.status === 200) {
-      setLoading(false);
-      window.location.reload();
-    }
-  };
+  // const markAllAsRead = async () => {
+  //   setLoading(true);
+  //   const res = await axios.put(`${BASE_URL}/notifications/${user?.id}`);
+  //   if (res.status === 200) {
+  //     setLoading(false);
+  //     window.location.reload();
+  //   }
+  // };
   // const seeLessNotification = async () => {
   //   try {
   //     const getNotifications = async () => {
@@ -105,12 +105,11 @@ const Navbar = ({ user, parsedUserData }: any) => {
     try {
       const res = await axios.get(`${BASE_URL}/user/logout`);
       if (res.status === 200) {
-        document.cookie =
-          "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        sessionStorage.removeItem("userData");
         navigate("/login");
       }
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.log("Logout failed:", error);
     }
   };
 

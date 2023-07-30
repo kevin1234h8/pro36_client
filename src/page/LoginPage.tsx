@@ -6,12 +6,8 @@ import animationData from "../lottie/63787-secure-login.json";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../config/config";
-const LoginPage = ({
-  setUser,
-  setLoginInfo,
-  setShowToast,
-  setLoading,
-}: any) => {
+import LoadingSpinner from "../components/LoadingSpinner";
+const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -19,6 +15,7 @@ const LoginPage = ({
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const setCookie = (name: string, value: any, days: number) => {
     const date = new Date();
@@ -28,6 +25,8 @@ const LoginPage = ({
   };
 
   const handleSubmit = async (e: SyntheticEvent) => {
+    setLoading(true);
+
     try {
       e.preventDefault();
       const values = {
@@ -48,16 +47,22 @@ const LoginPage = ({
             3 * 24 * 60 * 60
           }; path=/;`;
           localStorage.setItem("activeMenu", "Input Invoice");
+          setLoading(false);
+
           navigate("/input-invoice");
         } else {
           document.cookie = `jwt=${res.data.accessToken}; max-age=${
             3 * 24 * 60 * 60
           }; path=/;`;
           localStorage.setItem("activeMenu", "New Account");
+          setLoading(false);
+
           navigate("/new-account");
         }
       }
     } catch (err) {
+      setLoading(false);
+
       toast.error("Login unsuccessful", {
         position: "top-right",
         autoClose: 3000,
@@ -71,6 +76,10 @@ const LoginPage = ({
       setShowErrorMessage(true);
     }
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div>
@@ -124,7 +133,8 @@ const LoginPage = ({
                   name="username"
                   placeholder="Username"
                   required
-                  pattern="^[a-z_-]{3,15}$"
+                  minLength={3}
+                  maxLength={20}
                   onChange={(e) => {
                     setUsername(e.target.value);
                     // if (!/^[a-z_-]{3,15}$/.test(username)) {
@@ -181,7 +191,7 @@ const LoginPage = ({
                     type={showPassword ? "text" : "password"}
                     name="password"
                     id="password"
-                    pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#_?!@$%^&*-]).{8,20}$"
+                    // pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#_?!@$%^&*-]).{8,20}$"
                     placeholder="Password"
                     required
                     onChange={(e) => {

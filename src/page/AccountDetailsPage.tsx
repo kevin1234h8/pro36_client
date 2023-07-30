@@ -13,6 +13,9 @@ const DetailsPage = ({ user }: any) => {
   const [account, setAccount] = useState<AccountInterface>();
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
+  console.log(account?.serial_key);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showInvPassword, setShowInvPassword] = useState<boolean>(false);
 
   useEffect(() => {
     const getAccount = async () => {
@@ -43,7 +46,7 @@ const DetailsPage = ({ user }: any) => {
       {isSuccessModalVisible ? (
         <SuccessModal
           text={`Account Deleted Successfully`}
-          redirectLink={`/`}
+          redirectLink={`/new-account`}
         />
       ) : null}
       <Navbar user={user} />
@@ -73,24 +76,50 @@ const DetailsPage = ({ user }: any) => {
                 />
                 <label>Account No</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   defaultValue={account?.password}
                   name=""
                   required
                   readOnly
                 />
+                <div className="absolute top-0 right-0">
+                  {showPassword ? (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>MT4 / MT5 Pass</label>
               </div>
-              <div className="input-box">
+              <div className="relative input-box">
                 <input
-                  type="password"
+                  type={showInvPassword ? "text" : "password"}
                   defaultValue={account?.inv_pass}
                   name=""
                   required
                   readOnly
                 />
+                <div className="absolute top-0 right-0">
+                  {showInvPassword ? (
+                    <i
+                      onClick={() => setShowInvPassword(!showInvPassword)}
+                      className="text-indigo-600 fa-solid fa-eye "
+                    ></i>
+                  ) : (
+                    <i
+                      onClick={() => setShowInvPassword(!showInvPassword)}
+                      className="text-indigo-600 fa-solid fa-eye-slash "
+                    ></i>
+                  )}
+                </div>
                 <label>Inv Pass</label>
               </div>
               <div className="input-box">
@@ -135,9 +164,9 @@ const DetailsPage = ({ user }: any) => {
               </div>
               <div className="input-box">
                 <input
-                  type="number"
+                  type="text"
                   name=""
-                  defaultValue={account?.serial_key}
+                  value={account?.serial_key}
                   required
                   readOnly
                 />

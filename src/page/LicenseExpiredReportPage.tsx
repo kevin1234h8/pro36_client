@@ -654,7 +654,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info">
                                         <p className="table-row__name w-[100px] ">
-                                          {user.id}
+                                          {user.client_name}
                                         </p>
                                       </div>
                                     </td>

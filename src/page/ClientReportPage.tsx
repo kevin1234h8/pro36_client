@@ -114,7 +114,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       return;
     }
     const res = await axios.get(
-      `${BASE_URL}/client-report?startDate=${startDate}&endDate=${endDate}&clientName=${clientName}`,
+      `${BASE_URL}/client-report?startDate=${startDateValue.startDate}&endDate=${endDateValue.endDate}&clientName=${clientName}`,
       { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {
@@ -146,14 +146,18 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
 
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
-        (account: InputInvoiceSummary, index: number) => [
-          index + 1,
-          account.date,
-          account.no_invoice,
-          "Rp " + formatNumberToIDR(account.total_amount),
-        ]
-      );
+        (account: InputInvoiceSummary, index: number) => {
+          const parts = account.date.split("-"); // Split the date string into an array [year, month, day]
+          const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert to "day-month-year" format
 
+          return [
+            index + 1,
+            formattedDate, // Use the formatted date
+            account.no_invoice,
+            "Rp " + formatNumberToIDR(account.total_amount),
+          ];
+        }
+      );
       const tableHeaders = ["No", "Invoice Date", "No Invoice", "Total Amount"];
       const tableData = [tableHeaders, ...rows];
 
@@ -233,12 +237,17 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
 
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
-        (account: InputInvoiceSummary, index: number) => [
-          index + 1,
-          account.date,
-          account.no_invoice,
-          "Rp " + formatNumberToIDR(account.total_amount.toFixed(2)),
-        ]
+        (account: InputInvoiceSummary, index: number) => {
+          const parts = account.date.split("-");
+          const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+          return [
+            index + 1,
+            formattedDate, // Use the formatted <date></date>
+            account.no_invoice,
+            "Rp " + formatNumberToIDR(account.total_amount),
+          ];
+        }
       );
 
       const tableHeaders = ["No", "Invoice Date", "No Invoice", "Total Amount"];
@@ -659,6 +668,8 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                           <tbody className="table__tbody">
                             {sortedAccount?.map(
                               (user: InputInvoiceSummary, index: number) => {
+                                const parts = user.date.split("-");
+                                const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
                                 return (
                                   <tr
                                     key={index}
@@ -677,7 +688,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info  w-[75px]">
                                         <p className="table-row text-center w-[75px] dark:text-[#c6c8ca]">
-                                          {user.date}
+                                          {formattedDate}
                                         </p>
                                       </div>
                                     </td>

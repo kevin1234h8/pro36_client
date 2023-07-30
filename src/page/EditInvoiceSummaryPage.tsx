@@ -38,6 +38,8 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [beneficiaryName, setBeneficiaryName] = useState("");
   const [accountNumber, setAccountNumber] = useState<number>(1);
 
+  const periodFrom = useRef<string>("");
+  const periodTo = useRef<string>("");
   const invoiceNoRef = useRef("");
   const dateRef = useRef("");
   const clientNameRef = useRef("");
@@ -68,13 +70,13 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     useState(false);
 
   const [details, setDetails] = useState<InputInvoiceDetails[]>([]);
-
+  const parts = dateRef.current.split("-");
+  const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
       );
-      console.log(res.data);
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
       setInvoiceNo(inputInvoiceSummary.no_invoice);
       setDate(inputInvoiceSummary.date);
@@ -103,6 +105,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
             headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
           }
         );
+
         setDefaultValue(res.data.inputInvoiceDetails);
         setInputInvoiceDetails(res.data.inputInvoiceDetails);
         setInvoiceDetails(res.data.inputInvoiceDetails);
@@ -160,11 +163,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   //   setInvoiceDetails(updatedDetails);
   // };
   const onRemoveDetailRow = (idToRemove: string) => {
-    console.log("Removing detail with id:", idToRemove);
     const updatedDetails = invoiceDetails.filter(
       (detail: any) => detail.id !== idToRemove
     );
-    console.log("Updated invoiceDetails:", updatedDetails);
     setInvoiceDetails(updatedDetails);
   };
 
@@ -220,7 +221,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const newDetail: any = {
       id: id,
       no_invoice: invoiceNoRef.current,
-      period_from: new Date().toLocaleDateString(),
+      period_from: new Date()
+        .toLocaleDateString("en-GB", options)
+        .replace(/\//g, "-"),
       period_to: new Date()
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
@@ -233,7 +236,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     setDetails((prevDetails: any) => [...prevDetails, newDetail]);
     setInvoiceDetails((prevDetails: any) => [...prevDetails, newDetail]);
   };
-
   const [isImportModalIsVisible, setIsImportModalIsVisible] = useState(false);
   const [isImportAccountModalVisible, setImportAccountModalVisible] =
     useState<boolean>(false);
@@ -290,10 +292,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const removedDetails = defaultValue.filter(
     (item1: any) => !invoiceDetails.some((item2: any) => item2.id === item1.id)
   );
-  console.log("invoiceDetails : ", invoiceDetails);
-  console.log("defaultValue : ", defaultValue);
-  console.log("addDetails : ", addDetails);
-  console.log("removedDetails : ", removedDetails);
   const [memberAccounts, setMemberAccounts] = useState<any>([]);
 
   const [loadingImportDetails, setLoadingImportDetails] = useState(false);
@@ -390,7 +388,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     setLoading(true);
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
-      if (!dateRegex.test(date)) {
+      if (!dateRegex.test(formattedDate)) {
         alert(
           "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
         );
@@ -399,10 +397,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       const totalAmount = invoiceDetails.reduce((sum: number, detail: any) => {
         const amount = detail.rupiah
           ? detail.rupiah
-          : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+          : (detail.profit * (serviceFee / 100) * rate).toFixed(2);
         return sum + parseFloat(amount);
       }, 0);
       const values = {
+        periodFrom: periodFrom.current,
+        periodTo: periodTo.current,
         clientName: clientNameRef.current,
         serviceFee: serviceFee,
         rate: rate,
@@ -419,24 +419,37 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         values
       );
 
+      const hasInvalidDate = invoiceDetails?.some(
+        (detail: any) =>
+          !dateRegex.test(detail.period_from) ||
+          !dateRegex.test(detail.period_to)
+      );
+
+      if (hasInvalidDate) {
+        setLoading(false);
+        alert(
+          "Invalid period from or period to date format, please use the format dd-mm-yyyy. For example, 17-05-2023."
+        );
+        return;
+      }
       const inputInvoiceDetailsData = invoiceDetails?.map(
-        (detail: any, index: number) => [
-          // detail.id,
-          // detail.no_invoice,
-          // detail.period_from,
-          // detail.period_to,
-          parseInt(detail.account_no),
-          detail.broker_name,
-          parseInt(detail.profit),
-          parseInt((detail.profit * (serviceFeeRef.current / 100)).toFixed(2)),
-          parseInt(
-            (detail.profit * (1 - serviceFeeRef.current / 100) * rate).toFixed(
-              2
-            )
-          ),
-          user?.id,
-          detail.id,
-        ]
+        (detail: any, index: number) => {
+          return [
+            detail.period_from,
+            detail.period_to,
+            parseInt(detail.account_no),
+            detail.broker_name,
+            parseInt(detail.profit),
+            parseInt(
+              (detail.profit * (serviceFeeRef.current / 100)).toFixed(2)
+            ),
+            parseInt(
+              (detail.profit * (serviceFeeRef.current / 100) * rate).toFixed(2)
+            ),
+            user?.id,
+            detail.id,
+          ];
+        }
       );
 
       if (removedDetails.length > 0) {
@@ -449,10 +462,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           `${BASE_URL}/input-invoice/input-invoice-details/delete-invoice-details`,
           { data: removeInputInvoiceDetailsData }
         );
-        console.log("deleteInvoiceDetailsRes : ", deleteInvoiceDetailsRes);
       }
-
-      // console.log(deleteInvoiceDetailsRes.data);
 
       if (inputInvoiceDetails.length > 0) {
         const inputInvoiceDetailsRes = await axios.put(
@@ -470,7 +480,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         parseInt(detail.profit),
         parseInt((detail.profit * (serviceFeeRef.current / 100)).toFixed(2)),
         parseInt(
-          (detail.profit * (1 - serviceFeeRef.current / 100) * rate).toFixed(2)
+          (detail.profit * (serviceFeeRef.current / 100) * rate).toFixed(2)
         ),
         user?.id,
         user?.id,
@@ -567,7 +577,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                   <div className="input-box">
                     <input
                       type="text"
-                      value={dateRef.current}
+                      value={formattedDate}
                       name=""
                       required
                       readOnly
@@ -708,7 +718,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
             )}
           </div>
           <div
-            className={`lg:w-full  overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
+            className={`lg:w-full  overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-8  dark:bg-[#0e1011] `}
             style={{ width: widthStyle }}
           >
             <div className="row row--top-40"></div>
@@ -741,6 +751,46 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                               {index + 1}
                             </td>
                             <td
+                              data-column="Account No"
+                              className="table-row__td"
+                            >
+                              <p className="flex items-center justify-center gap-2">
+                                <input
+                                  type="text"
+                                  className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
+                                  min={1}
+                                  defaultValue={detail.period_from}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "period_from",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </p>
+                            </td>
+                            <td
+                              data-column="Account No"
+                              className="table-row__td"
+                            >
+                              <p className="flex items-center justify-center gap-2">
+                                <input
+                                  type="text"
+                                  className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
+                                  min={1}
+                                  defaultValue={detail.period_to}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "period_to",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </p>
+                            </td>
+                            {/* <td
                               data-column="Period To"
                               className="table-row__td "
                             >
@@ -749,8 +799,8 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   {detail.period_from}
                                 </p>
                               </div>
-                            </td>
-                            <td
+                            </td> */}
+                            {/* <td
                               data-column="Period From"
                               className="table-row__td "
                             >
@@ -759,7 +809,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   {detail.period_to}
                                 </p>
                               </div>
-                            </td>
+                            </td> */}
                             <td
                               data-column="Account No"
                               className="table-row__td"
@@ -834,14 +884,14 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                 ? formatNumberToIDR(
                                     (
                                       detail.profit *
-                                      (1 - serviceFee / 100) *
+                                      (serviceFee / 100) *
                                       rate
                                     ).toFixed(2)
                                   )
                                 : formatNumberToIDR(
                                     (
                                       detail.profit *
-                                      (1 - serviceFee / 100) *
+                                      (serviceFee / 100) *
                                       rate
                                     ).toFixed(2)
                                   )}

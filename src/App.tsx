@@ -36,6 +36,7 @@ function App() {
   const [showToast, setShowToast] = useState<any>();
   const [avatar, setAvatar] = useState<any>();
   const currentDate = new Date();
+  const [userDataFetched, setUserDataFetched] = useState(false);
 
   const apiKey = "38a4000d2421d3f8cf6b913c32d87aeb";
   const formattedDate = currentDate.toISOString().split("T")[0];
@@ -61,7 +62,7 @@ function App() {
   const userData: any = sessionStorage.getItem("userData");
   const parsedUserData = JSON.parse(userData);
 
-  useEffect((): any => {
+  useEffect(() => {
     setLoading(true);
     const getLoginUser = async () => {
       try {
@@ -71,12 +72,12 @@ function App() {
         if (res.data.user) {
           setUser(res.data.user);
         }
-        if (res.status === 200) {
-          setLoading(false);
-        }
+        setLoading(false);
+        setUserDataFetched(true); // Mark that user data has been fetched
       } catch (err) {
         console.log(err);
         setLoading(false);
+        setUserDataFetched(true); // Mark that user data has been fetched even on error
       }
     };
     getLoginUser();
@@ -135,10 +136,10 @@ function App() {
 
   onWindowMatch();
   // Whenever the user explicitly chooses to respect the OS preference
-
-  return loading ? (
-    <LoadingSpinner />
-  ) : (
+  if (!userDataFetched) {
+    return <LoadingSpinner />;
+  }
+  return (
     <div className="dark:bg-[#0e1011] h-screen ">
       <Router>
         <Routes>

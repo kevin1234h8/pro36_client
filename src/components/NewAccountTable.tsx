@@ -226,7 +226,7 @@ const NewAccountTable = ({
         </div>
         {account?.length > 0 ? (
           <div
-            className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
+            className={`lg:w-full overflow-x-scroll  lg:overflow-x-hidden px-4 md:px-8 lg:px-0  dark:bg-[#0e1011] `}
             style={{ width: widthStyle }}
           >
             <div className="row row--top-40"></div>

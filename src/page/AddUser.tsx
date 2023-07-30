@@ -12,9 +12,46 @@ const AddUser = ({ user, parsedUserData }: any) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
+  const [passwordInputErrorMessage, setPasswordInputErrorMessage] = useState<
+    string[]
+  >([]);
+  const [showSuccessPassword, setShowSuccessPassword] =
+    useState<boolean>(false);
+  const [showPasswordInputErrorMessage, setShowPasswordInputErrorMessage] =
+    useState<boolean>(false);
+
+  const handlePasswordChange = (e: any) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    const errors = [];
+
+    // Check for minimum 8 characters
+    if (newPassword.length < 8) {
+      errors.push("Password must be at least 8 characters long.");
+    }
+
+    // Check for numbers
+    if (!/\d/.test(newPassword)) {
+      errors.push("Password must include at least one number.");
+    }
+
+    // Check for symbols
+    if (!/[#_?!@$%^&*-]/.test(newPassword)) {
+      errors.push("Password must include at least one symbol. ");
+    }
+    setShowSuccessPassword(true);
+    setPasswordInputErrorMessage(errors);
+  };
+
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    if (passwordInputErrorMessage.length > 0) {
+      alert("Invalid password. Please input a valid password and try again.");
+      return;
+    }
     try {
       const values = {
         username,
@@ -32,6 +69,7 @@ const AddUser = ({ user, parsedUserData }: any) => {
       }
     } catch (err) {
       setShowErrorMessage(true);
+      setShowPasswordInputErrorMessage(true);
     }
   };
 
@@ -68,7 +106,8 @@ const AddUser = ({ user, parsedUserData }: any) => {
                   maxLength={20}
                   name=""
                   required
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
+                  // onChange={(e) => setPassword(e.target.value)}
                 />
                 <div className="absolute top-0 right-0">
                   {showPassword ? (
@@ -84,6 +123,33 @@ const AddUser = ({ user, parsedUserData }: any) => {
                   )}
                 </div>
                 <label>Password</label>
+                {/* {password && !passwordErrorMessage && (
+                  <div className="my-8 mt-1 text-sm text-green-500">
+                    Success! Password is valid.
+                  </div>
+                )} */}
+                {passwordInputErrorMessage.length > 0 ? (
+                  <div className="mb-8">
+                    {passwordInputErrorMessage.map((message) => {
+                      return (
+                        <div className="text-xs text-red-500 text-start">
+                          {message}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : null}
+
+                {showSuccessPassword ? (
+                  <div>
+                    {passwordInputErrorMessage.length === 0 ? (
+                      <div className="mb-8 text-xs text-green-500 text-start">
+                        Password is valid.
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+                {/* Password Error Messages */}
               </div>
               <div className="input-box">
                 <select

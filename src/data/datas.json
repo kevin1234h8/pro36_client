@@ -124,7 +124,7 @@
       "name": "Account No"
     },
     {
-      "name": "Broker"
+      "name": "Type"
     },
     {
       "name": "Profit ($)"
@@ -246,5 +246,15 @@
     {
       "name": "Total P/L"
     }
+  ],
+  "inputInvoiceDetailsTableHeaders": [
+    "No",
+    "Period From",
+    "Period To",
+    "Account No",
+    "Type",
+    "Amount ($)",
+    "Service Fee ($)",
+    "Amount in Rupiah"
   ]
 }

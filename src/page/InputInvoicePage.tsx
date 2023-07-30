@@ -74,6 +74,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     const inputInvoiceDetailsRes = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
     );
+    const parts = data.date.split("-");
+    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
     setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceDetails);
     const inputInvoiceDataDetails =
       inputInvoiceDetailsRes.data.inputInvoiceDetails;
@@ -133,7 +135,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
               parseFloat(
                 (
                   parseInt(detail.profit) *
-                  (1 - data.service_fee / 100) *
+                  (data.service_fee / 100) *
                   data.rate
                 ).toFixed(2)
               ).toLocaleString("id-ID", {
@@ -160,16 +162,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       rows.push(totalRow);
       // Set table properties
 
-      const tableHeaders = [
-        "No",
-        "Period From",
-        "Period To",
-        "Account No",
-        "Broker",
-        "Amount ($)",
-        "Service Fee ($)",
-        "Amount in Rupiah",
-      ];
+      const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
       const tableData = [tableHeaders, ...rows];
       const tableConfig = {
         startY: startY,
@@ -211,7 +204,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       doc.text("Statement Date", 120, 15);
       doc.text("Statement No.", 120, 20);
       doc.setFont("helvetica", "normal");
-      doc.text(data.date, 170, 15);
+      doc.text(formattedDate, 170, 15);
       doc.text(data.no_invoice, 170, 20);
 
       doc.setFont("helvetica", "bold");
@@ -564,6 +557,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                       <tbody className="table__tbody">
                         {sortedAccount?.map(
                           (details: InputInvoiceSummary, index: number) => {
+                            const parts = details.date.split("-");
+                            const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
                             return (
                               <tr
                                 key={index}
@@ -578,7 +573,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                   className=" table-row__td"
                                 >
                                   <div className="table-row__info">
-                                    {details.date}
+                                    {formattedDate}
                                   </div>
                                 </td>
                                 <td

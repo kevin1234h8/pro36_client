@@ -343,12 +343,12 @@ const Detail: React.FC<any> = ({
       </div>
       {details.length > 0 ? (
         <div
-          className={`lg:w-full overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-20  dark:bg-[#0e1011] `}
+          className={`lg:w-full overflow-x-scroll lg:overflow-x-hidden   px-4 md:px-8 lg:px-8  dark:bg-[#0e1011] `}
           style={{ width: widthStyle }}
         >
           <div className="row row--top-40"></div>
           <div className="row row--top-20">
-            <div className="col-md-12">
+            <div className="overflow-x-scroll col-md-12">
               <div className="table-container  da rk:bg-[#0e1011]">
                 <table className="table">
                   <thead className="table__thead dark:bg-[#0e1011] dark:text-white">
@@ -380,19 +380,33 @@ const Detail: React.FC<any> = ({
                             className="table-row__td "
                           >
                             <div className="table-row__info">
-                              <p className="table-row__name w-[100px] dark:text-[#a0a1a4]">
-                                {detail.periodFrom}
-                              </p>
+                              <input
+                                type="text"
+                                className="text-center border-none appearance-none cursor-pointer  dark:text-[#a0a1a4]   dark:bg-[#0e1011] "
+                                placeholder="0"
+                                min={1}
+                                value={detail.periodFrom}
+                                onChange={(e) =>
+                                  handleInputChange(index, "periodFrom", e)
+                                }
+                              />
                             </div>
                           </td>
                           <td
                             data-column="Period From"
                             className="table-row__td "
                           >
-                            <div className="table-row__info w-[100px]">
-                              <p className="text-center table-row__name dark:text-[#a0a1a4]">
-                                {detail.periodTo}
-                              </p>
+                            <div className="table-row__info ">
+                              <input
+                                type="text"
+                                className="text-center border-none appearance-none cursor-pointer  dark:text-[#a0a1a4]   dark:bg-[#0e1011] "
+                                placeholder="0"
+                                min={1}
+                                value={detail.periodTo}
+                                onChange={(e) =>
+                                  handleInputChange(index, "periodTo", e)
+                                }
+                              />
                             </div>
                           </td>
                           <td
@@ -421,7 +435,7 @@ const Detail: React.FC<any> = ({
                                 className="text-center  cursor-pointer  dark:text-[#a0a1a4]  dark:bg-[#0e1011] "
                                 type="text"
                                 value={detail.broker}
-                                placeholder="broker name"
+                                placeholder="Type"
                                 onChange={(e) =>
                                   handleInputChange(index, "broker", e)
                                 }
@@ -472,7 +486,7 @@ const Detail: React.FC<any> = ({
                               ? parseFloat(
                                   (
                                     parseInt(detail.profit) *
-                                    (1 - serviceFee / 100) *
+                                    (serviceFee / 100) *
                                     rate
                                   ).toFixed(2)
                                 ).toLocaleString("id-ID", {
@@ -526,6 +540,16 @@ const InvoiceDocument = ({
   setIsSuccessModalVisible,
   invoiceNoDate,
 }: any) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1; // Months are zero-indexed, so add 1
+  const day = today.getDate();
+
+  // Form a string representation of today's date in the format "YYYY-MM-DD"
+  const todayDate = `${year}-${month.toString().padStart(2, "0")}-${day
+    .toString()
+    .padStart(2, "0")}`;
+
   const [totalAmountInRupiah, setTotalAmountInRupiah] = useState(0);
   const [totalServiceFee, setTotalServiceFee] = useState(0);
   useEffect(() => {
@@ -555,7 +579,7 @@ const InvoiceDocument = ({
         ? "Rp" + detail.rupiah
         : "Rp" +
           parseFloat(
-            (parseInt(detail.profit) * (1 - serviceFee / 100) * rate).toFixed(2)
+            (parseInt(detail.profit) * (serviceFee / 100) * rate).toFixed(2)
           ).toLocaleString("id-ID", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -563,7 +587,21 @@ const InvoiceDocument = ({
             useGrouping: true,
           }),
     ]);
+    const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
 
+    const hasInvalidDate = details?.some(
+      (detail: any) =>
+        !dateRegex.test(detail.periodFrom) || !dateRegex.test(detail.periodTo)
+    );
+
+    if (hasInvalidDate) {
+      setLoading(false);
+      alert(
+        "Invalid period from or period to date format, please use the format dd-mm-yyyy. For example, 17-05-2023."
+      );
+      return;
+    }
+    // If all date formats are correct, create the array of values
     const values = details?.map((detail: any, index: number) => [
       invoiceNo,
       detail.periodFrom,
@@ -572,10 +610,12 @@ const InvoiceDocument = ({
       detail.broker,
       formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
       formatNumberToIDR((detail.profit * (serviceFee / 100)).toFixed(2)),
-      (parseInt(detail.profit) * (1 - serviceFee / 100) * rate).toFixed(2),
+      (parseInt(detail.profit) * (serviceFee / 100) * rate).toFixed(2),
       user?.id,
       user?.id,
     ]);
+
+    // Continue with the rest of your logic (e.g., submitting the data)
     try {
       const res = await axios.post(
         `${BASE_URL}/input-invoice/input-invoice-details/create`,
@@ -587,7 +627,7 @@ const InvoiceDocument = ({
     const totalAmount = details.reduce((sum: number, detail: any) => {
       const amount = detail.rupiah
         ? detail.rupiah
-        : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+        : (detail.profit * (serviceFee / 100) * rate).toFixed(2);
       return sum + parseFloat(amount);
     }, 0);
     setTotalAmountInRupiah(totalAmount.toFixed(2));
@@ -595,13 +635,13 @@ const InvoiceDocument = ({
 
     const summaryValues = {
       invoiceNo: invoiceNoDate,
-      date: date
-        .toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-        .replace(/\//g, "-"),
+      date: todayDate,
+      // .toLocaleDateString("en-GB", {
+      //   day: "2-digit",
+      //   month: "2-digit",
+      //   year: "numeric",
+      // })
+      // .replace(/\//g, "-"),
       clientName,
       serviceFee,
       rate,
@@ -639,16 +679,7 @@ const InvoiceDocument = ({
       startY: startY,
       margin: { top: 150 },
     };
-    const tableHeaders = [
-      "No",
-      "Period From",
-      "Period To",
-      "Account No",
-      "Broker",
-      "Amount ($)",
-      "Service Fee ($)",
-      "Amount in Rupiah",
-    ];
+    const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
     const tableData = [tableHeaders, ...rows];
     const tableConfig = {
       startY: startY,
@@ -746,7 +777,7 @@ const InvoiceDocument = ({
     const totalAmount = details.reduce((sum: number, detail: any) => {
       const amount = detail.rupiah
         ? detail.rupiah
-        : (detail.profit * (1 - serviceFee / 100) * rate).toFixed(2);
+        : (detail.profit * (serviceFee / 100) * rate).toFixed(2);
       return sum + parseFloat(amount);
     }, 0);
     setTotalAmountInRupiah(totalAmount.toFixed(2));
@@ -773,7 +804,7 @@ const InvoiceDocument = ({
         ? "Rp" + detail.rupiah
         : "Rp" +
           parseFloat(
-            (parseInt(detail.profit) * (1 - serviceFee / 100) * rate).toFixed(2)
+            (parseInt(detail.profit) * (serviceFee / 100) * rate).toFixed(2)
           ).toLocaleString("id-ID", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -805,16 +836,7 @@ const InvoiceDocument = ({
       startY: startY,
       margin: { top: 150 },
     };
-    const tableHeaders = [
-      "No",
-      "Period From",
-      "Period To",
-      "Account No",
-      "Broker",
-      "Amount ($)",
-      "Service Fee ($)",
-      "Amount in Rupiah",
-    ];
+    const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
     const tableData = [tableHeaders, ...rows];
     const tableConfig = {
       startY: startY,
