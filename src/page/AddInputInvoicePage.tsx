@@ -54,6 +54,7 @@ const Summary = ({
   }
   const monthNumber = date.getMonth() + 1; // Adding 1 to get the month number from 1 to 12
   const romanMonth = convertToRoman(monthNumber);
+
   useEffect(() => {
     const getLastestInvoiceNo = async () => {
       try {
@@ -270,13 +271,10 @@ const Detail: React.FC<any> = ({
   details,
   serviceFee,
   addInputInvoiceDetails,
-  onAddDetailRow,
   onDetailChange,
   rate,
-  setProfit,
   setImportAccountModalVisible,
   onRemoveDetailRow,
-  setIsImportModalIsVisible,
   setImportMemberAccountModalVisible,
   user,
 }) => {
@@ -289,24 +287,23 @@ const Detail: React.FC<any> = ({
     onDetailChange(index, field, event.target.value);
   };
 
-  const handleInputChangeFloat = (
-    index: number,
-    field: keyof DetailRow,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    let newValue = parseFloat(event.target.value);
-    if (field === "service") {
-      // Convert the percentage input to a decimal value
-      newValue = newValue / 100;
-    }
-    onDetailChange(index, field, newValue);
-  };
-  const getService = () => {
-    details?.map((detail: any) => {
-      return detail.service;
-    });
-  };
-
+  // const handleInputChangeFloat = (
+  //   index: number,
+  //   field: keyof DetailRow,
+  //   event: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   let newValue = parseFloat(event.target.value);
+  //   if (field === "service") {
+  //     // Convert the percentage input to a decimal value
+  //     newValue = newValue / 100;
+  //   }
+  //   onDetailChange(index, field, newValue);
+  // };
+  // const getService = () => {
+  //   details?.map((detail: any) => {
+  //     return detail.service;
+  //   });
+  // };
   return (
     <div className=" max-w-7xl">
       <div className="flex flex-col items-center font-bold">
@@ -435,7 +432,7 @@ const Detail: React.FC<any> = ({
                                 className="text-center  cursor-pointer  dark:text-[#a0a1a4]  dark:bg-[#0e1011] "
                                 type="text"
                                 value={detail.broker}
-                                placeholder="Type"
+                                placeholder=""
                                 onChange={(e) =>
                                   handleInputChange(index, "broker", e)
                                 }
@@ -1022,22 +1019,26 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     setSearchResults(res.data.inputInvoiceSummary);
   };
 
+  // useEffect(() => {
+  //   try {
+  //     const getImportAccount = async () => {
+  //       const res = await axios.get(
+  //         `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
+  //         {
+  //           headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+  //         }
+  //       );
+  //       setSearchResults(res.data.inputInvoiceSummary);
+  //     };
+  //     getImportAccount();
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, []);
+
   useEffect(() => {
-    try {
-      const getImportAccount = async () => {
-        const res = await axios.get(
-          `${BASE_URL}/input-invoice/input-invoice-summary?pageSize=100&search=${searchQuery}&createdDate=${createdDate}`,
-          {
-            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
-          }
-        );
-        setSearchResults(res.data.inputInvoiceSummary);
-      };
-      getImportAccount();
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    getImportAccount();
+  }, [parsedUserData?.accessToken]);
 
   const addInputInvoiceDetails = () => {
     const newDetail: DetailRow = {
@@ -1103,12 +1104,13 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       setBeneficiaryName(inputInvoiceSummary.bank_beneficiary);
       setAccountNumber(inputInvoiceSummary.bank_no);
       setIsImportModalIsVisible(false);
-      const newDetails: DetailRow[] = response.data.inputInvoiceSummary?.map(
+      console.log(response.data.inputInvoiceDetails);
+      const newDetails: DetailRow[] = response.data.inputInvoiceDetails?.map(
         (detailsObject: any) => ({
           periodFrom: detailsObject.period_from,
           periodTo: detailsObject.period_to,
           accountNo: detailsObject.account_no,
-          broker: detailsObject.broker_name,
+          broker: "",
           profit: detailsObject.profit,
           service: detailsObject.service_cost,
           rupiah: detailsObject.cost_in_rupiah,
@@ -1128,7 +1130,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       periodFrom: inputInvoiceDetailsObject.period_from,
       periodTo: inputInvoiceDetailsObject.period_to,
       accountNo: inputInvoiceDetailsObject.account_no,
-      broker: inputInvoiceDetailsObject.broker_name,
+      broker: "",
       profit: inputInvoiceDetailsObject.profit,
       service: inputInvoiceDetailsObject.service_cost,
       rupiah: inputInvoiceDetailsObject.cost_in_rupiah,
@@ -1149,7 +1151,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
       accountNo: memberAccounts.account_no,
-      broker: memberAccounts.server,
+      broker: "",
       profit: 0,
       service: 0,
       rupiah: 0,
@@ -1174,26 +1176,30 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     }
   };
 
+  // useEffect(() => {
+  //   setLoadingImportMemberAccount(true);
+  //   try {
+  //     const getMemberAccounts = async () => {
+  //       const res = await axios.get(
+  //         `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
+  //         {
+  //           headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+  //         }
+  //       );
+  //       if (res.status === 200) {
+  //         setLoadingImportMemberAccount(false);
+  //         setMemberAccounts(res.data.accounts);
+  //       }
+  //     };
+  //     getMemberAccounts();
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, [parsedUserData?.accessToken]);
+
   useEffect(() => {
-    setLoadingImportMemberAccount(true);
-    try {
-      const getMemberAccounts = async () => {
-        const res = await axios.get(
-          `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
-          {
-            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
-          }
-        );
-        if (res.status === 200) {
-          setLoadingImportMemberAccount(false);
-          setMemberAccounts(res.data.accounts);
-        }
-      };
-      getMemberAccounts();
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    getMemberAccounts();
+  }, [parsedUserData?.accessToken]);
 
   const getInvoiceDetails = async () => {
     setLoadingImportDetails(true);
@@ -1211,26 +1217,31 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     }
   };
 
+  // useEffect(() => {
+  //   setLoadingImportDetails(true);
+  //   try {
+  //     const getInvoiceDetails = async () => {
+  //       let res = await axios.get(
+  //         `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`,
+  //         {
+  //           headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+  //         }
+  //       );
+  //       if (res.status === 200) {
+  //         setLoadingImportDetails(false);
+  //         setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
+  //       }
+  //     };
+  //     getInvoiceDetails();
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, [parsedUserData?.accessToken]);
+
   useEffect(() => {
-    setLoadingImportDetails(true);
-    try {
-      const getInvoiceDetails = async () => {
-        let res = await axios.get(
-          `${BASE_URL}/input-invoice/input-invoice-details?search=${invoiceDetailsSearchQuery}&createdDate=${createdDateInvoiceDetails}`,
-          {
-            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
-          }
-        );
-        if (res.status === 200) {
-          setLoadingImportDetails(false);
-          setInvoiceDetailsSearchResults(res.data.inputInvoiceDetails);
-        }
-      };
-      getInvoiceDetails();
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    getInvoiceDetails();
+  }, [parsedUserData?.accessToken]);
+
   const handleDetailChange = (
     index: number,
     field: keyof DetailRow,
@@ -1294,6 +1305,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
           searchResults={searchResults}
           setIsImportModalIsVisible={setIsImportModalIsVisible}
           getImportAccount={getImportAccount}
+          parsedUserData={parsedUserData}
           setSearchQuery={setSearchQuery}
           handleImport={handleImport}
           searchMessage={searchMessage}

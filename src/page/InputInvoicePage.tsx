@@ -11,9 +11,7 @@ import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Breadcrumb from "../components/Breadcrumb";
-import NoResultsFound from "../components/NoResultsFound";
 import { formatNumberToIDR } from "../utils/numberUtils";
-import transparentLoader from "../assets/transparentLoader.gif";
 
 const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -26,13 +24,10 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useLoading();
-  const [inputInvoice, setInputInvoice] = useState<any>();
+  // const [inputInvoice, setInputInvoice] = useState<any>();
   const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
   const totalPages = Math.ceil(totalInvoiceSummary / invoiceSummaryPageSize);
-  const [totalAmountInRupiah, setTotalAmountInRupiah] = useState(0);
-  const [totalServiceFee, setTotalServiceFee] = useState(0);
-  const [totalProfitInUSD, setTotalProfitInUSD] = useState(0);
-  const [loadingInputInvoice, setLoadingInputInvoice] = useState(false);
+  // const [loadingInputInvoice, setLoadingInputInvoice] = useState(false);
   useEffect(() => {
     if (inputInvoiceDetails) {
     }
@@ -69,7 +64,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
     );
-    setInputInvoice(res.data.inputInvoiceSummary);
     const data = res.data.inputInvoiceSummary;
     const inputInvoiceDetailsRes = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
@@ -88,20 +82,18 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       0
     );
 
-    const totalAmount = inputInvoiceDataDetails.reduce(
-      (sum: number, detail: any) => {
-        const amount = detail.cost_in_rupiah
-          ? detail.cost_in_rupiah
-          : (detail.profit * (1 - data.service_fee / 100) * data.rate).toFixed(
-              2
-            );
-        return sum + parseFloat(amount);
-      },
-      0
-    );
-    const totalAmountInRupiah = formatNumberToIDR(
-      parseFloat(totalAmount).toFixed(2)
-    );
+    // const totalAmount = inputInvoiceDataDetails.reduce(
+    //   (sum: number, detail: any) => {
+    //     const amount = detail.cost_in_rupiah
+    //       ? detail.cost_in_rupiah
+    //       : (detail.profit * (1 - data.service_fee / 100) * data.rate).toFixed(
+    //           2
+    //         );
+    //     return sum + parseFloat(amount);
+    //   },
+    //   0
+    // );
+
     const totalFee = inputInvoiceDataDetails.reduce(
       (sum: number, detail: any) => {
         // const fee = Number(detail.service) ;
@@ -275,7 +267,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     newPage: number,
     newPageSize: number
   ) => {
-    setLoadingInputInvoice(true);
     try {
       let res = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-summary?page=${newPage}&pageSize=${newPageSize}&search=${searchInvoiceSummary}`,
@@ -285,7 +276,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       );
 
       if (res.status === 200) {
-        setLoadingInputInvoice(false);
         setIsLoading(false);
       }
       setInputDetails(res.data.inputInvoiceSummary);

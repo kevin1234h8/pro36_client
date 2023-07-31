@@ -1,19 +1,19 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
-import useContainerWidthUtils from "../utils/useContainerWidthUtils";
-import { AccountInterface } from "../interface/AccountInterface";
-import datas from "../data/datas.json";
-import autoTable from "jspdf-autotable";
-import { BASE_URL, EDIT_MEMBER_PATH } from "../config/config";
-import Navbar from "../components/Navbar";
-import Breadcrumb from "../components/Breadcrumb";
-import Datepicker from "react-tailwindcss-datepicker";
 import axios from "axios";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { useState } from "react";
+import Datepicker from "react-tailwindcss-datepicker";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import jsPDF from "jspdf";
-import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
-import NoResultsFound from "../components/NoResultsFound";
 import transparentLoader from "../assets/transparentLoader.gif";
+import Breadcrumb from "../components/Breadcrumb";
+import Navbar from "../components/Navbar";
+import NoResultsFound from "../components/NoResultsFound";
+import SearchFromDateToEndDateModal from "../components/SearchFromDateToEndDateModal";
+import { BASE_URL } from "../config/config";
+import datas from "../data/datas.json";
+import { AccountInterface } from "../interface/AccountInterface";
+import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 
 const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -24,6 +24,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const [pageSize, setPageSize] = useState<number>(20);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
+  const [recruiter, setRecruiter] = useState<string>("");
 
   const [startDateValue, setStartDateValue] = useState<any>({
     startDate: null,
@@ -53,7 +54,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
+        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}&recruiter=${recruiter}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setLicenseExpiredAccounts(res.data.licenseExpiredAccounts);
@@ -72,7 +73,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       const rows = licenseExpiredAccounts.map(
         (account: AccountInterface, index: number) => [
           index + 1,
-          account.id,
+          account.client_name,
           account.account_no,
           account.expired_date,
           account.recruit_by,
@@ -139,7 +140,8 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
     doc.setFont("helvetica", "normal");
     doc.text(`License Expired Report`, 15, 20);
     doc.setFontSize(10);
-    doc.text(`From Date: [ ${startDate}] to [${endDate} ]`, 15, 30);
+    doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
+    doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
 
     doc.save(`LicenseExpiredReport_${startDate}_${endDate}.pdf`);
   };
@@ -153,7 +155,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       const rows = licenseExpiredAccounts.map(
         (account: AccountInterface, index: number) => [
           index + 1,
-          account.id,
+          account.client_name,
           account.account_no,
           account.expired_date,
           account.recruit_by,
@@ -220,7 +222,8 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
     doc.setFont("helvetica", "normal");
     doc.text(`License Expired Report`, 15, 20);
     doc.setFontSize(10);
-    doc.text(`From Date: [ ${startDate} ] to [ ${endDate} ]`, 15, 30);
+    doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
+    doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
 
     const pdfBlob = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -264,7 +267,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       return;
     }
     const res = await axios.get(
-      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}&search=${search}`,
+      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}&search=${search}&recruiter=${recruiter}`,
       { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {
@@ -400,6 +403,24 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                   <span className="relative text-xs">Print</span>
                 </a>
               </button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-row lg:items-center md:gap-10 lg:gap-10">
+            <div className="w-auto dark:text-[#e4e4e4] md:w-24 lg:w-24">
+              Recruiter:
+            </div>
+            <div>
+              <input
+                type="text"
+                className="relative transition-all duration-300 py-2.5 pl-4 pr-14 w-full border-gray-300 dark:bg-slate-800 dark:text-white/80 dark:border-slate-600 rounded-lg tracking-wide font-light text-sm placeholder-gray-400 bg-white focus:ring disabled:opacity-40 disabled:cursor-not-allowed focus:border-indigo-500 focus:ring-indigo-500/20"
+                placeholder="Search Recruiter"
+                onChange={(e) => setRecruiter(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    getLicenseExpiredAccountsByStartDateAndEndDate();
+                  }
+                }}
+              />
             </div>
           </div>
           <div className="flex items-center justify-between w-full px-0 mt-4 md:px-8 lg:px-0 ">

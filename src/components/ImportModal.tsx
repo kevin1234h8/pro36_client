@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import datas from "../data/datas.json";
 const ImportModal = ({
   setIsImportModalIsVisible,
@@ -6,6 +6,7 @@ const ImportModal = ({
   getImportAccount,
   searchResults,
   searchMessage,
+  parsedUserData,
   handleImport,
   setCreatedDate,
 }: any) => {
@@ -18,6 +19,7 @@ const ImportModal = ({
   oneMonthAgo.setMonth(currentDate.getMonth() - 1);
   var threeMonthsAgo = new Date(currentDate);
   threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+
   return (
     <div
       className="min-w-screen  h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-[100] outline-none focus:outline-none bg-no-repeat bg-center bg-cover"

@@ -23,7 +23,7 @@
 .main .main__content .filter-container {
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
 }
 .main .main__content .filter-container .filter-section {
   display: flex;
@@ -94,7 +94,10 @@
   left: 0;
   direction: rtl;
   z-index: -1;
-  box-shadow: -7px -7px 20px 0px rgba(255, 255, 255, 0.6), -4px -4px 5px 0px rgba(255, 255, 255, 0.6), 7px 7px 20px 0px rgba(0, 0, 0, 0.1333333333), 4px 4px 5px 0px rgba(0, 0, 0, 0.0666666667);
+  box-shadow: -7px -7px 20px 0px rgba(255, 255, 255, 0.6),
+    -4px -4px 5px 0px rgba(255, 255, 255, 0.6),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1333333333),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.0666666667);
   transition: all 0.3s ease;
 }
 
@@ -121,6 +124,9 @@
   left: 0;
   direction: rtl;
   z-index: -1;
-  box-shadow: -7px -7px 20px 0px rgba(255, 255, 255, 0.6), -4px -4px 5px 0px rgba(255, 255, 255, 0.6), 7px 7px 20px 0px rgba(0, 0, 0, 0.1333333333), 4px 4px 5px 0px rgba(0, 0, 0, 0.0666666667);
+  box-shadow: -7px -7px 20px 0px rgba(255, 255, 255, 0.6),
+    -4px -4px 5px 0px rgba(255, 255, 255, 0.6),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1333333333),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.0666666667);
   transition: all 0.3s ease;
-}/*# sourceMappingURL=homepage.css.map */
+} /*# sourceMappingURL=homepage.css.map */

@@ -244,6 +244,15 @@
       "name": "Invoice No"
     },
     {
+      "name": "Client Name"
+    },
+    {
+      "name": "City"
+    },
+    {
+      "name": "Country"
+    },
+    {
       "name": "Total P/L"
     }
   ],
@@ -256,5 +265,14 @@
     "Amount ($)",
     "Service Fee ($)",
     "Amount in Rupiah"
+  ],
+  "clientReportsTableHeaders": [
+    "No",
+    "Invoice Date",
+    "No Invoice",
+    "Client Name",
+    "City",
+    "Country",
+    "Total Amount"
   ]
 }

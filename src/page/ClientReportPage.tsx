@@ -45,21 +45,14 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
   const handleSort = (columnName: any) => {
-    // If the clicked column is the current sort column, toggle the sort direction
     if (columnName === sortColumn) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      // If the clicked column is a different column, set it as the new sort column
       setSortColumn(columnName);
       setSortDirection("asc");
     }
   };
 
-  // useEffect(() => {
-  //   const getAccount = async() => {
-  //     const res = await axios.get(`${BASE_URL}/account/${id}`);
-  //   }
-  // })
   const startedDateParts = startDateValue.startDate?.split("-");
   let startDate = "";
   if (startedDateParts !== undefined) {
@@ -158,7 +151,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
           ];
         }
       );
-      const tableHeaders = ["No", "Invoice Date", "No Invoice", "Total Amount"];
+      const tableHeaders = datas.clientReportsTableHeaders;
       const tableData = [tableHeaders, ...rows];
 
       const tableConfig = {
@@ -245,12 +238,15 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
             index + 1,
             formattedDate, // Use the formatted <date></date>
             account.no_invoice,
+            account.client_name,
+            account.city,
+            account.country,
             "Rp " + formatNumberToIDR(account.total_amount),
           ];
         }
       );
 
-      const tableHeaders = ["No", "Invoice Date", "No Invoice", "Total Amount"];
+      const tableHeaders = datas.clientReportsTableHeaders;
       const tableData = [tableHeaders, ...rows];
 
       const tableConfig = {
@@ -279,7 +275,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(
         `Grand Total P/L Rp ${formattedGrandTotal.toString()}`,
         75,
-        startY + tableHeight
+        startY + tableHeight + 20
       );
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
@@ -339,6 +335,33 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     } else if (sortColumn === "Invoice No") {
       const clientNameA = a.no_invoice.toUpperCase();
       const clientNameB = b.no_invoice.toUpperCase();
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Client Name") {
+      const clientNameA = a.client_name.toUpperCase();
+      const clientNameB = b.client_name.toUpperCase();
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "City") {
+      const clientNameA = a.city.toUpperCase();
+      const clientNameB = b.city.toUpperCase();
+      if (clientNameA < clientNameB) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (clientNameA > clientNameB) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
+      return 0;
+    } else if (sortColumn === "Country") {
+      const clientNameA = a.country.toUpperCase();
+      const clientNameB = b.country.toUpperCase();
       if (clientNameA < clientNameB) {
         return sortDirection === "asc" ? -1 : 1;
       } else if (clientNameA > clientNameB) {
@@ -460,6 +483,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                 />
               </div>
             </div>
+
             <div className="hidden gap-4 item-center md:flex lg:flex">
               <button
                 className="add-member-btn"
@@ -703,6 +727,36 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                       </div>
                                     </td>
                                     <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row text-center dark:text-[#c6c8ca]">
+                                          {user.client_name}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row text-center dark:text-[#c6c8ca]">
+                                          {user.city}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
+                                      data-column="Client Name"
+                                      className="table-row__td "
+                                    >
+                                      <div className="table-row__info">
+                                        <p className="table-row text-center dark:text-[#c6c8ca]">
+                                          {user.country}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td
                                       data-column="Server"
                                       className="table-row__td"
                                     >
@@ -726,6 +780,9 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                   Grand Total P/L
                                 </strong>
                               </td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                               <td></td>
                               <td></td>
                               <td

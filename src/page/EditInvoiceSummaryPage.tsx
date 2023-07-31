@@ -277,7 +277,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
       account_no: memberAccounts.account_no,
-      broker_name: memberAccounts.server,
+      broker_name: "",
       profit: 0,
       service: 0,
       rupiah: 0,
@@ -307,7 +307,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       period_from: inputInvoiceDetailsObject.period_from,
       period_to: inputInvoiceDetailsObject.period_to,
       account_no: inputInvoiceDetailsObject.account_no,
-      broker_name: inputInvoiceDetailsObject.broker_name,
+      broker_name: "",
       profit: inputInvoiceDetailsObject.profit,
       service_cost: inputInvoiceDetailsObject.service_cost,
       cost_in_rupiah: inputInvoiceDetailsObject.cost_in_rupiah,
@@ -373,7 +373,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           periodFrom: detailsObject.period_from,
           periodTo: detailsObject.period_to,
           accountNo: detailsObject.account_no,
-          broker: detailsObject.broker_name,
+          broker: "",
           profit: detailsObject.profit,
           service: detailsObject.service_cost,
           rupiah: detailsObject.cost_in_rupiah,
@@ -836,7 +836,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   className="text-center  dark:bg-[#0e1011]   dark:text-[#a0a1a4]  cursor-pointer "
                                   type="text"
                                   defaultValue={detail.broker_name}
-                                  placeholder="broker name"
+                                  placeholder=""
                                   onChange={(e) =>
                                     handleInputChange(
                                       index,

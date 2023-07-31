@@ -62,7 +62,7 @@ function App() {
   const userData: any = sessionStorage.getItem("userData");
   const parsedUserData = JSON.parse(userData);
 
-  useEffect(() => {
+  useEffect((): any => {
     setLoading(true);
     const getLoginUser = async () => {
       try {
@@ -80,7 +80,7 @@ function App() {
         setUserDataFetched(true); // Mark that user data has been fetched even on error
       }
     };
-    getLoginUser();
+    return () => getLoginUser();
   }, [parsedUserData?.accessToken]);
 
   useEffect(() => {
