@@ -63,7 +63,7 @@ function App() {
   const parsedUserData = JSON.parse(userData);
 
   useEffect((): any => {
-    setLoading(true);
+    // setLoading(true);
     const getLoginUser = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/user/profile`, {
@@ -72,15 +72,15 @@ function App() {
         if (res.data.user) {
           setUser(res.data.user);
         }
-        setLoading(false);
+        // setLoading(false);
         setUserDataFetched(true); // Mark that user data has been fetched
       } catch (err) {
         console.log(err);
-        setLoading(false);
+        // setLoading(false);
         setUserDataFetched(true); // Mark that user data has been fetched even on error
       }
     };
-    return () => getLoginUser();
+    getLoginUser();
   }, [parsedUserData?.accessToken]);
 
   useEffect(() => {
