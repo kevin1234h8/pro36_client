@@ -607,7 +607,6 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                 >
                   <div className="row row--top-40"></div>
                   <div className="row row--top-20">
-                    ;
                     <div className="col-md-12">
                       <div className="table-container  dark:bg-[#0e1011]">
                         <table className="table">
