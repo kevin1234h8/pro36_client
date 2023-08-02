@@ -558,7 +558,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                         {sortedAccount?.map(
                           (details: InputInvoiceSummary, index: number) => {
                             const parts = details.date.split("-");
-                            const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            const formattedDate =
+                              getIndonesianFormattedDateUNION(details.date);
                             return (
                               <tr
                                 key={index}
@@ -573,9 +574,10 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                   className=" table-row__td"
                                 >
                                   <div className="table-row__info">
-                                    {getIndonesianFormattedDate(
-                                      getFormattedDate(details.date)
+                                    {getIndonesianFormattedDateUNION(
+                                      details.date
                                     )}
+                                    <div>{details.date}</div>
                                   </div>
                                 </td>
                                 <td

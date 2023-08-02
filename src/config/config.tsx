@@ -1,5 +1,5 @@
-// export const BASE_URL = "http://localhost:5000";
-export const BASE_URL = "https://api.pro36.web.id";
+export const BASE_URL = "http://localhost:5000";
+// export const BASE_URL = "https://api.pro36.web.id";
 export const ADD_MEMBER_PATH = "/new-account/add-member";
 export const EDIT_MEMBER_PATH = "/new-account/edit-account/:id";
 export const REPORT_PATH = "/report";
