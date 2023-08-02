@@ -15,6 +15,7 @@ import { formatNumberToIDR } from "../utils/numberUtils";
 import { v4 } from "uuid";
 import LoadingSpinner from "../components/LoadingSpinner";
 import {
+  changeDateFormatAndIncrementHour,
   formatDateFromLongStringToDDMMYYYY,
   formatDateToYYYYMMDD,
   getIndonesianFormattedDate,
@@ -1098,10 +1099,10 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       setIsImportModalIsVisible(false);
       const newDetails: DetailRow[] = response.data.inputInvoiceDetails?.map(
         (detailsObject: any) => ({
-          periodFrom: getIndonesianFormattedDateUNION(
+          periodFrom: changeDateFormatAndIncrementHour(
             detailsObject.period_from
           ),
-          periodTo: getIndonesianFormattedDateUNION(detailsObject.period_to),
+          periodTo: changeDateFormatAndIncrementHour(detailsObject.period_to),
           accountNo: detailsObject.account_no,
           broker: "",
           profit: detailsObject.profit,
@@ -1120,10 +1121,10 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     const inputInvoiceDetailsObject = res.data.inputInvoiceDetails;
     const newDetail: DetailRow = {
       id: id,
-      periodFrom: getIndonesianFormattedDateUNION(
+      periodFrom: changeDateFormatAndIncrementHour(
         inputInvoiceDetailsObject.period_from
       ),
-      periodTo: getIndonesianFormattedDateUNION(
+      periodTo: changeDateFormatAndIncrementHour(
         inputInvoiceDetailsObject.period_to
       ),
       accountNo: inputInvoiceDetailsObject.account_no,

@@ -301,6 +301,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     setInvoiceDetails((prevDetails: any) => [...prevDetails, newDetail]);
     setIsImportMemberAccountModalVisible(false);
   };
+
   const addDetails = invoiceDetails.filter(
     (item2: any) => !defaultValue.some((item1: any) => item1.id === item2.id)
   );
@@ -327,8 +328,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const newDetail: any = {
       id: id,
       no_invoice: invoiceNoRef.current,
-      period_from: inputInvoiceDetailsObject.period_from,
-      period_to: inputInvoiceDetailsObject.period_to,
+      period_from: changeDateFormatAndIncrementDayToYYYYMMDD(
+        inputInvoiceDetailsObject.period_from
+      ),
+      period_to: changeDateFormatAndIncrementDayToYYYYMMDD(
+        inputInvoiceDetailsObject.period_to
+      ),
       account_no: inputInvoiceDetailsObject.account_no,
       broker_name: "",
       profit: inputInvoiceDetailsObject.profit,
