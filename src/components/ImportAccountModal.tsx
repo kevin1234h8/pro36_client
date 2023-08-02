@@ -1,6 +1,10 @@
 import React from "react";
 import datas from "../data/datas.json";
 import transparentLoader from "../assets/transparentLoader.gif";
+import {
+  getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
+} from "../utils/dateUtils";
 
 const ImportAccountModal = ({
   getInvoiceDetails,
@@ -42,7 +46,7 @@ const ImportAccountModal = ({
               className="w-full bg-white focus:outline-none dark:bg-[#1e293b] dark:focus:bg-[#1e293b] dark:text-white "
               type="text"
               name="search"
-              placeholder="Search By Broker"
+              placeholder="Search By Type"
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   getInvoiceDetails();
@@ -126,7 +130,9 @@ const ImportAccountModal = ({
                               </td>
                               <td className="py-2 w-[100px]">
                                 <div className="font-medium text-gray-800 dark:text-white">
-                                  {result.period_from}
+                                  {getIndonesianFormattedDateUNION(
+                                    result.period_from
+                                  )}
                                 </div>
                               </td>
                               <td className="p-2">

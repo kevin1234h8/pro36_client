@@ -9,7 +9,15 @@ import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Calendar from "react-calendar";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
+import {
+  formatDateFromLongStringToDDMMYYYY,
+  formatDateToYYYYMMDD,
+  getFormattedDate,
+  getIndonesianFormattedDate,
+} from "../utils/dateUtils";
 
 const EditAccountPage = ({ user }: any) => {
   const { id } = useParams();
@@ -73,23 +81,91 @@ const EditAccountPage = ({ user }: any) => {
     return new Date(year, month, day);
   };
 
-  const [value, onChange] = useState<any>(parseDateString(registDate));
+  function formatDate(inputDateStr: any) {
+    const date = new Date(inputDateStr);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+
+    return `${day}-${month}-${year}`;
+  }
+
+  function formatDateToLongString(inputDateStr: any) {
+    const date = new Date(inputDateStr);
+
+    const options: any = {
+      weekday: "short",
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "short",
+    };
+
+    return date.toLocaleString("en-US", options);
+  }
+
+  const formattedDateToLongString = formatDateToLongString(registDate);
+  const formattedDateasd = formatDate(registDate);
+
+  const inputDateStr =
+    "Tue Aug 01 2023 00:00:00 GMT+0700 (Western Indonesia Time)";
+  const newaad = new Date(inputDateStr);
+
+  const year = newaad.getFullYear();
+  const month = String(newaad.getMonth() + 1).padStart(2, "0");
+  const day = String(newaad.getDate()).padStart(2, "0");
+
+  const formattedDate = `${day}-${month}-${year}`;
+
+  const [value, onChange] = useState<any>(
+    parseDateString(getIndonesianFormattedDate(getFormattedDate(registDate)))
+  );
   const [valueExpiredDate, onChangeExpiredDate] = useState<any>(
-    parseDateString(expiredDate)
+    parseDateString(getIndonesianFormattedDate(getFormattedDate(expiredDate)))
   );
   useEffect(() => {
-    onChange(parseDateString(registDate));
-    onChangeExpiredDate(parseDateString(expiredDate));
+    const formattedRegistDate = getIndonesianFormattedDate(
+      getFormattedDate(registDate)
+    );
+    const formattedExpiredDate = getIndonesianFormattedDate(
+      getFormattedDate(expiredDate)
+    );
+
+    onChange(parseDateString(formattedRegistDate));
+    onChangeExpiredDate(parseDateString(formattedExpiredDate));
   }, [registDate, expiredDate]);
 
-  const formattedRegistDate = value
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-    .replace(/\//g, "-");
+  // useEffect(() => {
+  //   onChange(parseDateString(registDate));
+  //   onChangeExpiredDate(parseDateString(expiredDate));
+  // }, [registDate, expiredDate]);
 
+  // const formattedRegistDate = value
+  //   .toLocaleDateString("en-GB", {
+  //     day: "2-digit",
+  //     month: "2-digit",
+  //     year: "numeric",
+  //   })
+  //   .replace(/\//g, "-");
+
+  const formatRegistDateToDDMMYYYY = formatDateFromLongStringToDDMMYYYY(value);
+  const formatExpiredDateToDDMMYYYY =
+    formatDateFromLongStringToDDMMYYYY(valueExpiredDate);
+
+  const formatRegistDateToYYYYMMDD = formatDateToYYYYMMDD(
+    formatRegistDateToDDMMYYYY
+  );
+  const formatExpiredDateToYYYYMMDD = formatDateToYYYYMMDD(
+    formatExpiredDateToDDMMYYYY
+  );
+
+  const formattedRegistDate = getIndonesianFormattedDate(
+    getFormattedDate(registDate)
+  );
   const formattedExpiredDate = valueExpiredDate
     .toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -99,7 +175,24 @@ const EditAccountPage = ({ user }: any) => {
     .replace(/\//g, "-");
 
   const handleSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
     try {
+      if (account?.status == "2") {
+        toast.error(
+          "Cannot edit the account. The account has already been deleted. Please restored the account!",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+        return;
+      }
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
       if (
         !dateRegex.test(formattedRegistDate) ||
@@ -119,8 +212,8 @@ const EditAccountPage = ({ user }: any) => {
         inv_pass: invPassword,
         server,
         ea_name: eaName,
-        regist_date: formattedRegistDate,
-        expired_date: formattedExpiredDate,
+        regist_date: formatRegistDateToYYYYMMDD,
+        expired_date: formatExpiredDateToYYYYMMDD,
         serial_key: serialKey,
         remark,
         vps,
@@ -152,6 +245,7 @@ const EditAccountPage = ({ user }: any) => {
     <LoadingSpinner />
   ) : (
     <div className="dark:bg-[#0e1011] ">
+      <ToastContainer />
       {isSuccessModelIsVisible ? (
         <SuccessModal
           redirectLink="/new-account"
@@ -255,7 +349,7 @@ const EditAccountPage = ({ user }: any) => {
               <div className="relative input-box">
                 <input
                   id="RegistDate"
-                  value={formattedRegistDate}
+                  value={formatRegistDateToDDMMYYYY}
                   type="text"
                   required
                   // onChange={(e) => setRegistDate(e.target.value)}
@@ -278,7 +372,7 @@ const EditAccountPage = ({ user }: any) => {
               <div className="input-box">
                 <input
                   id="ExpiredDate"
-                  value={formattedExpiredDate}
+                  value={formatExpiredDateToDDMMYYYY}
                   type="text"
                   onChange={(e) => setExpiredDate(e.target.value)}
                 />

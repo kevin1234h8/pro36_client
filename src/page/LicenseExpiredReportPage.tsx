@@ -14,6 +14,10 @@ import { BASE_URL } from "../config/config";
 import datas from "../data/datas.json";
 import { AccountInterface } from "../interface/AccountInterface";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import {
+  getFormattedDate,
+  getIndonesianFormattedDate,
+} from "../utils/dateUtils";
 
 const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -54,7 +58,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDate}&endDate=${endDate}&recruiter=${recruiter}`,
+        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDateValue.startDate}&endDate=${endDateValue.endDate}}&recruiter=${recruiter}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setLicenseExpiredAccounts(res.data.licenseExpiredAccounts);
@@ -75,7 +79,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
           index + 1,
           account.client_name,
           account.account_no,
-          account.expired_date,
+          getIndonesianFormattedDate(getFormattedDate(account.expired_date)),
           account.recruit_by,
           account.vps,
           account.ea_name,
@@ -157,7 +161,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
           index + 1,
           account.client_name,
           account.account_no,
-          account.expired_date,
+          getIndonesianFormattedDate(getFormattedDate(account.expired_date)),
           account.recruit_by,
           account.vps,
           account.ea_name,
@@ -267,7 +271,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       return;
     }
     const res = await axios.get(
-      `${BASE_URL}/license-expired-report?startDate=${startDate}&endDate=${endDate}&search=${search}&recruiter=${recruiter}`,
+      `${BASE_URL}/license-expired-report?startDate=${startDateValue.startDate}&endDate=${endDateValue.endDate}&search=${search}&recruiter=${recruiter}`,
       { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
     );
     if (res.status === 200) {
@@ -695,7 +699,9 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info">
                                         <p className="table-row text-center">
-                                          {user.expired_date}
+                                          {getIndonesianFormattedDate(
+                                            getFormattedDate(user.expired_date)
+                                          )}
                                         </p>
                                       </div>
                                     </td>

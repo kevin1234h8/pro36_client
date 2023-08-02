@@ -7,6 +7,11 @@ import DetailModal from "./DetailModal";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import NoResultsFound from "./NoResultsFound";
 import { BASE_URL } from "../config/config";
+import {
+  formatDateToDDMMYYYY,
+  getFormattedDate,
+  getIndonesianFormattedDate,
+} from "../utils/dateUtils";
 const ExAccountTable = ({
   user,
   exAccount,
@@ -65,8 +70,8 @@ const ExAccountTable = ({
     if (sortColumn === "No") {
       return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
     } else if (sortColumn === "Regist Date") {
-      const dateA = a.regist_date;
-      const dateB = b.regist_date;
+      const dateA = formatDateToDDMMYYYY(a.regist_date);
+      const dateB = formatDateToDDMMYYYY(b.regist_date);
 
       if (dateA < dateB) {
         return sortDirection === "asc" ? -1 : 1;
@@ -102,8 +107,8 @@ const ExAccountTable = ({
       }
       return 0;
     } else if (sortColumn === "Expired Date") {
-      const dateA = a.expired_date;
-      const dateB = b.expired_date;
+      const dateA = formatDateToDDMMYYYY(a.expired_date);
+      const dateB = formatDateToDDMMYYYY(b.expired_date);
 
       if (dateA < dateB) {
         return sortDirection === "asc" ? -1 : 1;
@@ -324,7 +329,9 @@ const ExAccountTable = ({
                               >
                                 <div className="table-row__info">
                                   <p className="table-row__name w-[100px] dark:text-[#a0a1a4]  ">
-                                    {user.regist_date}
+                                    {getIndonesianFormattedDate(
+                                      getFormattedDate(user.regist_date)
+                                    )}
                                   </p>
                                 </div>
                               </td>
@@ -363,7 +370,9 @@ const ExAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {user.expired_date}
+                                  {getIndonesianFormattedDate(
+                                    getFormattedDate(user.expired_date)
+                                  )}
                                 </p>
                               </td>
                               <td

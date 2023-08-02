@@ -17,6 +17,10 @@ import SearchClientReportFromDateToEndDateModal from "../components/SearchClient
 import NoResultsFound from "../components/NoResultsFound";
 import { formatNumberToIDR } from "../utils/numberUtils";
 import transparentLoader from "../assets/transparentLoader.gif";
+import {
+  getFormattedDate,
+  getIndonesianFormattedDate,
+} from "../utils/dateUtils";
 
 const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -70,7 +74,6 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
         `${BASE_URL}/client-report?page=${newPage}&pageSize=${newPageSize}&clientName=${clientName}&startDate=${startDate}&endDate=${endDate}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
-      console.log(res.data);
       setClientReportAccounts(res.data.clientReportAccounts);
       setPage(newPage);
     } catch (err) {
@@ -140,17 +143,23 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => {
-          const parts = account.date.split("-"); // Split the date string into an array [year, month, day]
-          const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert to "day-month-year" format
+          const parts = account.date.split("-");
+          const formattedDate = getIndonesianFormattedDate(
+            getFormattedDate(account.date)
+          );
 
           return [
             index + 1,
-            formattedDate, // Use the formatted date
+            formattedDate, // Use the formatted <date></date>
             account.no_invoice,
+            account.client_name,
+            account.city,
+            account.country,
             "Rp " + formatNumberToIDR(account.total_amount),
           ];
         }
       );
+
       const tableHeaders = datas.clientReportsTableHeaders;
       const tableData = [tableHeaders, ...rows];
 
@@ -180,7 +189,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(
         `Grand Total P/L Rp ${formattedGrandTotal.toString()}`,
         75,
-        startY + tableHeight
+        startY + tableHeight + 20
       );
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
@@ -232,7 +241,9 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => {
           const parts = account.date.split("-");
-          const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          const formattedDate = getIndonesianFormattedDate(
+            getFormattedDate(account.date)
+          );
 
           return [
             index + 1,
@@ -712,7 +723,9 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info  w-[75px]">
                                         <p className="table-row text-center w-[75px] dark:text-[#c6c8ca]">
-                                          {formattedDate}
+                                          {getIndonesianFormattedDate(
+                                            getFormattedDate(user.date)
+                                          )}
                                         </p>
                                       </div>
                                     </td>

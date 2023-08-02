@@ -14,6 +14,12 @@ import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import { formatNumberToIDR } from "../utils/numberUtils";
 import { v4 } from "uuid";
 import LoadingSpinner from "../components/LoadingSpinner";
+import {
+  formatDateFromLongStringToDDMMYYYY,
+  formatDateToYYYYMMDD,
+  getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
+} from "../utils/dateUtils";
 const Summary = ({
   setInvoiceNo,
   setServiceFee,
@@ -601,8 +607,8 @@ const InvoiceDocument = ({
     // If all date formats are correct, create the array of values
     const values = details?.map((detail: any, index: number) => [
       invoiceNo,
-      detail.periodFrom,
-      detail.periodTo,
+      formatDateToYYYYMMDD(detail.periodFrom),
+      formatDateToYYYYMMDD(detail.periodTo),
       detail.accountNo,
       detail.broker,
       formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
@@ -676,6 +682,9 @@ const InvoiceDocument = ({
       startY: startY,
       margin: { top: 150 },
     };
+
+    const formattedDate = formatDateFromLongStringToDDMMYYYY(date);
+
     const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
     const tableData = [tableHeaders, ...rows];
     const tableConfig = {
@@ -714,17 +723,7 @@ const InvoiceDocument = ({
     doc.text("Statement Date", 120, 15);
     doc.text("Statement No.", 120, 20);
     doc.setFont("helvetica", "normal");
-    doc.text(
-      date
-        .toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-        .replace(/\//g, "-"),
-      170,
-      15
-    );
+    doc.text(formattedDate, 170, 15);
     doc.text(invoiceNo, 170, 20);
 
     doc.setFont("helvetica", "bold");
@@ -833,6 +832,9 @@ const InvoiceDocument = ({
       startY: startY,
       margin: { top: 150 },
     };
+
+    const formattedDate = formatDateFromLongStringToDDMMYYYY(date);
+
     const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
     const tableData = [tableHeaders, ...rows];
     const tableConfig = {
@@ -871,17 +873,7 @@ const InvoiceDocument = ({
     doc.text("Statement Date", 120, 15);
     doc.text("Statement No.", 120, 20);
     doc.setFont("helvetica", "normal");
-    doc.text(
-      date
-        .toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-        .replace(/\//g, "-"),
-      170,
-      15
-    );
+    doc.text(formattedDate, 170, 15);
     doc.text(invoiceNo, 170, 20);
 
     doc.setFont("helvetica", "bold");
@@ -1104,11 +1096,12 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       setBeneficiaryName(inputInvoiceSummary.bank_beneficiary);
       setAccountNumber(inputInvoiceSummary.bank_no);
       setIsImportModalIsVisible(false);
-      console.log(response.data.inputInvoiceDetails);
       const newDetails: DetailRow[] = response.data.inputInvoiceDetails?.map(
         (detailsObject: any) => ({
-          periodFrom: detailsObject.period_from,
-          periodTo: detailsObject.period_to,
+          periodFrom: getIndonesianFormattedDateUNION(
+            detailsObject.period_from
+          ),
+          periodTo: getIndonesianFormattedDateUNION(detailsObject.period_to),
           accountNo: detailsObject.account_no,
           broker: "",
           profit: detailsObject.profit,
@@ -1127,8 +1120,12 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     const inputInvoiceDetailsObject = res.data.inputInvoiceDetails;
     const newDetail: DetailRow = {
       id: id,
-      periodFrom: inputInvoiceDetailsObject.period_from,
-      periodTo: inputInvoiceDetailsObject.period_to,
+      periodFrom: getIndonesianFormattedDateUNION(
+        inputInvoiceDetailsObject.period_from
+      ),
+      periodTo: getIndonesianFormattedDateUNION(
+        inputInvoiceDetailsObject.period_to
+      ),
       accountNo: inputInvoiceDetailsObject.account_no,
       broker: "",
       profit: inputInvoiceDetailsObject.profit,

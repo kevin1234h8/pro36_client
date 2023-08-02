@@ -12,6 +12,13 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Breadcrumb from "../components/Breadcrumb";
 import { formatNumberToIDR } from "../utils/numberUtils";
+import {
+  formatDateToDDMMYYYY,
+  formatShortDateFromYYYYMMDDToDDMMYYYY,
+  getFormattedDate,
+  getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
+} from "../utils/dateUtils";
 
 const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -69,7 +76,10 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
     );
     const parts = data.date.split("-");
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    const formattedDate = getIndonesianFormattedDate(
+      getFormattedDate(data.date)
+    );
     setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceDetails);
     const inputInvoiceDataDetails =
       inputInvoiceDetailsRes.data.inputInvoiceDetails;
@@ -113,8 +123,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       const rows = inputInvoiceDataDetails?.map(
         (detail: any, index: number) => [
           index + 1,
-          detail.period_from,
-          detail.period_to,
+          getIndonesianFormattedDateUNION(detail.period_from),
+          getIndonesianFormattedDateUNION(detail.period_to),
           detail.account_no,
           detail.broker_name,
           "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
@@ -563,7 +573,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                   className=" table-row__td"
                                 >
                                   <div className="table-row__info">
-                                    {formattedDate}
+                                    {getIndonesianFormattedDate(
+                                      getFormattedDate(details.date)
+                                    )}
                                   </div>
                                 </td>
                                 <td

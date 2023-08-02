@@ -5,6 +5,12 @@ import datas from "../data/datas.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import { ADD_MEMBER_PATH, EDIT_MEMBER_PATH } from "../config/config";
 import NoResultsFound from "./NoResultsFound";
+import {
+  formatDateToDDMMYYYY,
+  formatDateToYYYYMMDD,
+  getFormattedDate,
+  getIndonesianFormattedDate,
+} from "../utils/dateUtils";
 const NewAccountTable = ({
   account,
   getPaginateData,
@@ -29,13 +35,18 @@ const NewAccountTable = ({
       setSortDirection("asc");
     }
   };
+  const getSortableDate = (dateStr: any) => {
+    const [day, month, year] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
 
+  // Print the sorted data
   const sortedAccount = [...account].sort((a, b) => {
     if (sortColumn === "No") {
       return sortDirection === "asc" ? a.id - b.id : b.id - a.id;
     } else if (sortColumn === "Regist Date") {
-      const dateA = a.regist_date;
-      const dateB = b.regist_date;
+      const dateA = formatDateToDDMMYYYY(a.regist_date);
+      const dateB = formatDateToDDMMYYYY(b.regist_date);
 
       if (dateA < dateB) {
         return sortDirection === "asc" ? -1 : 1;
@@ -71,8 +82,8 @@ const NewAccountTable = ({
       }
       return 0;
     } else if (sortColumn === "Expired Date") {
-      const dateA = a.expired_date;
-      const dateB = b.expired_date;
+      const dateA = formatDateToDDMMYYYY(a.expired_date);
+      const dateB = formatDateToDDMMYYYY(b.expired_date);
 
       if (dateA < dateB) {
         return sortDirection === "asc" ? -1 : 1;
@@ -289,7 +300,9 @@ const NewAccountTable = ({
                               >
                                 <div className="table-row__info">
                                   <p className="table-row__name w-[100px]   dark:text-[#a0a1a4] ">
-                                    {user.regist_date}
+                                    {getIndonesianFormattedDate(
+                                      getFormattedDate(user.regist_date)
+                                    )}
                                   </p>
                                 </div>
                               </td>
@@ -328,7 +341,9 @@ const NewAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {user.expired_date}
+                                  {getIndonesianFormattedDate(
+                                    getFormattedDate(user.expired_date)
+                                  )}
                                 </p>
                               </td>
                               <td

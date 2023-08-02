@@ -3,6 +3,7 @@ import { AccountInterface } from "../interface/AccountInterface";
 import axios from "axios";
 import datas from "../data/datas.json";
 import { BASE_URL } from "../config/config";
+import { getIndonesianFormattedDateUNION } from "../utils/dateUtils";
 const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
   const [exAccount, setExAccount] = useState<AccountInterface>();
   useEffect(() => {
@@ -38,7 +39,9 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
             <div className="w-full details-container">
               <div className="detail-item">
                 <div className="detail-title">Regist Date</div>
-                <div className="detail-value">{exAccount?.regist_date}</div>
+                <div className="detail-value">
+                  {getIndonesianFormattedDateUNION(exAccount?.regist_date)}
+                </div>
               </div>
               <div className="detail-item">
                 <div className="detail-title">Client Name</div>
@@ -54,7 +57,9 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
               </div>
               <div className="detail-item">
                 <div className="detail-title">Expired Date</div>
-                <div className="detail-value">{exAccount?.expired_date}</div>
+                <div className="detail-value">
+                  {getIndonesianFormattedDateUNION(exAccount?.expired_date)}
+                </div>
               </div>
               <div className="detail-item">
                 <div className="detail-title">Ea Name</div>

@@ -10,6 +10,14 @@ import Breadcrumb from "../components/Breadcrumb";
 import datas from "../data/datas.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import { formatNumberToIDR } from "../utils/numberUtils";
+import {
+  convertToDDMMYYYY,
+  formatDateToDDMMYYYY,
+  formatShortStringToDDMMYYYY,
+  getFormattedDate,
+  getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
+} from "../utils/dateUtils";
 
 const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
   const { id } = useParams();
@@ -20,6 +28,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
     useState<boolean>(false);
   const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
   const [date, setDate] = useState<string>("");
+
   useEffect(() => {
     try {
       const getInvoiceSummary = async () => {
@@ -30,7 +39,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
         setInvoiceSummary(res.data.inputInvoiceSummary);
         const parts = res.data.inputInvoiceSummary.date.split("-");
         const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        setDate(formattedDate);
+        setDate(res.data.inputInvoiceSummary.date);
         const getInputInvoiceDetails = async () => {
           const invoiceDetailsRes = await axios.get(
             `${BASE_URL}/input-invoice/input-invoice-details/${res.data.inputInvoiceSummary.no_invoice}`,
@@ -49,7 +58,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }, [id]);
 
   const handleDelete = async () => {
     try {
@@ -109,7 +118,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
               <div className="input-box">
                 <input
                   type="text"
-                  defaultValue={date}
+                  value={getIndonesianFormattedDateUNION(invoiceSummary?.date)}
                   name=""
                   required
                   readOnly
@@ -240,7 +249,9 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         <td data-column="Period To" className="table-row__td ">
                           <div className="table-row__info">
                             <p className="table-row__name w-[100px]  dark:text-[#a0a1a4]">
-                              {detail.period_from}
+                              {getIndonesianFormattedDateUNION(
+                                detail.period_from
+                              )}
                             </p>
                           </div>
                         </td>
@@ -250,7 +261,9 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         >
                           <div className="table-row__info w-[100px]">
                             <p className="text-center table-row__name   dark:text-[#a0a1a4]">
-                              {detail.period_to}
+                              {getIndonesianFormattedDateUNION(
+                                detail.period_to
+                              )}
                             </p>
                           </div>
                         </td>

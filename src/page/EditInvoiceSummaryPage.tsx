@@ -15,6 +15,19 @@ import { DetailRow } from "../interface/DetailRowInterface";
 import ImportAccountModal from "../components/ImportAccountModal";
 import ImportMemberAccountModal from "../components/ImportMemberAccountModal";
 import ImportModal from "../components/ImportModal";
+import {
+  convertToDDMMYYYY,
+  convertToYYYYMMDD,
+  formatShortStringToDDMMYYYY,
+  getFormattedDate,
+  getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
+  formatShortDateFromYYYYMMDDToDDMMYYYY,
+  formatDateToOriginal,
+  formatDateToISO,
+  formatShortDateToDDMMYYYY,
+  formatShortStringDateToYYYYMMDD,
+} from "../utils/dateUtils";
 
 const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   // const handleInputChange = (
@@ -71,7 +84,10 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
 
   const [details, setDetails] = useState<InputInvoiceDetails[]>([]);
   const parts = dateRef.current.split("-");
-  const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  const formattedDate = getIndonesianFormattedDate(
+    getFormattedDate(dateRef.current)
+  );
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
@@ -105,7 +121,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
             headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
           }
         );
-
         setDefaultValue(res.data.inputInvoiceDetails);
         setInputInvoiceDetails(res.data.inputInvoiceDetails);
         setInvoiceDetails(res.data.inputInvoiceDetails);
@@ -174,7 +189,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const calculateService = (profit: number, rate: number) => {
     return profit * rate;
   };
-
   useEffect(() => {
     setLoadingImportMemberAccount(true);
     try {
@@ -221,12 +235,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const newDetail: any = {
       id: id,
       no_invoice: invoiceNoRef.current,
-      period_from: new Date()
-        .toLocaleDateString("en-GB", options)
-        .replace(/\//g, "-"),
-      period_to: new Date()
-        .toLocaleDateString("en-GB", options)
-        .replace(/\//g, "-"),
+      period_from: convertToDDMMYYYY(
+        new Date().toLocaleDateString("en-GB", options).replace(/\//g, "-")
+      ),
+      period_to: convertToDDMMYYYY(
+        new Date().toLocaleDateString("en-GB", options).replace(/\//g, "-")
+      ),
       account_no: 0,
       broker_name: "",
       profit: Number(0),
@@ -270,18 +284,19 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const newDetail: any = {
       id: id,
       no_invoice: invoiceNoRef.current,
-      period_from: new Date()
-        .toLocaleDateString("en-GB", options)
-        .replace(/\//g, "-"),
-      period_to: new Date()
-        .toLocaleDateString("en-GB", options)
-        .replace(/\//g, "-"),
+      period_from: convertToDDMMYYYY(
+        new Date().toLocaleDateString("en-GB", options).replace(/\//g, "-")
+      ),
+      period_to: convertToDDMMYYYY(
+        new Date().toLocaleDateString("en-GB", options).replace(/\//g, "-")
+      ),
       account_no: memberAccounts.account_no,
       broker_name: "",
       profit: 0,
       service: 0,
       rupiah: 0,
     };
+
     setDetails((prevDetails: any) => [...prevDetails, newDetail]);
     setInvoiceDetails((prevDetails: any) => [...prevDetails, newDetail]);
     setIsImportMemberAccountModalVisible(false);
@@ -295,6 +310,14 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [memberAccounts, setMemberAccounts] = useState<any>([]);
 
   const [loadingImportDetails, setLoadingImportDetails] = useState(false);
+
+  function formatShortDateToDDMMYYYYasd(dateString: any) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
 
   const handleImportInvoiceDetails = async (invoiceDetailsId: string) => {
     const res = await axios.get(
@@ -382,6 +405,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       setInvoiceDetails(newDetails);
     }
   };
+
   const [searchMessage, setSearchMessage] = useState("");
 
   const handleUpdate = async (id: string, invoiceNo: string) => {
@@ -421,8 +445,10 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
 
       const hasInvalidDate = invoiceDetails?.some(
         (detail: any) =>
-          !dateRegex.test(detail.period_from) ||
-          !dateRegex.test(detail.period_to)
+          !dateRegex.test(
+            getIndonesianFormattedDateUNION(detail.period_from)
+          ) ||
+          !dateRegex.test(getIndonesianFormattedDateUNION(detail.period_to))
       );
 
       if (hasInvalidDate) {
@@ -435,8 +461,8 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       const inputInvoiceDetailsData = invoiceDetails?.map(
         (detail: any, index: number) => {
           return [
-            detail.period_from,
-            detail.period_to,
+            formatShortStringDateToYYYYMMDD(detail.period_from),
+            formatShortStringDateToYYYYMMDD(detail.period_to),
             parseInt(detail.account_no),
             detail.broker_name,
             parseInt(detail.profit),
@@ -759,7 +785,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   type="text"
                                   className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                   min={1}
-                                  defaultValue={detail.period_from}
+                                  defaultValue={getIndonesianFormattedDateUNION(
+                                    detail.period_from
+                                  )}
                                   onChange={(e) =>
                                     handleInputChange(
                                       index,
@@ -779,7 +807,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   type="text"
                                   className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                   min={1}
-                                  defaultValue={detail.period_to}
+                                  defaultValue={getIndonesianFormattedDateUNION(
+                                    detail.period_to
+                                  )}
                                   onChange={(e) =>
                                     handleInputChange(
                                       index,

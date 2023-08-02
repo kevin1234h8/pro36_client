@@ -7,21 +7,29 @@ import { BASE_URL } from "../config/config";
 import { AccountInterface } from "../interface/AccountInterface";
 import { goBack } from "../utils/navigationUtils";
 import Breadcrumb from "../components/Breadcrumb";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "react-calendar/dist/Calendar.css";
+import {
+  getFormattedDate,
+  getIndonesianFormattedDate,
+} from "../utils/dateUtils";
 
 const DetailsPage = ({ user }: any) => {
   const { id } = useParams();
   const [account, setAccount] = useState<AccountInterface>();
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
-  console.log(account?.serial_key);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showInvPassword, setShowInvPassword] = useState<boolean>(false);
+  const [expiredDate, setExpiredDate] = useState<any>();
 
   useEffect(() => {
     const getAccount = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/account/${id}`);
         setAccount(res.data.account);
+        setExpiredDate(res.data.account.expired_date);
       } catch (err) {
         console.log(err);
       }
@@ -30,6 +38,22 @@ const DetailsPage = ({ user }: any) => {
   }, [id]);
 
   const handleDelete = async () => {
+    if (account?.status == "2") {
+      toast.error(
+        "Cannot delete the account. The account has already been deleted.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+      return;
+    }
     const confirmed = window.confirm(
       "Are you sure you want to delete your account ?"
     );
@@ -41,8 +65,29 @@ const DetailsPage = ({ user }: any) => {
     }
   };
 
+  const goToEditPage = () => {
+    if (account?.status == "2") {
+      toast.error(
+        "Cannot edit the account. The account has already been deleted. Please restored the account!",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+      return;
+    }
+    window.location.href = `/new-account/edit-account/${id}`;
+  };
+
   return (
     <div className="dark:bg-[#0e1011]  ">
+      <ToastContainer />
       {isSuccessModalVisible ? (
         <SuccessModal
           text={`Account Deleted Successfully`}
@@ -147,7 +192,9 @@ const DetailsPage = ({ user }: any) => {
               <div className="input-box">
                 <input
                   id="RegistDate"
-                  defaultValue={account?.regist_date}
+                  value={getIndonesianFormattedDate(
+                    getFormattedDate(account?.regist_date)
+                  )}
                   type="text"
                   readOnly
                 />
@@ -156,7 +203,9 @@ const DetailsPage = ({ user }: any) => {
               <div className="input-box">
                 <input
                   id="RegistDate"
-                  defaultValue={account?.expired_date}
+                  value={getIndonesianFormattedDate(
+                    getFormattedDate(account?.expired_date)
+                  )}
                   type="text"
                   readOnly
                 />
@@ -205,7 +254,7 @@ const DetailsPage = ({ user }: any) => {
           </form>
           <div className="form-footer">
             <a
-              href={`/new-account/edit-account/${id}`}
+              onClick={goToEditPage}
               className=" rounded px-5 py-2.5 overflow-hidden group bg-green-500 relative hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
             >
               <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>

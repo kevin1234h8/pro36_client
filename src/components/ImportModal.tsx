@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
 import datas from "../data/datas.json";
+import {
+  getFormattedDate,
+  getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
+} from "../utils/dateUtils";
 const ImportModal = ({
   setIsImportModalIsVisible,
   setSearchQuery,
@@ -116,7 +121,7 @@ const ImportModal = ({
                           </td>
                           <td className="py-2 w-[100px]">
                             <div className="text-gray-800 dark:text-white">
-                              {result.date}
+                              {getIndonesianFormattedDateUNION(result.date)}
                             </div>
                           </td>
                           <td className="p-2">

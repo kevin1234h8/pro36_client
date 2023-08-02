@@ -11,6 +11,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { getFormattedDate } from "../utils/dateUtils";
 
 const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
   let uuidv4: string;
@@ -47,6 +48,16 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
   const [valueExpiredDate, onChangeExpiredDate] =
     useState<any>(oneYearLaterDate);
 
+  // const getFormattedDate = (dateStr: any) => {
+  //   const date = new Date(dateStr);
+  //   const year = date.getFullYear();
+  //   const month = String(date.getMonth() + 1).padStart(2, "0");
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   return `${year}-${month}-${day}`;
+  // };
+
+  const formattedYYYYMMDDDate = getFormattedDate(value);
+  const formattedYYYYMMDDExpiredDate = getFormattedDate(valueExpiredDate);
   const formattedRegistDate = value
     .toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -54,7 +65,6 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
       year: "numeric",
     })
     .replace(/\//g, "-");
-
   const formattedExpiredDate = valueExpiredDate
     .toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -86,8 +96,8 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
         inv_pass: invPassword,
         server,
         ea_name: eaName,
-        regist_date: formattedRegistDate,
-        expired_date: formattedExpiredDate,
+        regist_date: formattedYYYYMMDDDate,
+        expired_date: formattedYYYYMMDDExpiredDate,
         serial_key: serialKey,
         remark,
         vps,
