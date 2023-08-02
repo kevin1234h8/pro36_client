@@ -578,7 +578,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                     {changeDateFormatAndIncrementHour(
                                       details.date
                                     )}
-                                    <div>{details.date}</div>
                                   </div>
                                 </td>
                                 <td
