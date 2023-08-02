@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import {
+  changeDateFormatAndIncrementHour,
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
@@ -192,9 +193,7 @@ const DetailsPage = ({ user }: any) => {
               <div className="input-box">
                 <input
                   id="RegistDate"
-                  value={getIndonesianFormattedDate(
-                    getFormattedDate(account?.regist_date)
-                  )}
+                  value={changeDateFormatAndIncrementHour(account?.regist_date)}
                   type="text"
                   readOnly
                 />
@@ -203,8 +202,8 @@ const DetailsPage = ({ user }: any) => {
               <div className="input-box">
                 <input
                   id="RegistDate"
-                  value={getIndonesianFormattedDate(
-                    getFormattedDate(account?.expired_date)
+                  value={changeDateFormatAndIncrementHour(
+                    account?.expired_date
                   )}
                   type="text"
                   readOnly

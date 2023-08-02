@@ -185,3 +185,25 @@ export const changeDateFormatAndIncrementDayToYYYYMMDD = (
 
   return outputDate;
 };
+
+export const changeDateFormatToDDMMYYYY = (inputDate: any) => {
+  // Create a Date object from the original date string
+  const dateObj = new Date(inputDate);
+
+  // Set the date to the next day
+  dateObj.setDate(dateObj.getDate() + 1);
+
+  // Get the day, month, and year
+  const day = dateObj.getDate();
+  const month = dateObj.getMonth() + 1; // Months are zero-based, so we add 1
+  const year = dateObj.getFullYear();
+
+  // Convert day and month to two-digit format if needed
+  const dayFormatted = day < 10 ? `0${day}` : `${day}`;
+  const monthFormatted = month < 10 ? `0${month}` : `${month}`;
+
+  // Create the desired date format
+  const outputDate = `${dayFormatted}-${monthFormatted}-${year}`;
+
+  return outputDate;
+};

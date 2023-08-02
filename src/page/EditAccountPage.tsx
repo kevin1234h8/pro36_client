@@ -13,6 +13,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import {
+  changeDateFormatToDDMMYYYY,
   formatDateFromLongStringToDDMMYYYY,
   formatDateToYYYYMMDD,
   getFormattedDate,
@@ -151,8 +152,7 @@ const EditAccountPage = ({ user }: any) => {
   //     year: "numeric",
   //   })
   //   .replace(/\//g, "-");
-
-  const formatRegistDateToDDMMYYYY = formatDateFromLongStringToDDMMYYYY(value);
+  const formatRegistDateToDDMMYYYY = changeDateFormatToDDMMYYYY(value);
   const formatExpiredDateToDDMMYYYY =
     formatDateFromLongStringToDDMMYYYY(valueExpiredDate);
 
