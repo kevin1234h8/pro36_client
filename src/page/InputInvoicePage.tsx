@@ -13,6 +13,7 @@ import autoTable from "jspdf-autotable";
 import Breadcrumb from "../components/Breadcrumb";
 import { formatNumberToIDR } from "../utils/numberUtils";
 import {
+  changeDateFormat,
   formatDateToDDMMYYYY,
   formatShortDateFromYYYYMMDDToDDMMYYYY,
   getFormattedDate,
@@ -574,9 +575,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                   className=" table-row__td"
                                 >
                                   <div className="table-row__info">
-                                    {getIndonesianFormattedDateUNION(
-                                      details.date
-                                    )}
+                                    {changeDateFormat(details.date)}
                                     <div>{details.date}</div>
                                   </div>
                                 </td>

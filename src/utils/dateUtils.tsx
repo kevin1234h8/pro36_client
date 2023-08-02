@@ -120,3 +120,15 @@ export const formatShortStringDateToYYYYMMDD = (dateString: any) => {
 
   return formattedDate;
 };
+
+export const changeDateFormat = (inputDate: any) => {
+  const parsedDate = new Date(inputDate);
+
+  const year: any = parsedDate.getFullYear();
+  const month: any = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day: any = String(parsedDate.getDate()).padStart(2, "0");
+
+  const outputDate = `${day}-${month}-${year}`;
+
+  return outputDate;
+};
