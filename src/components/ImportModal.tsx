@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import datas from "../data/datas.json";
 import {
+  changeDateFormatAndIncrementHour,
   getFormattedDate,
   getIndonesianFormattedDate,
   getIndonesianFormattedDateUNION,
@@ -121,7 +122,7 @@ const ImportModal = ({
                           </td>
                           <td className="py-2 w-[100px]">
                             <div className="text-gray-800 dark:text-white">
-                              {getIndonesianFormattedDateUNION(result.date)}
+                              {changeDateFormatAndIncrementHour(result.date)}
                             </div>
                           </td>
                           <td className="p-2">

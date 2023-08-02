@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import datas from "../data/datas.json";
 import { AccountInterface } from "../interface/AccountInterface";
 import transparentLoader from "../assets/transparentLoader.gif";
-import { getIndonesianFormattedDateUNION } from "../utils/dateUtils";
+import {
+  changeDateFormatAndIncrementHour,
+  getIndonesianFormattedDateUNION,
+} from "../utils/dateUtils";
 
 const ImportMemberAccountModal = ({
   setMemberAccountSearchQuery,
@@ -145,7 +148,7 @@ const ImportMemberAccountModal = ({
                               </td>
                               <td className="py-2">
                                 <div className="text-gray-800 w-[100px] dark:text-white">
-                                  {getIndonesianFormattedDateUNION(
+                                  {changeDateFormatAndIncrementHour(
                                     result.regist_date
                                   )}
                                 </div>

@@ -132,3 +132,56 @@ export const changeDateFormat = (inputDate: any) => {
 
   return outputDate;
 };
+
+export const convertDateToIndonesiaTimezone = (inputDate: any) => {
+  const utcDate = new Date(inputDate);
+
+  // Convert the UTC date to Indonesia timezone (Asia/Jakarta)
+  const timeZone = "Asia/Jakarta";
+  const convertedDate = utcDate.toLocaleString("en-US", { timeZone: timeZone });
+  return convertedDate;
+};
+
+// Exa
+export const incrementHourInISOString = (originalDate: any) => {
+  const updatedDate = new Date(originalDate);
+
+  // Increment the hour by one
+  updatedDate.setUTCHours(updatedDate.getUTCHours() + 1);
+
+  // Convert the updated date back to the ISO string format (with "Z" indicating UTC)
+  const updatedISOString = updatedDate.toISOString();
+  return updatedISOString;
+};
+
+export const changeDateFormatAndIncrementHour = (originalDate: any) => {
+  const updatedDate = new Date(originalDate);
+
+  // Increment the hour by one
+  updatedDate.setUTCHours(updatedDate.getUTCHours() + 1);
+
+  // Format the updated date in the desired format
+  const year: any = updatedDate.getFullYear();
+  const month: any = String(updatedDate.getMonth() + 1).padStart(2, "0");
+  const day: any = String(updatedDate.getDate()).padStart(2, "0");
+  const outputDate = `${day}-${month}-${year}`;
+
+  return outputDate;
+};
+export const changeDateFormatAndIncrementDayToYYYYMMDD = (
+  originalDate: any
+) => {
+  // Parse the original date
+  const parsedDate = new Date(originalDate);
+
+  // Increment the day by one
+  parsedDate.setDate(parsedDate.getDate() + 1);
+
+  // Format the updated date in the desired format
+  const year: any = parsedDate.getFullYear();
+  const month: any = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day: any = String(parsedDate.getDate()).padStart(2, "0");
+  const outputDate = `${year}-${month}-${day}`;
+
+  return outputDate;
+};

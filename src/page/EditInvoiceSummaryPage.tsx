@@ -27,6 +27,8 @@ import {
   formatDateToISO,
   formatShortDateToDDMMYYYY,
   formatShortStringDateToYYYYMMDD,
+  changeDateFormatAndIncrementHour,
+  changeDateFormatAndIncrementDayToYYYYMMDD,
 } from "../utils/dateUtils";
 
 const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
@@ -85,9 +87,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [details, setDetails] = useState<InputInvoiceDetails[]>([]);
   const parts = dateRef.current.split("-");
   // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  const formattedDate = getIndonesianFormattedDate(
-    getFormattedDate(dateRef.current)
-  );
+  const formattedDate = changeDateFormatAndIncrementHour(dateRef.current);
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
@@ -446,9 +446,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       const hasInvalidDate = invoiceDetails?.some(
         (detail: any) =>
           !dateRegex.test(
-            getIndonesianFormattedDateUNION(detail.period_from)
+            changeDateFormatAndIncrementHour(detail.period_from)
           ) ||
-          !dateRegex.test(getIndonesianFormattedDateUNION(detail.period_to))
+          !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to))
       );
 
       if (hasInvalidDate) {
@@ -461,8 +461,8 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       const inputInvoiceDetailsData = invoiceDetails?.map(
         (detail: any, index: number) => {
           return [
-            formatShortStringDateToYYYYMMDD(detail.period_from),
-            formatShortStringDateToYYYYMMDD(detail.period_to),
+            changeDateFormatAndIncrementDayToYYYYMMDD(detail.period_from),
+            changeDateFormatAndIncrementDayToYYYYMMDD(detail.period_to),
             parseInt(detail.account_no),
             detail.broker_name,
             parseInt(detail.profit),
@@ -785,7 +785,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   type="text"
                                   className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                   min={1}
-                                  defaultValue={getIndonesianFormattedDateUNION(
+                                  defaultValue={changeDateFormatAndIncrementHour(
                                     detail.period_from
                                   )}
                                   onChange={(e) =>
@@ -807,7 +807,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   type="text"
                                   className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                   min={1}
-                                  defaultValue={getIndonesianFormattedDateUNION(
+                                  defaultValue={changeDateFormatAndIncrementHour(
                                     detail.period_to
                                   )}
                                   onChange={(e) =>

@@ -6,6 +6,7 @@ import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import { ADD_MEMBER_PATH, EDIT_MEMBER_PATH } from "../config/config";
 import NoResultsFound from "./NoResultsFound";
 import {
+  changeDateFormatAndIncrementHour,
   formatDateToDDMMYYYY,
   formatDateToYYYYMMDD,
   getFormattedDate,
@@ -300,8 +301,8 @@ const NewAccountTable = ({
                               >
                                 <div className="table-row__info">
                                   <p className="table-row__name w-[100px]   dark:text-[#a0a1a4] ">
-                                    {getIndonesianFormattedDate(
-                                      getFormattedDate(user.regist_date)
+                                    {changeDateFormatAndIncrementHour(
+                                      user.regist_date
                                     )}
                                   </p>
                                 </div>
@@ -341,8 +342,8 @@ const NewAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {getIndonesianFormattedDate(
-                                    getFormattedDate(user.expired_date)
+                                  {changeDateFormatAndIncrementHour(
+                                    user.expired_date
                                   )}
                                 </p>
                               </td>

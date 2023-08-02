@@ -18,6 +18,7 @@ import NoResultsFound from "../components/NoResultsFound";
 import { formatNumberToIDR } from "../utils/numberUtils";
 import transparentLoader from "../assets/transparentLoader.gif";
 import {
+  changeDateFormatAndIncrementHour,
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
@@ -144,9 +145,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => {
           const parts = account.date.split("-");
-          const formattedDate = getIndonesianFormattedDate(
-            getFormattedDate(account.date)
-          );
+          const formattedDate = changeDateFormatAndIncrementHour(account.date);
 
           return [
             index + 1,
@@ -241,9 +240,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => {
           const parts = account.date.split("-");
-          const formattedDate = getIndonesianFormattedDate(
-            getFormattedDate(account.date)
-          );
+          const formattedDate = changeDateFormatAndIncrementHour(account.date);
 
           return [
             index + 1,
@@ -723,8 +720,8 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info  w-[75px]">
                                         <p className="table-row text-center w-[75px] dark:text-[#c6c8ca]">
-                                          {getIndonesianFormattedDate(
-                                            getFormattedDate(user.date)
+                                          {changeDateFormatAndIncrementHour(
+                                            user.date
                                           )}
                                         </p>
                                       </div>

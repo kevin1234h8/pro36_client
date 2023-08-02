@@ -11,6 +11,7 @@ import datas from "../data/datas.json";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import { formatNumberToIDR } from "../utils/numberUtils";
 import {
+  changeDateFormatAndIncrementHour,
   convertToDDMMYYYY,
   formatDateToDDMMYYYY,
   formatShortStringToDDMMYYYY,
@@ -118,7 +119,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
               <div className="input-box">
                 <input
                   type="text"
-                  value={getIndonesianFormattedDateUNION(invoiceSummary?.date)}
+                  value={changeDateFormatAndIncrementHour(invoiceSummary?.date)}
                   name=""
                   required
                   readOnly
@@ -249,7 +250,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         <td data-column="Period To" className="table-row__td ">
                           <div className="table-row__info">
                             <p className="table-row__name w-[100px]  dark:text-[#a0a1a4]">
-                              {getIndonesianFormattedDateUNION(
+                              {changeDateFormatAndIncrementHour(
                                 detail.period_from
                               )}
                             </p>
@@ -261,7 +262,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         >
                           <div className="table-row__info w-[100px]">
                             <p className="text-center table-row__name   dark:text-[#a0a1a4]">
-                              {getIndonesianFormattedDateUNION(
+                              {changeDateFormatAndIncrementHour(
                                 detail.period_to
                               )}
                             </p>

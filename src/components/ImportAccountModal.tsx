@@ -2,6 +2,7 @@ import React from "react";
 import datas from "../data/datas.json";
 import transparentLoader from "../assets/transparentLoader.gif";
 import {
+  changeDateFormatAndIncrementHour,
   getIndonesianFormattedDate,
   getIndonesianFormattedDateUNION,
 } from "../utils/dateUtils";
@@ -130,7 +131,7 @@ const ImportAccountModal = ({
                               </td>
                               <td className="py-2 w-[100px]">
                                 <div className="font-medium text-gray-800 dark:text-white">
-                                  {getIndonesianFormattedDateUNION(
+                                  {changeDateFormatAndIncrementHour(
                                     result.period_from
                                   )}
                                 </div>
