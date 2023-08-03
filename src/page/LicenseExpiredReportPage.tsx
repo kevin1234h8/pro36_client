@@ -409,7 +409,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center lg:flex-row lg:items-center md:gap-10 lg:gap-10">
+          <div className="flex flex-col gap-4 px-0 md:px-8 lg:px-0 md:flex-row md:items-center lg:flex-row lg:items-center md:gap-10 lg:gap-10">
             <div className="w-auto dark:text-[#e4e4e4] md:w-24 lg:w-24">
               Recruiter:
             </div>
