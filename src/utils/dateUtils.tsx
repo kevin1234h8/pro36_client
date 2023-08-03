@@ -168,6 +168,22 @@ export const changeDateFormatAndIncrementHour = (originalDate: any) => {
 
   return outputDate;
 };
+
+export const changeDateFormatAndNotIncrementHour = (originalDate: any) => {
+  const updatedDate = new Date(originalDate);
+
+  // Increment the hour by one
+  updatedDate.setUTCHours(updatedDate.getUTCHours());
+
+  // Format the updated date in the desired format
+  const year: any = updatedDate.getFullYear();
+  const month: any = String(updatedDate.getMonth() + 1).padStart(2, "0");
+  const day: any = String(updatedDate.getDate()).padStart(2, "0");
+  const outputDate = `${day}-${month}-${year}`;
+
+  return outputDate;
+};
+
 export const changeDateFormatAndIncrementDayToYYYYMMDD = (
   originalDate: any
 ) => {
@@ -186,12 +202,30 @@ export const changeDateFormatAndIncrementDayToYYYYMMDD = (
   return outputDate;
 };
 
+export const changeDateFormatAndNotIncrementDayToYYYYMMDD = (
+  originalDate: any
+) => {
+  // Parse the original date
+  const parsedDate = new Date(originalDate);
+
+  // Increment the day by one
+  parsedDate.setDate(parsedDate.getDate());
+
+  // Format the updated date in the desired format
+  const year: any = parsedDate.getFullYear();
+  const month: any = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day: any = String(parsedDate.getDate()).padStart(2, "0");
+  const outputDate = `${year}-${month}-${day}`;
+
+  return outputDate;
+};
+
 export const changeDateFormatToDDMMYYYY = (inputDate: any) => {
   // Create a Date object from the original date string
   const dateObj = new Date(inputDate);
 
   // Set the date to the next day
-  dateObj.setDate(dateObj.getDate() + 1);
+  dateObj.setDate(dateObj.getDate());
 
   // Get the day, month, and year
   const day = dateObj.getDate();

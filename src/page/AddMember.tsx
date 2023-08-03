@@ -65,6 +65,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
       year: "numeric",
     })
     .replace(/\//g, "-");
+
   const formattedExpiredDate = valueExpiredDate
     .toLocaleDateString("en-GB", {
       day: "2-digit",

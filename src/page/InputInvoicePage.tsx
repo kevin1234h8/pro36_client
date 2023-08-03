@@ -69,6 +69,188 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
   //   console.log("inputInvoiceDetailsRes: ", inputInvoiceDetailsRes.data);
   //   console.log("inputInvoice: ", inputInvoice);
   // };
+
+  const savePDF = async (id: string, noInvoice: string) => {
+    setIsLoading(false);
+    const res = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
+    );
+    const data = res.data.inputInvoiceSummary;
+    const inputInvoiceDetailsRes = await axios.get(
+      `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
+    );
+    const parts = data.date.split("-");
+    // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    const formattedDate = changeDateFormatAndIncrementHour(data.date);
+    setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceDetails);
+    const inputInvoiceDataDetails =
+      inputInvoiceDetailsRes.data.inputInvoiceDetails;
+
+    const totalUSDProfit = inputInvoiceDataDetails.reduce(
+      (sum: number, detail: any) => {
+        const profit = detail.profit.toFixed(2);
+        return sum + parseFloat(profit);
+      },
+      0
+    );
+
+    // const totalAmount = inputInvoiceDataDetails.reduce(
+    //   (sum: number, detail: any) => {
+    //     const amount = detail.cost_in_rupiah
+    //       ? detail.cost_in_rupiah
+    //       : (detail.profit * (1 - data.service_fee / 100) * data.rate).toFixed(
+    //           2
+    //         );
+    //     return sum + parseFloat(amount);
+    //   },
+    //   0
+    // );
+
+    const totalFee = inputInvoiceDataDetails.reduce(
+      (sum: number, detail: any) => {
+        // const fee = Number(detail.service) ;
+        const fee = detail.service
+          ? detail.service
+          : (detail.profit * (data.service_fee / 100)).toFixed(2);
+        return sum + parseFloat(fee);
+      },
+      0
+    );
+
+    const doc = new jsPDF();
+    const startY = 80; // Initial Y-coordinate for the table
+    const rowHeight = 10; // Adjust the row height as needed
+
+    if (data || inputInvoiceDataDetails) {
+      const rows = inputInvoiceDataDetails?.map(
+        (detail: any, index: number) => [
+          index + 1,
+          changeDateFormatAndIncrementHour(detail.period_from),
+          changeDateFormatAndIncrementHour(detail.period_to),
+          detail.account_no,
+          detail.broker_name,
+          "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
+          detail.service
+            ? "$" + detail.service
+            : "$" + (detail.profit * (data.service_fee / 100)).toFixed(2),
+          detail.rupiah
+            ? "Rp" + detail.rupiah
+            : "Rp" +
+              parseFloat(
+                (
+                  parseInt(detail.profit) *
+                  (data.service_fee / 100) *
+                  data.rate
+                ).toFixed(2)
+              ).toLocaleString("id-ID", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                style: "decimal",
+                useGrouping: true,
+              }),
+        ]
+      );
+      const formattedTotalAmount = formatNumberToIDR(
+        parseFloat(data.total_amount).toFixed(2)
+      );
+      const totalRow = [
+        "Total",
+        "",
+        "",
+        "",
+        "",
+        "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
+        "$" + formatNumberToIDR(parseFloat(totalFee).toFixed(2)),
+        "Rp" + formatNumberToIDR(parseFloat(data.total_amount).toFixed(2)),
+      ];
+      rows.push(totalRow);
+      // Set table properties
+
+      const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
+      const tableData = [tableHeaders, ...rows];
+      const tableConfig = {
+        startY: startY,
+        head: [tableHeaders],
+        body: rows,
+      };
+      autoTable(doc, tableConfig);
+      const tableHeight = tableData.length * rowHeight;
+
+      doc.setFontSize(10);
+
+      doc.setFont("helvetica", "bold");
+      doc.text(data?.client_name || "", 15, 20);
+      doc.setTextColor(0, 0, 0); //
+      doc.setFont("helvetica", "normal");
+      doc.text(data.city, 15, 25);
+      doc.text(data.country, 15, 30);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setFillColor(255, 165, 0); // Orange color
+      doc.rect(15, 43, 70, 10, "F");
+      doc.text("SERVICE FEE", 15, 50);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text("SERVICE FEE (%)", 15, 57);
+      doc.text("Rate", 15, 64);
+      doc.setFont("helvetica", "normal");
+      doc.text(data.service_fee + "%", 50, 57);
+      doc.text(
+        "Rp" + formatNumberToIDR(parseFloat(data.rate).toFixed(2)),
+        50,
+        64
+      );
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Statement Date", 120, 15);
+      doc.text("Statement No.", 120, 20);
+      doc.setFont("helvetica", "normal");
+      doc.text(formattedDate, 170, 15);
+      doc.text(data.no_invoice, 170, 20);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFillColor(255, 165, 0); // Orange color
+      doc.rect(118, 43, 80, 10, "F");
+      doc.text("PAYMENT SUMMARY", 120, 50);
+      doc.text("Ammount (Rp)", 170, 50);
+      doc.text("Total", 120, 57);
+      doc.setFont("helvetica", "normal");
+
+      doc.text("Rp" + formattedTotalAmount, 170, 57);
+      doc.setFontSize(10);
+      doc.text(
+        "Payment By Transfer To (Full amount in Rupiah)",
+        15,
+        startY + tableHeight + 30
+      );
+      doc.setFont("helvetica", "bold");
+      doc.text(data.bank_name, 15, startY + tableHeight + 40);
+      doc.text(data.bank_beneficiary, 15, startY + tableHeight + 45);
+      doc.text(data.bank_no, 15, startY + tableHeight + 50);
+
+      doc.setFont("helvetica", "italic");
+
+      // Set the underline style
+
+      // Set the font size and text color
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+
+      // Add the text with underline and italic style
+      doc.rect(8, startY + tableHeight + 65, 195, 10);
+      doc.text(
+        "Please make a payment within 7 days after this statement is issued, otherwise the software will be deactivated",
+        12,
+        startY + tableHeight + 70
+      );
+
+      doc.save(`${data.client_name}_invoice_${data.no_invoice}.pdf`);
+    }
+  };
+
   const print = async (id: string, noInvoice: string) => {
     setIsLoading(false);
     const res = await axios.get(
@@ -239,9 +421,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       doc.setTextColor(0, 0, 0);
 
       // Add the text with underline and italic style
-      doc.rect(8, startY + tableHeight + 65, 190, 10);
+      doc.rect(8, startY + tableHeight + 65, 195, 10);
       doc.text(
-        "Please make a payment within 7 days after this statement is issued, otherwise the robot will be deactivated",
+        "Please make a payment within 7 days after this statement is issued, otherwise the software will be deactivated",
         12,
         startY + tableHeight + 70
       );
@@ -654,6 +836,15 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                           print(details.id, details.no_invoice);
                                         }}
                                         className="fa-solid fa-file-pdf text-[#3fd2ea] cursor-pointer"
+                                      ></i>
+                                      <i
+                                        className="fa-solid fa-download text-[#3fd2ea] cursor-pointer"
+                                        onClick={() => {
+                                          savePDF(
+                                            details.id,
+                                            details.no_invoice
+                                          );
+                                        }}
                                       ></i>
                                     </div>
                                   </div>

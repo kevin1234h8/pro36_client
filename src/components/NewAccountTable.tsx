@@ -7,6 +7,7 @@ import { ADD_MEMBER_PATH, EDIT_MEMBER_PATH } from "../config/config";
 import NoResultsFound from "./NoResultsFound";
 import {
   changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHour,
   formatDateToDDMMYYYY,
   formatDateToYYYYMMDD,
   getFormattedDate,
@@ -342,7 +343,7 @@ const NewAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {changeDateFormatAndIncrementHour(
+                                  {changeDateFormatAndNotIncrementHour(
                                     user.expired_date
                                   )}
                                 </p>

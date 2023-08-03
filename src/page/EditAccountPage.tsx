@@ -18,6 +18,7 @@ import {
   formatDateToYYYYMMDD,
   getFormattedDate,
   getIndonesianFormattedDate,
+  getIndonesianFormattedDateUNION,
 } from "../utils/dateUtils";
 
 const EditAccountPage = ({ user }: any) => {
@@ -76,6 +77,14 @@ const EditAccountPage = ({ user }: any) => {
 
   const parseDateString = (dateString: any) => {
     const parts = dateString.split("-");
+    const day = parseInt(parts[0], 10) + 1;
+    const month = parseInt(parts[1], 10) - 1; // Subtract 1 to get zero-based month
+    const year = parseInt(parts[2], 10);
+    return new Date(year, month, day);
+  };
+
+  const parseDateStringExpiredDate = (dateString: any) => {
+    const parts = dateString.split("-");
     const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1; // Subtract 1 to get zero-based month
     const year = parseInt(parts[2], 10);
@@ -112,32 +121,23 @@ const EditAccountPage = ({ user }: any) => {
   const formattedDateToLongString = formatDateToLongString(registDate);
   const formattedDateasd = formatDate(registDate);
 
-  const inputDateStr =
-    "Tue Aug 01 2023 00:00:00 GMT+0700 (Western Indonesia Time)";
-  const newaad = new Date(inputDateStr);
-
-  const year = newaad.getFullYear();
-  const month = String(newaad.getMonth() + 1).padStart(2, "0");
-  const day = String(newaad.getDate()).padStart(2, "0");
-
-  const formattedDate = `${day}-${month}-${year}`;
-
   const [value, onChange] = useState<any>(
     parseDateString(getIndonesianFormattedDate(getFormattedDate(registDate)))
   );
   const [valueExpiredDate, onChangeExpiredDate] = useState<any>(
-    parseDateString(getIndonesianFormattedDate(getFormattedDate(expiredDate)))
+    parseDateStringExpiredDate(
+      getIndonesianFormattedDate(getFormattedDate(expiredDate))
+    )
   );
+
   useEffect(() => {
     const formattedRegistDate = getIndonesianFormattedDate(
       getFormattedDate(registDate)
     );
-    const formattedExpiredDate = getIndonesianFormattedDate(
-      getFormattedDate(expiredDate)
-    );
+    const formattedExpiredDate = getIndonesianFormattedDateUNION(expiredDate);
 
     onChange(parseDateString(formattedRegistDate));
-    onChangeExpiredDate(parseDateString(formattedExpiredDate));
+    onChangeExpiredDate(parseDateStringExpiredDate(formattedExpiredDate));
   }, [registDate, expiredDate]);
 
   // useEffect(() => {
@@ -152,9 +152,23 @@ const EditAccountPage = ({ user }: any) => {
   //     year: "numeric",
   //   })
   //   .replace(/\//g, "-");
+  function formatExpiredDate(dateString: any) {
+    // Convert the date string to a Date object
+    const dateObj = new Date(dateString);
+
+    // Get the day, month, and year from the Date object
+    const day = dateObj.getUTCDate().toString().padStart(2, "0");
+    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
+    const year = dateObj.getUTCFullYear();
+
+    // Combine the parts to form the desired format
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return formattedDate;
+  }
   const formatRegistDateToDDMMYYYY = changeDateFormatToDDMMYYYY(value);
   const formatExpiredDateToDDMMYYYY =
-    formatDateFromLongStringToDDMMYYYY(valueExpiredDate);
+    changeDateFormatToDDMMYYYY(valueExpiredDate);
 
   const formatRegistDateToYYYYMMDD = formatDateToYYYYMMDD(
     formatRegistDateToDDMMYYYY
@@ -166,6 +180,7 @@ const EditAccountPage = ({ user }: any) => {
   const formattedRegistDate = getIndonesianFormattedDate(
     getFormattedDate(registDate)
   );
+
   const formattedExpiredDate = valueExpiredDate
     .toLocaleDateString("en-GB", {
       day: "2-digit",

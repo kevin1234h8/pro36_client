@@ -749,7 +749,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
             )}
           </div>
           <div
-            className={`lg:w-full  overflow-x-scroll md:overflow-x-hidden lg:overflow-x-hidden  px-4 md:px-8 lg:px-8  dark:bg-[#0e1011] `}
+            className={`lg:w-full  overflow-x-scroll  lg:overflow-x-hidden  px-4 md:px-8 lg:px-8  dark:bg-[#0e1011] `}
             style={{ width: widthStyle }}
           >
             <div className="row row--top-40"></div>
