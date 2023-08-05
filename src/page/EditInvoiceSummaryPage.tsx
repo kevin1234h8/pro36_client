@@ -470,11 +470,11 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
             changeDateFormatAndIncrementDayToYYYYMMDD(detail.period_to),
             parseInt(detail.account_no),
             detail.broker_name,
-            parseInt(detail.profit),
-            parseInt(
+            parseFloat(detail.profit),
+            parseFloat(
               (detail.profit * (serviceFeeRef.current / 100)).toFixed(2)
             ),
-            parseInt(
+            parseFloat(
               (detail.profit * (serviceFeeRef.current / 100) * rate).toFixed(2)
             ),
             user?.id,

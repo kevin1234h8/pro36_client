@@ -645,6 +645,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     totalInvoiceSummary
   );
 
+  console.log(inputInvoiceDetails);
+
   return isLoading ? (
     <LoadingSpinner />
   ) : (
@@ -951,7 +953,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                       activeLinkClassName="bg-indigo-600 text-white"
                     />
                   </ul>
-                  <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                  <div className="text-xs text-indigo-600 md:text-base lg:text-base">
                     Showing {firstItemIndex} - {lastItemIndex} of{" "}
                     {totalInvoiceSummary} Invoice(s)
                   </div>
