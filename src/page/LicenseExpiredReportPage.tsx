@@ -97,33 +97,39 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       ];
 
       const tableData = [tableHeaders, ...rows];
-      const tableHeight = tableData.length * rowHeight;
-
       const drawPageTitle = (title: any) => {
         if (isFirstPage) {
           doc.setFontSize(16);
           doc.setFont("helvetica", "normal");
-          doc.text(title, 15, 20);
+          doc.text(`License Expired Report`, 15, 20);
           doc.setFontSize(10);
           doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
           doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
+
           isFirstPage = false; // Set the flag to false after drawing the title
         }
       };
-
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
         didDrawPage: (data: any) => {
           // Call the function to draw the title on each page
-          drawPageTitle("License Expired Report");
+          drawPageTitle("Client P/L Report");
         },
       };
 
       autoTable(doc, tableConfig);
 
       // Calculate the table height
+      const tableHeight = tableData.length * rowHeight;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "italic");
+      // doc.text(
+      //   "Nb. Sort berdasarkan Expired Date",
+      //   15,
+      //   startY + tableHeight + 10
+      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -182,33 +188,39 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       ];
 
       const tableData = [tableHeaders, ...rows];
-      const tableHeight = tableData.length * rowHeight;
-
       const drawPageTitle = (title: any) => {
         if (isFirstPage) {
           doc.setFontSize(16);
           doc.setFont("helvetica", "normal");
-          doc.text(title, 15, 20);
+          doc.text(`License Expired Report`, 15, 20);
           doc.setFontSize(10);
           doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
           doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
+
           isFirstPage = false; // Set the flag to false after drawing the title
         }
       };
-
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
         didDrawPage: (data: any) => {
           // Call the function to draw the title on each page
-          drawPageTitle("License Expired Report");
+          drawPageTitle("Client P/L Report");
         },
       };
 
       autoTable(doc, tableConfig);
 
       // Calculate the table height
+      const tableHeight = tableData.length * rowHeight;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "italic");
+      // doc.text(
+      //   "Nb. Sort berdasarkan Expired Date",
+      //   15,
+      //   startY + tableHeight + 10
+      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -784,9 +796,9 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                           activeLinkClassName="bg-indigo-600 text-white"
                         />
                       </ul>
-                      <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                      <div className="text-indigo-600">
                         Showing {firstItemIndex} - {lastItemIndex} of{" "}
-                        {licenseExpiredAccounts} Invoice(s)
+                        {licenseExpiredAccountsCount} Licence Account(s)
                       </div>
                     </div>
                   </div>
