@@ -491,7 +491,10 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         );
         const deleteInvoiceDetailsRes = await axios.post(
           `${BASE_URL}/input-invoice/input-invoice-details/delete-invoice-details`,
-          { data: removeInputInvoiceDetailsData }
+          { data: removeInputInvoiceDetailsData },
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
         );
       }
 
@@ -519,7 +522,10 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       if (addDetailsValues.length > 0) {
         const invoiceDetailsCreateRes = await axios.post(
           `${BASE_URL}/input-invoice/input-invoice-details/create`,
-          { values: addDetailsValues }
+          { values: addDetailsValues },
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
         );
       }
 
