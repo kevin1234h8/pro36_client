@@ -7,15 +7,12 @@ import DetailModal from "./DetailModal";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import NoResultsFound from "./NoResultsFound";
 import { BASE_URL } from "../config/config";
+import ReactPaginate from "react-paginate";
 import {
   changeDateFormatAndIncrementHour,
   formatDateToDDMMYYYY,
-  getFormattedDate,
-  getIndonesianFormattedDate,
 } from "../utils/dateUtils";
 import ExAccountPage from "../page/ExAccountPage";
-import { start } from "repl";
-import { totalmem } from "os";
 const ExAccountTable = ({
   user,
   exAccount,
@@ -37,8 +34,6 @@ const ExAccountTable = ({
     useState<boolean>(false);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-  console.log(totalExAccount);
-  console.log(totalPages);
   const restoreUser = async (id: string) => {
     const values = {
       restored_by: user?.id,
@@ -65,41 +60,30 @@ const ExAccountTable = ({
   };
 
   const handleSort = (columnName: any) => {
-    // If the clicked column is the current sort column, toggle the sort direction
     if (columnName === sortColumn) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      // If the clicked column is a different column, set it as the new sort column
       setSortColumn(columnName);
       setSortDirection("asc");
     }
   };
 
-  const maxVisibleButtons = 5; // Maximum number of visible page buttons excluding ellipsis
-  const ellipsis = "...";
-  const halfVisibleButtons = Math.floor(maxVisibleButtons / 2);
+  const maxVisiblePages = 5; // Maximum number of visible page buttons excluding ellipsis
 
-  const [startPage, setStartPage] = useState(1);
-  const [endPage, setEndPage] = useState(
-    totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
-  );
+  // const handlePageClick = (pageNumber: any) => {
+  //   if (pageNumber <= halfVisibleButtons + 1) {
+  //     setStartPage(1);
+  //     setEndPage(totalPages > maxVisiblePages ? maxVisiblePages : totalPages);
+  //   } else if (pageNumber >= totalPages - halfVisibleButtons) {
+  //     setStartPage(totalPages - maxVisiblePages + 1);
+  //     setEndPage(totalPages);
+  //   } else {
+  //     setStartPage(pageNumber - halfVisibleButtons);
+  //     setEndPage(pageNumber + halfVisibleButtons);
+  //   }
 
-  const handlePageClick = (pageNumber: any) => {
-    if (pageNumber <= halfVisibleButtons + 1) {
-      setStartPage(1);
-      setEndPage(
-        totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
-      );
-    } else if (pageNumber >= totalPages - halfVisibleButtons) {
-      setStartPage(totalPages - maxVisibleButtons + 1);
-      setEndPage(totalPages);
-    } else {
-      setStartPage(pageNumber - halfVisibleButtons);
-      setEndPage(pageNumber + halfVisibleButtons);
-    }
-
-    getExAccountPaginateData(pageNumber, exAccountPageSize);
-  };
+  //   getExAccountPaginateData(pageNumber, exAccountPageSize);
+  // };
 
   const sortedExAccount = [...exAccount].sort((a, b) => {
     if (sortColumn === "No") {
@@ -190,6 +174,18 @@ const ExAccountTable = ({
     }
     return 0;
   });
+
+  let customPageNumber = 0;
+  const handlePageClick = (event: any) => {
+    console.log("page : ", event.selected + 1);
+    customPageNumber = event.selected + 1;
+    getExAccountPaginateData(event.selected + 1, exAccountPageSize);
+  };
+  const firstItemIndex = (exAccountPage - 1) * exAccountPageSize + 1;
+  const lastItemIndex = Math.min(
+    firstItemIndex + exAccountPageSize - 1,
+    totalExAccount
+  );
   return (
     <div className="w-full lg:mx-auto ">
       {isSuccessModalVisible ? (
@@ -467,102 +463,39 @@ const ExAccountTable = ({
                   </table>
                 </div>
               </div>
-              <div className="flex items-center justify-center my-10">
+              <div className="flex items-center justify-between my-10 ">
+                <div></div>
                 <ul className="inline-flex space-x-2">
-                  {exAccountPage > 1 ? (
-                    <li>
-                      <button
-                        onClick={() => {
-                          getExAccountPaginateData(exAccountPage - 1);
-                        }}
-                        className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                      >
-                        <svg
-                          className="w-4 h-4 fill-current"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd"
-                            fill-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </button>
-                    </li>
-                  ) : null}
-
-                  {startPage > 2 && (
-                    <li key="ellipsis-start">
-                      <button
-                        onClick={() => handlePageClick(1)}
-                        className={`w-10 h-10 pagination-button ${
-                          exAccountPage === 1 ? "bg-indigo-600 text-white" : ""
-                        } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                      >
-                        {1}
-                      </button>
-                      <span className="mx-2 dark:text-white">{ellipsis}</span>
-                    </li>
-                  )}
-
-                  {Array.from(
-                    { length: endPage - startPage + 1 },
-                    (_, index) => {
-                      const pageNumber = startPage + index;
-                      return (
-                        <li key={pageNumber}>
-                          <button
-                            onClick={() => handlePageClick(pageNumber)}
-                            className={`w-10 h-10 pagination-button ${
-                              exAccountPage === pageNumber
-                                ? "bg-indigo-600 text-white"
-                                : ""
-                            } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                          >
-                            {pageNumber}
-                          </button>
-                        </li>
-                      );
+                  <ReactPaginate
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={5}
+                    pageCount={totalPages}
+                    previousLabel="<"
+                    breakLinkClassName={"text-indigo-600"}
+                    previousClassName={
+                      "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
                     }
-                  )}
-
-                  {endPage < totalPages && (
-                    <li key="ellipsis-end">
-                      <span className="mx-2 dark:text-white">{ellipsis}</span>
-                      <button
-                        onClick={() => handlePageClick(totalPages)}
-                        className={`w-10 h-10 pagination-button ${
-                          exAccountPage === totalPages
-                            ? "bg-indigo-600 text-white"
-                            : ""
-                        } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                      >
-                        {totalPages}
-                      </button>
-                    </li>
-                  )}
-                  {exAccountPage < totalPages ? (
-                    <li>
-                      <button
-                        onClick={() => {
-                          getExAccountPaginateData(exAccountPage + 1);
-                        }}
-                        className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                      >
-                        <svg
-                          className="w-4 h-4 fill-current"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"
-                            fill-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </button>
-                    </li>
-                  ) : null}
+                    previousLinkClassName={"text-indigo-600 "}
+                    nextClassName={
+                      "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                    }
+                    nextLinkClassName={"text-indigo-600"}
+                    containerClassName="flex items-center gap-4"
+                    breakClassName="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                    renderOnZeroPageCount={null}
+                    pageClassName={` flex items-center justify-center  w-10 h-10   transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                    pageLinkClassName={
+                      " flex items-center justify-center w-10 h-10 text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                    }
+                    activeLinkClassName="bg-indigo-600 text-white"
+                  />
                 </ul>
+                <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                  Showing {firstItemIndex} - {lastItemIndex} of {totalExAccount}{" "}
+                  Ex Account(s)
+                </div>
               </div>
             </div>
           </div>

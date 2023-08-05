@@ -25,7 +25,7 @@ const HomePage = ({
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  console.log(search);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
 
@@ -73,7 +73,7 @@ const HomePage = ({
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       let res = await axios.get(
-        `${BASE_URL}/account?page=${newPage}&pageSize=${newPageSize}&search=${search}`,
+        `${BASE_URL}/account?page=${newPage}&pageSize=${newPageSize}&accountNo=${search}`,
         {
           headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
         }
@@ -83,6 +83,7 @@ const HomePage = ({
       }
       setAccount(res.data.accounts);
       setTotalAccount(res.data.totalAccount);
+      console.log(res.data.totalAccount);
       setPage(newPage);
     } catch (err) {
       console.log(err);

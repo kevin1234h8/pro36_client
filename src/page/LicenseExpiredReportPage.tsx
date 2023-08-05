@@ -18,6 +18,7 @@ import {
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
+import ReactPaginate from "react-paginate";
 
 const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -29,7 +30,6 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [recruiter, setRecruiter] = useState<string>("");
-
   const [startDateValue, setStartDateValue] = useState<any>({
     startDate: null,
     endDate: null,
@@ -72,7 +72,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
     const doc = new jsPDF();
     const startY = 40; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
-
+    let isFirstPage = true;
     if (licenseExpiredAccounts && licenseExpiredAccounts.length > 0) {
       const rows = licenseExpiredAccounts.map(
         (account: AccountInterface, index: number) => [
@@ -97,24 +97,33 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       ];
 
       const tableData = [tableHeaders, ...rows];
+      const tableHeight = tableData.length * rowHeight;
+
+      const drawPageTitle = (title: any) => {
+        if (isFirstPage) {
+          doc.setFontSize(16);
+          doc.setFont("helvetica", "normal");
+          doc.text(title, 15, 20);
+          doc.setFontSize(10);
+          doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
+          doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
+          isFirstPage = false; // Set the flag to false after drawing the title
+        }
+      };
 
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
+        didDrawPage: (data: any) => {
+          // Call the function to draw the title on each page
+          drawPageTitle("License Expired Report");
+        },
       };
 
       autoTable(doc, tableConfig);
 
       // Calculate the table height
-      const tableHeight = tableData.length * rowHeight;
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "italic");
-      // doc.text(
-      //   "Nb. Sort berdasarkan Expired Date",
-      //   15,
-      //   startY + tableHeight + 10
-      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -140,12 +149,6 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       //   startY + rowHeight + 10
       // );
     }
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "normal");
-    doc.text(`License Expired Report`, 15, 20);
-    doc.setFontSize(10);
-    doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
-    doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
 
     doc.save(`LicenseExpiredReport_${startDate}_${endDate}.pdf`);
   };
@@ -154,7 +157,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
     const doc = new jsPDF();
     const startY = 40; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
-
+    let isFirstPage = true;
     if (licenseExpiredAccounts && licenseExpiredAccounts.length > 0) {
       const rows = licenseExpiredAccounts.map(
         (account: AccountInterface, index: number) => [
@@ -179,24 +182,33 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       ];
 
       const tableData = [tableHeaders, ...rows];
+      const tableHeight = tableData.length * rowHeight;
+
+      const drawPageTitle = (title: any) => {
+        if (isFirstPage) {
+          doc.setFontSize(16);
+          doc.setFont("helvetica", "normal");
+          doc.text(title, 15, 20);
+          doc.setFontSize(10);
+          doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
+          doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
+          isFirstPage = false; // Set the flag to false after drawing the title
+        }
+      };
 
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
+        didDrawPage: (data: any) => {
+          // Call the function to draw the title on each page
+          drawPageTitle("License Expired Report");
+        },
       };
 
       autoTable(doc, tableConfig);
 
       // Calculate the table height
-      const tableHeight = tableData.length * rowHeight;
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "italic");
-      // doc.text(
-      //   "Nb. Sort berdasarkan Expired Date",
-      //   15,
-      //   startY + tableHeight + 10
-      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -222,12 +234,6 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       //   startY + rowHeight + 10
       // );
     }
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "normal");
-    doc.text(`License Expired Report`, 15, 20);
-    doc.setFontSize(10);
-    doc.text(`Recruiter: [ ${recruiter} ]`, 15, 30);
-    doc.text(`From Date: [ ${startDate}] to [ ${endDate} ]`, 15, 35);
 
     const pdfBlob = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -361,6 +367,18 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
     }
     return 0;
   });
+
+  let customPageNumber = 0;
+  const handlePageClick = (event: any) => {
+    console.log("page : ", event.selected + 1);
+    customPageNumber = event.selected + 1;
+    getPaginateData(event.selected + 1, pageSize);
+  };
+  const firstItemIndex = (page - 1) * pageSize + 1;
+  const lastItemIndex = Math.min(
+    firstItemIndex + pageSize - 1,
+    licenseExpiredAccountsCount
+  );
 
   return (
     <div>
@@ -737,71 +755,39 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                         </table>
                       </div>
                     </div>
-                    <div className="flex items-center justify-center my-10">
+                    <div className="flex items-center justify-between my-10 ">
+                      <div></div>
                       <ul className="inline-flex space-x-2">
-                        {page > 1 ? (
-                          <li>
-                            <button
-                              onClick={() => {
-                                getPaginateData(page - 1, pageSize);
-                              }}
-                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                            >
-                              <svg
-                                className="w-4 h-4 fill-current"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                  clip-rule="evenodd"
-                                  fill-rule="evenodd"
-                                ></path>
-                              </svg>
-                            </button>
-                          </li>
-                        ) : null}
-                        {Array.from({ length: totalPages }, (_, index) => {
-                          const pageIndex = index + 1;
-                          return (
-                            <li key={pageIndex}>
-                              <button
-                                onClick={() => {
-                                  getPaginateData(pageIndex, pageSize);
-                                }}
-                                className={`w-10 h-10 ${
-                                  page === index + 1
-                                    ? "bg-indigo-600 text-white"
-                                    : ""
-                                } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                              >
-                                {index + 1}
-                              </button>
-                            </li>
-                          );
-                        })}
-
-                        {page < totalPages ? (
-                          <li>
-                            <button
-                              onClick={() => {
-                                getPaginateData(page + 1, pageSize);
-                              }}
-                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                            >
-                              <svg
-                                className="w-4 h-4 fill-current"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                  clip-rule="evenodd"
-                                  fill-rule="evenodd"
-                                ></path>
-                              </svg>
-                            </button>
-                          </li>
-                        ) : null}
+                        <ReactPaginate
+                          breakLabel="..."
+                          nextLabel=">"
+                          onPageChange={handlePageClick}
+                          pageRangeDisplayed={5}
+                          pageCount={totalPages}
+                          previousLabel="<"
+                          breakLinkClassName={"text-indigo-600"}
+                          previousClassName={
+                            "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          }
+                          previousLinkClassName={"text-indigo-600 "}
+                          nextClassName={
+                            "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          }
+                          nextLinkClassName={"text-indigo-600"}
+                          containerClassName="flex items-center gap-4"
+                          breakClassName="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          renderOnZeroPageCount={null}
+                          pageClassName={` flex items-center justify-center  w-10 h-10   transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                          pageLinkClassName={
+                            " flex items-center justify-center w-10 h-10 text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          }
+                          activeLinkClassName="bg-indigo-600 text-white"
+                        />
                       </ul>
+                      <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                        Showing {firstItemIndex} - {lastItemIndex} of{" "}
+                        {licenseExpiredAccounts} Invoice(s)
+                      </div>
                     </div>
                   </div>
                 </div>

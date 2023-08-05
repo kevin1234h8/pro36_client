@@ -22,6 +22,7 @@ import {
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
+import ReactPaginate from "react-paginate";
 
 const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -72,7 +73,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/client-report?page=${newPage}&pageSize=${newPageSize}&clientName=${clientName}&startDate=${startDate}&endDate=${endDate}`,
+        `${BASE_URL}/client-report?page=${newPage}&pageSize=${newPageSize}&clientName=${clientName}&startDate=${startDateValue.startDate}&endDate=${endDateValue.endDate}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setClientReportAccounts(res.data.clientReportAccounts);
@@ -235,7 +236,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     const doc = new jsPDF();
     const startY = 60; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
-
+    let isFirstPage = true;
     if (ClientReportAccounts && ClientReportAccounts.length > 0) {
       const rows = ClientReportAccounts.map(
         (account: InputInvoiceSummary, index: number) => {
@@ -256,14 +257,37 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
 
       const tableHeaders = datas.clientReportsTableHeaders;
       const tableData = [tableHeaders, ...rows];
+      const drawPageTitle = (title: any) => {
+        if (isFirstPage) {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(12);
+          doc.text("Client P/L Report", 15, 20);
+          doc.setFontSize(10);
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(11);
+          doc.text(`From Date : [ ${startDate} ] to [ ${endDate} ] `, 15, 30);
+          doc.text(`Client Name`, 15, 40);
+          doc.text(`:`, 40, 40);
+          doc.text(clientName, 50, 40);
+          doc.text(`City`, 15, 45);
+          doc.text(`:`, 40, 45);
+          doc.text(city.city, 50, 45);
+          isFirstPage = false; // Set the flag to false after drawing the title
+        }
+      };
 
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
+        didDrawPage: (data: any) => {
+          // Call the function to draw the title on each page
+          drawPageTitle("Client P/L Report");
+        },
       };
 
       const tableHeight = tableData.length * rowHeight;
+
       const city = ClientReportAccounts.find(
         (ClientReportAccount: any, index: number) => {
           return ClientReportAccount.city;
@@ -308,18 +332,18 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       //   15,
       //   startY + rowHeight + 20
       // );
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      doc.text("Client P/L Report", 15, 20);
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0); //
-      doc.text(`From Date : [  ] to [  ] `, 15, 30);
-      doc.text(`Client Name`, 15, 40);
-      doc.text(`:`, 40, 40);
-      doc.text("", 50, 40);
-      doc.text(`City`, 15, 45);
-      doc.text(`:`, 40, 45);
-      doc.text("", 50, 45);
+      // doc.setFont("helvetica", "normal");
+      // doc.setFontSize(12);
+      // doc.text("Client P/L Report", 15, 20);
+      // doc.setFontSize(10);
+      // doc.setTextColor(0, 0, 0); //
+      // doc.text(`From Date : [  ] to [  ] `, 15, 30);
+      // doc.text(`Client Name`, 15, 40);
+      // doc.text(`:`, 40, 40);
+      // doc.text("", 50, 40);
+      // doc.text(`City`, 15, 45);
+      // doc.text(`:`, 40, 45);
+      // doc.text("", 50, 45);
     }
 
     const pdfBlob = doc.output("blob");
@@ -388,6 +412,18 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
     }
     return 0;
   });
+
+  let customPageNumber = 0;
+  const handlePageClick = (event: any) => {
+    console.log("page : ", event.selected + 1);
+    customPageNumber = event.selected + 1;
+    getPaginateData(event.selected + 1, pageSize);
+  };
+  const firstItemIndex = (page - 1) * pageSize + 1;
+  const lastItemIndex = Math.min(
+    firstItemIndex + pageSize - 1,
+    ClientReportAccountsCount
+  );
   return (
     <div>
       <ToastContainer />
@@ -808,71 +844,80 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                         </table>
                       </div>
                     </div>
-                    <div className="flex items-center justify-center my-10">
-                      <ul className="inline-flex space-x-2">
-                        {page > 1 ? (
-                          <li>
-                            <button
-                              onClick={() => {
-                                getPaginateData(page - 1, pageSize);
-                              }}
-                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                            >
-                              <svg
-                                className="w-4 h-4 fill-current"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                  clip-rule="evenodd"
-                                  fill-rule="evenodd"
-                                ></path>
-                              </svg>
-                            </button>
-                          </li>
-                        ) : null}
-                        {Array.from({ length: totalPages }, (_, index) => {
-                          const pageIndex = index + 1;
-                          return (
-                            <li key={pageIndex}>
-                              <button
-                                onClick={() => {
-                                  getPaginateData(pageIndex, pageSize);
-                                }}
-                                className={`w-10 h-10 ${
-                                  page === index + 1
-                                    ? "bg-indigo-600 text-white"
-                                    : ""
-                                } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                              >
-                                {index + 1}
-                              </button>
-                            </li>
-                          );
-                        })}
+                    <div className="flex items-center justify-between my-10 ">
+                      <div>
+                        <select
+                          className="appearance-none h-full rounded-l border-indigo-600 text-indigo-600 text-sm border block md:text-base lg:text-lg w-full bg-white py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-indigo-700 dark:bg-[#0e1011] dark:focus:bg-[#0e1011] rounded-lg dark:focus:text-white dark:text-white"
+                          onChange={(e) => {
+                            const selectedPageSize = parseInt(e.target.value);
+                            setPageSize(parseInt(e.target.value));
 
-                        {page < totalPages ? (
-                          <li>
-                            <button
-                              onClick={() => {
-                                getPaginateData(page + 1, pageSize);
-                              }}
-                              className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                            >
-                              <svg
-                                className="w-4 h-4 fill-current"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                  clip-rule="evenodd"
-                                  fill-rule="evenodd"
-                                ></path>
-                              </svg>
-                            </button>
-                          </li>
-                        ) : null}
+                            getPaginateData(1, selectedPageSize);
+                          }}
+                        >
+                          <option
+                            value="20"
+                            className="text-[6px] md:text-[6px] lg:text-[12px]"
+                          >
+                            20
+                          </option>
+                          <option
+                            value="40"
+                            className="text-[6px] md:text-[6px] lg:text-[12px]"
+                          >
+                            40
+                          </option>
+                          <option
+                            value="60"
+                            className="text-[6px] md:text-[6px] lg:text-[12px]"
+                          >
+                            60
+                          </option>
+                          <option
+                            value="80"
+                            className="text-[6px] md:text-[6px] lg:text-[12px]"
+                          >
+                            80
+                          </option>
+                          <option
+                            value="100"
+                            className="text-[6px] md:text-[6px] lg:text-[12px]"
+                          >
+                            100
+                          </option>
+                        </select>
+                      </div>
+                      <ul className="inline-flex space-x-2">
+                        <ReactPaginate
+                          breakLabel="..."
+                          nextLabel=">"
+                          onPageChange={handlePageClick}
+                          pageRangeDisplayed={5}
+                          pageCount={totalPages}
+                          previousLabel="<"
+                          breakLinkClassName={"text-indigo-600"}
+                          previousClassName={
+                            "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          }
+                          previousLinkClassName={"text-indigo-600 "}
+                          nextClassName={
+                            "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          }
+                          nextLinkClassName={"text-indigo-600"}
+                          containerClassName="flex items-center gap-4"
+                          breakClassName="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          renderOnZeroPageCount={null}
+                          pageClassName={` flex items-center justify-center  w-10 h-10   transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                          pageLinkClassName={
+                            " flex items-center text-sm justify-center w-10 h-10 text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                          }
+                          activeLinkClassName="bg-indigo-600 text-white"
+                        />
                       </ul>
+                      <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                        Showing {firstItemIndex} - {lastItemIndex} of{" "}
+                        {ClientReportAccountsCount} Invoice(s)
+                      </div>
                     </div>
                   </div>
                 </div>

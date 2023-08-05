@@ -13,6 +13,7 @@ import {
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
+import ReactPaginate from "react-paginate";
 const NewAccountTable = ({
   account,
   getPaginateData,
@@ -51,22 +52,22 @@ const NewAccountTable = ({
     totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
   );
 
-  const handlePageClick = (pageNumber: any) => {
-    if (pageNumber <= halfVisibleButtons + 1) {
-      setStartPage(1);
-      setEndPage(
-        totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
-      );
-    } else if (pageNumber >= totalPages - halfVisibleButtons) {
-      setStartPage(totalPages - maxVisibleButtons + 1);
-      setEndPage(totalPages);
-    } else {
-      setStartPage(pageNumber - halfVisibleButtons);
-      setEndPage(pageNumber + halfVisibleButtons);
-    }
+  // const handlePageClick = (pageNumber: any) => {
+  //   if (pageNumber <= halfVisibleButtons + 1) {
+  //     setStartPage(1);
+  //     setEndPage(
+  //       totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
+  //     );
+  //   } else if (pageNumber >= totalPages - halfVisibleButtons) {
+  //     setStartPage(totalPages - maxVisibleButtons + 1);
+  //     setEndPage(totalPages);
+  //   } else {
+  //     setStartPage(pageNumber - halfVisibleButtons);
+  //     setEndPage(pageNumber + halfVisibleButtons);
+  //   }
 
-    getPaginateData(pageNumber, pageSize);
-  };
+  //   getPaginateData(pageNumber, pageSize);
+  // };
 
   // Print the sorted data
   const sortedAccount = [...account].sort((a, b) => {
@@ -159,6 +160,14 @@ const NewAccountTable = ({
     return 0;
   });
 
+  let customPageNumber = 0;
+  const handlePageClick = (event: any) => {
+    console.log("page : ", event.selected + 1);
+    customPageNumber = event.selected + 1;
+    getPaginateData(event.selected + 1, pageSize);
+  };
+  const firstItemIndex = (page - 1) * pageSize + 1;
+  const lastItemIndex = Math.min(firstItemIndex + pageSize - 1, totalAccount);
   return (
     <div className="w-full lg:mx-auto ">
       <div className="mx-auto max-w-7xl">
@@ -254,7 +263,7 @@ const NewAccountTable = ({
             <input
               placeholder="Search Account No"
               className="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm  md:text-base lg:text-lg placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none dark:text-white dark:bg-[#0e1011] dark:focus:bg-[#0e1011] dark:focus:text-white"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => parseInt(setSearch(e.target.value))}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   getPaginateData(1, pageSize);
@@ -433,100 +442,39 @@ const NewAccountTable = ({
                   </table>
                 </div>
               </div>
-              <div className="flex items-center justify-center my-10">
+              <div className="flex items-center  justify-between my-10 ">
+                <div></div>
                 <ul className="inline-flex space-x-2">
-                  {page > 1 ? (
-                    <li>
-                      <button
-                        onClick={() => {
-                          getPaginateData(page - 1);
-                        }}
-                        className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                      >
-                        <svg
-                          className="w-4 h-4 fill-current"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd"
-                            fill-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </button>
-                    </li>
-                  ) : null}
-
-                  {startPage > 2 && (
-                    <li key="ellipsis-start">
-                      <button
-                        onClick={() => handlePageClick(1)}
-                        className={`w-10 h-10 pagination-button ${
-                          page === 1 ? "bg-indigo-600 text-white" : ""
-                        } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                      >
-                        {1}
-                      </button>
-                      <span className="mx-2 dark:text-white">{ellipsis}</span>
-                    </li>
-                  )}
-
-                  {Array.from(
-                    { length: endPage - startPage + 1 },
-                    (_, index) => {
-                      const pageNumber = startPage + index;
-                      return (
-                        <li key={pageNumber}>
-                          <button
-                            onClick={() => handlePageClick(pageNumber)}
-                            className={`w-10 h-10 pagination-button ${
-                              page === pageNumber
-                                ? "bg-indigo-600 text-white"
-                                : ""
-                            } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                          >
-                            {pageNumber}
-                          </button>
-                        </li>
-                      );
+                  <ReactPaginate
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={5}
+                    pageCount={totalPages}
+                    previousLabel="<"
+                    breakLinkClassName={"text-indigo-600"}
+                    previousClassName={
+                      "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
                     }
-                  )}
-
-                  {endPage < totalPages && (
-                    <li key="ellipsis-end">
-                      <span className="mx-2 dark:text-white">{ellipsis}</span>
-                      <button
-                        onClick={() => handlePageClick(totalPages)}
-                        className={`w-10 h-10 pagination-button ${
-                          page === totalPages ? "bg-indigo-600 text-white" : ""
-                        } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                      >
-                        {totalPages}
-                      </button>
-                    </li>
-                  )}
-                  {page < totalPages ? (
-                    <li>
-                      <button
-                        onClick={() => {
-                          getPaginateData(page + 1);
-                        }}
-                        className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                      >
-                        <svg
-                          className="w-4 h-4 fill-current"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"
-                            fill-rule="evenodd"
-                          ></path>
-                        </svg>
-                      </button>
-                    </li>
-                  ) : null}
+                    previousLinkClassName={"text-indigo-600 "}
+                    nextClassName={
+                      "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                    }
+                    nextLinkClassName={"text-indigo-600"}
+                    containerClassName="flex items-center gap-4"
+                    breakClassName="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                    renderOnZeroPageCount={null}
+                    pageClassName={` flex items-center justify-center  w-10 h-10   transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                    pageLinkClassName={
+                      " flex items-center justify-center w-10 h-10 text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                    }
+                    activeLinkClassName="bg-indigo-600 text-white"
+                  />
                 </ul>
+                <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                  Showing {firstItemIndex} - {lastItemIndex} of {totalAccount}{" "}
+                  Account(s)
+                </div>
               </div>
             </div>
           </div>

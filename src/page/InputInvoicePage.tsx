@@ -22,6 +22,7 @@ import {
   getIndonesianFormattedDateUNION,
   incrementHourInISOString,
 } from "../utils/dateUtils";
+import ReactPaginate from "react-paginate";
 
 const InputInvoicePage = ({ user, parsedUserData }: any) => {
   const widthStyle = useContainerWidthUtils();
@@ -72,6 +73,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
 
   const savePDF = async (id: string, noInvoice: string) => {
     setIsLoading(false);
+    let isFirstPage = true;
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
     );
@@ -165,67 +167,80 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       ];
       rows.push(totalRow);
       // Set table properties
-
       const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
       const tableData = [tableHeaders, ...rows];
+      const drawFirstPageContent = () => {
+        doc.setFontSize(10);
+
+        doc.setFont("helvetica", "bold");
+        doc.text(data?.client_name || "", 15, 20);
+        doc.setTextColor(0, 0, 0); //
+        doc.setFont("helvetica", "normal");
+        doc.text(data.city, 15, 25);
+        doc.text(data.country, 15, 30);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setFillColor(255, 165, 0); // Orange color
+        doc.rect(15, 43, 70, 10, "F");
+        doc.text("SERVICE FEE", 15, 50);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("SERVICE FEE (%)", 15, 57);
+        doc.text("Rate", 15, 64);
+        doc.setFont("helvetica", "normal");
+        doc.text(data.service_fee + "%", 50, 57);
+        doc.text(
+          "Rp" + formatNumberToIDR(parseFloat(data.rate).toFixed(2)),
+          50,
+          64
+        );
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("Statement Date", 120, 15);
+        doc.text("Statement No.", 120, 20);
+        doc.setFont("helvetica", "normal");
+        doc.text(formattedDate, 170, 15);
+        doc.text(data.no_invoice, 170, 20);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFillColor(255, 165, 0); // Orange color
+        doc.rect(118, 43, 80, 10, "F");
+        doc.text("PAYMENT SUMMARY", 120, 50);
+        doc.text("Ammount (Rp)", 170, 50);
+        doc.text("Total", 120, 57);
+        doc.setFont("helvetica", "normal");
+
+        doc.text("Rp" + formattedTotalAmount, 170, 57);
+        doc.setFontSize(10);
+        doc.text(
+          "Payment By Transfer To (Full amount in Rupiah)",
+          15,
+          startY + tableHeight + 30
+        );
+        isFirstPage = false;
+      };
+
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
+        didDrawPage: (data: any) => {
+          if (isFirstPage) {
+            // Draw the content at the top of the first page
+            drawFirstPageContent();
+            isFirstPage = false; // Set the flag to false after drawing the first page
+          }
+        },
       };
-      autoTable(doc, tableConfig);
       const tableHeight = tableData.length * rowHeight;
 
+      autoTable(doc, tableConfig);
+
       doc.setFontSize(10);
 
-      doc.setFont("helvetica", "bold");
-      doc.text(data?.client_name || "", 15, 20);
-      doc.setTextColor(0, 0, 0); //
-      doc.setFont("helvetica", "normal");
-      doc.text(data.city, 15, 25);
-      doc.text(data.country, 15, 30);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setFillColor(255, 165, 0); // Orange color
-      doc.rect(15, 43, 70, 10, "F");
-      doc.text("SERVICE FEE", 15, 50);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "bold");
-      doc.text("SERVICE FEE (%)", 15, 57);
-      doc.text("Rate", 15, 64);
-      doc.setFont("helvetica", "normal");
-      doc.text(data.service_fee + "%", 50, 57);
-      doc.text(
-        "Rp" + formatNumberToIDR(parseFloat(data.rate).toFixed(2)),
-        50,
-        64
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text("Statement Date", 120, 15);
-      doc.text("Statement No.", 120, 20);
-      doc.setFont("helvetica", "normal");
-      doc.text(formattedDate, 170, 15);
-      doc.text(data.no_invoice, 170, 20);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFillColor(255, 165, 0); // Orange color
-      doc.rect(118, 43, 80, 10, "F");
-      doc.text("PAYMENT SUMMARY", 120, 50);
-      doc.text("Ammount (Rp)", 170, 50);
-      doc.text("Total", 120, 57);
-      doc.setFont("helvetica", "normal");
-
-      doc.text("Rp" + formattedTotalAmount, 170, 57);
-      doc.setFontSize(10);
-      doc.text(
-        "Payment By Transfer To (Full amount in Rupiah)",
-        15,
-        startY + tableHeight + 30
-      );
       doc.setFont("helvetica", "bold");
       doc.text(data.bank_name, 15, startY + tableHeight + 40);
       doc.text(data.bank_beneficiary, 15, startY + tableHeight + 45);
@@ -253,6 +268,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
 
   const print = async (id: string, noInvoice: string) => {
     setIsLoading(false);
+    let isFirstPage = true;
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary-details/${id}`
     );
@@ -346,67 +362,78 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       ];
       rows.push(totalRow);
       // Set table properties
-
       const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
       const tableData = [tableHeaders, ...rows];
+      const drawFirstPageContent = () => {
+        doc.setFontSize(10);
+
+        doc.setFont("helvetica", "bold");
+        doc.text(data?.client_name || "", 15, 20);
+        doc.setTextColor(0, 0, 0); //
+        doc.setFont("helvetica", "normal");
+        doc.text(data.city, 15, 25);
+        doc.text(data.country, 15, 30);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setFillColor(255, 165, 0); // Orange color
+        doc.rect(15, 43, 70, 10, "F");
+        doc.text("SERVICE FEE", 15, 50);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("SERVICE FEE (%)", 15, 57);
+        doc.text("Rate", 15, 64);
+        doc.setFont("helvetica", "normal");
+        doc.text(data.service_fee + "%", 50, 57);
+        doc.text(
+          "Rp" + formatNumberToIDR(parseFloat(data.rate).toFixed(2)),
+          50,
+          64
+        );
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("Statement Date", 120, 15);
+        doc.text("Statement No.", 120, 20);
+        doc.setFont("helvetica", "normal");
+        doc.text(formattedDate, 170, 15);
+        doc.text(data.no_invoice, 170, 20);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFillColor(255, 165, 0); // Orange color
+        doc.rect(118, 43, 80, 10, "F");
+        doc.text("PAYMENT SUMMARY", 120, 50);
+        doc.text("Ammount (Rp)", 170, 50);
+        doc.text("Total", 120, 57);
+        doc.setFont("helvetica", "normal");
+
+        doc.text("Rp" + formattedTotalAmount, 170, 57);
+        doc.setFontSize(10);
+        doc.text(
+          "Payment By Transfer To (Full amount in Rupiah)",
+          15,
+          startY + tableHeight + 30
+        );
+        isFirstPage = false;
+      };
+
       const tableConfig = {
         startY: startY,
         head: [tableHeaders],
         body: rows,
+        didDrawPage: (data: any) => {
+          if (isFirstPage) {
+            // Draw the content at the top of the first page
+            drawFirstPageContent();
+            isFirstPage = false; // Set the flag to false after drawing the first page
+          }
+        },
       };
-      autoTable(doc, tableConfig);
       const tableHeight = tableData.length * rowHeight;
 
+      autoTable(doc, tableConfig);
       doc.setFontSize(10);
-
-      doc.setFont("helvetica", "bold");
-      doc.text(data?.client_name || "", 15, 20);
-      doc.setTextColor(0, 0, 0); //
-      doc.setFont("helvetica", "normal");
-      doc.text(data.city, 15, 25);
-      doc.text(data.country, 15, 30);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setFillColor(255, 165, 0); // Orange color
-      doc.rect(15, 43, 70, 10, "F");
-      doc.text("SERVICE FEE", 15, 50);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "bold");
-      doc.text("SERVICE FEE (%)", 15, 57);
-      doc.text("Rate", 15, 64);
-      doc.setFont("helvetica", "normal");
-      doc.text(data.service_fee + "%", 50, 57);
-      doc.text(
-        "Rp" + formatNumberToIDR(parseFloat(data.rate).toFixed(2)),
-        50,
-        64
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text("Statement Date", 120, 15);
-      doc.text("Statement No.", 120, 20);
-      doc.setFont("helvetica", "normal");
-      doc.text(formattedDate, 170, 15);
-      doc.text(data.no_invoice, 170, 20);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFillColor(255, 165, 0); // Orange color
-      doc.rect(118, 43, 80, 10, "F");
-      doc.text("PAYMENT SUMMARY", 120, 50);
-      doc.text("Ammount (Rp)", 170, 50);
-      doc.text("Total", 120, 57);
-      doc.setFont("helvetica", "normal");
-
-      doc.text("Rp" + formattedTotalAmount, 170, 57);
-      doc.setFontSize(10);
-      doc.text(
-        "Payment By Transfer To (Full amount in Rupiah)",
-        15,
-        startY + tableHeight + 30
-      );
       doc.setFont("helvetica", "bold");
       doc.text(data.bank_name, 15, startY + tableHeight + 40);
       doc.text(data.bank_beneficiary, 15, startY + tableHeight + 45);
@@ -589,22 +616,34 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
   );
 
-  const handlePageClick = (pageNumber: any) => {
-    if (pageNumber <= halfVisibleButtons + 1) {
-      setStartPage(1);
-      setEndPage(
-        totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
-      );
-    } else if (pageNumber >= totalPages - halfVisibleButtons) {
-      setStartPage(totalPages - maxVisibleButtons + 1);
-      setEndPage(totalPages);
-    } else {
-      setStartPage(pageNumber - halfVisibleButtons);
-      setEndPage(pageNumber + halfVisibleButtons);
-    }
+  // const handlePageClick = (pageNumber: any) => {
+  //   if (pageNumber <= halfVisibleButtons + 1) {
+  //     setStartPage(1);
+  //     setEndPage(
+  //       totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
+  //     );
+  //   } else if (pageNumber >= totalPages - halfVisibleButtons) {
+  //     setStartPage(totalPages - maxVisibleButtons + 1);
+  //     setEndPage(totalPages);
+  //   } else {
+  //     setStartPage(pageNumber - halfVisibleButtons);
+  //     setEndPage(pageNumber + halfVisibleButtons);
+  //   }
 
-    getInvoiceSummaryPaginateData(pageNumber, invoiceSummaryPageSize);
+  //   getInvoiceSummaryPaginateData(pageNumber, invoiceSummaryPageSize);
+  // };
+
+  let customPageNumber = 0;
+  const handlePageClick = (event: any) => {
+    console.log("page : ", event.selected + 1);
+    customPageNumber = event.selected + 1;
+    getInvoiceSummaryPaginateData(event.selected + 1, invoiceSummaryPageSize);
   };
+  const firstItemIndex = (invoiceSummaryPage - 1) * invoiceSummaryPageSize + 1;
+  const lastItemIndex = Math.min(
+    firstItemIndex + invoiceSummaryPageSize - 1,
+    totalInvoiceSummary
+  );
 
   return isLoading ? (
     <LoadingSpinner />
@@ -883,110 +922,39 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                     </table>
                   </div>
                 </div>
-                <div className="flex items-center justify-center my-10">
+                <div className="flex items-center justify-between my-10 ">
+                  <div></div>
                   <ul className="inline-flex space-x-2">
-                    {invoiceSummaryPage > 1 ? (
-                      <li>
-                        <button
-                          onClick={() => {
-                            getInvoiceSummaryPaginateData(
-                              invoiceSummaryPage - 1,
-                              invoiceSummaryPageSize
-                            );
-                          }}
-                          className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                        >
-                          <svg
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                              clip-rule="evenodd"
-                              fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    ) : null}
-                    {startPage > 2 && (
-                      <li key="ellipsis-start">
-                        <button
-                          onClick={() => handlePageClick(1)}
-                          className={`w-10 h-10 pagination-button ${
-                            invoiceSummaryPage === 1
-                              ? "bg-indigo-600 text-white"
-                              : ""
-                          } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                        >
-                          {1}
-                        </button>
-                        <span className="mx-2 dark:text-white">{ellipsis}</span>
-                      </li>
-                    )}
-
-                    {Array.from(
-                      { length: endPage - startPage + 1 },
-                      (_, index) => {
-                        const pageNumber = startPage + index;
-                        return (
-                          <li key={pageNumber}>
-                            <button
-                              onClick={() => handlePageClick(pageNumber)}
-                              className={`w-10 h-10 pagination-button ${
-                                invoiceSummaryPage === pageNumber
-                                  ? "bg-indigo-600 text-white"
-                                  : ""
-                              } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                            >
-                              {pageNumber}
-                            </button>
-                          </li>
-                        );
+                    <ReactPaginate
+                      breakLabel="..."
+                      nextLabel=">"
+                      onPageChange={handlePageClick}
+                      pageRangeDisplayed={5}
+                      pageCount={totalPages}
+                      previousLabel="<"
+                      breakLinkClassName={"text-indigo-600"}
+                      previousClassName={
+                        "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
                       }
-                    )}
-
-                    {endPage < totalPages && (
-                      <li key="ellipsis-end">
-                        <span className="mx-2 dark:text-white">{ellipsis}</span>
-                        <button
-                          onClick={() => handlePageClick(totalPages)}
-                          className={`w-10 h-10 pagination-button ${
-                            invoiceSummaryPage === totalPages
-                              ? "bg-indigo-600 text-white"
-                              : ""
-                          } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                        >
-                          {totalPages}
-                        </button>
-                      </li>
-                    )}
-
-                    {invoiceSummaryPage < totalPages ? (
-                      <li>
-                        <button
-                          onClick={() => {
-                            getInvoiceSummaryPaginateData(
-                              invoiceSummaryPage + 1,
-                              invoiceSummaryPageSize
-                            );
-                          }}
-                          className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
-                        >
-                          <svg
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd"
-                              fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    ) : null}
+                      previousLinkClassName={"text-indigo-600 "}
+                      nextClassName={
+                        "flex items-center text-3xl justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                      }
+                      nextLinkClassName={"text-indigo-600"}
+                      containerClassName="flex items-center gap-4"
+                      breakClassName="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                      renderOnZeroPageCount={null}
+                      pageClassName={` flex items-center justify-center  w-10 h-10   transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                      pageLinkClassName={
+                        " flex items-center justify-center w-10 h-10 text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
+                      }
+                      activeLinkClassName="bg-indigo-600 text-white"
+                    />
                   </ul>
+                  <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                    Showing {firstItemIndex} - {lastItemIndex} of{" "}
+                    {totalInvoiceSummary} Invoice(s)
+                  </div>
                 </div>
               </div>
             </div>

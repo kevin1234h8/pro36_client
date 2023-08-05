@@ -777,6 +777,8 @@ const InvoiceDocument = ({
     const doc = new jsPDF();
     const startY = 80; // Initial Y-coordinate for the table
     const rowHeight = 10; // Adjust the row height as needed
+    let isFirstPage = true;
+    const tableStartY = startY + 10;
     const totalAmount = details.reduce((sum: number, detail: any) => {
       const amount = detail.rupiah
         ? detail.rupiah
@@ -844,64 +846,100 @@ const InvoiceDocument = ({
 
     const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
     const tableData = [tableHeaders, ...rows];
-    const tableConfig = {
-      startY: startY,
-      head: [tableHeaders],
-      body: rows,
+
+    const drawFirstPageContent = () => {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text(clientName, 15, 20);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "normal");
+      doc.text(city, 15, 25);
+      doc.text(country, 15, 30);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setFillColor(255, 165, 0); // Orange color
+      doc.rect(15, 43, 70, 10, "F");
+      doc.text("SERVICE FEE", 15, 50);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.text("SERVICE FEE (%)", 15, 57);
+      doc.text("Rate", 15, 64);
+      doc.setFont("helvetica", "normal");
+      doc.text(serviceFee + "%", 50, 57);
+      doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Statement Date", 120, 15);
+      doc.text("Statement No.", 120, 20);
+      doc.setFont("helvetica", "normal");
+      doc.text(formattedDate, 170, 15);
+      doc.text(invoiceNo, 170, 20);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFillColor(255, 165, 0); // Orange color
+      doc.rect(118, 43, 80, 10, "F");
+      doc.text("PAYMENT SUMMARY", 120, 50);
+      doc.text("Ammount (Rp)", 170, 50);
+      doc.text("Total", 120, 57);
+      doc.setFont("helvetica", "normal");
+
+      doc.text("Rp" + formattedTotalAmount, 170, 57);
+      isFirstPage = false;
     };
-    autoTable(doc, tableConfig);
     const tableHeight = tableData.length * rowHeight;
 
-    doc.setFontSize(10);
+    const tableConfig = {
+      startY: tableStartY,
+      head: [tableHeaders],
+      body: rows,
+      didDrawPage: (data: any) => {
+        if (isFirstPage) {
+          // Draw the content at the top of the first page
+          drawFirstPageContent();
+          isFirstPage = false; // Set the flag to false after drawing the first page
+        } else {
+          // Draw the content at the bottom of the table on subsequent pages
+          doc.text(
+            "Payment By Transfer To (Full amount in Rupiah)",
+            15,
+            tableStartY + tableHeight + 30
+          );
+          doc.setFont("helvetica", "bold");
+          doc.text(bankName, 15, tableStartY + tableHeight + 40);
+          doc.text(beneficiaryName, 15, tableStartY + tableHeight + 45);
+          doc.text(
+            accountNumber.toString(),
+            15,
+            tableStartY + tableHeight + 50
+          );
+
+          doc.setFont("helvetica", "italic");
+
+          // Set the underline style
+
+          // Set the font size and text color
+          doc.setFontSize(11);
+          doc.setTextColor(0, 0, 0);
+
+          // Add the text with underline and italic style
+          doc.rect(8, tableStartY + tableHeight + 65, 195, 10);
+          doc.text(
+            "Please make a payment within 7 days after this statement is issued, otherwise, the software will be deactivated",
+            12,
+            tableStartY + tableHeight + 70
+          );
+        }
+      },
+    };
+    autoTable(doc, tableConfig);
 
     doc.setFont("helvetica", "bold");
-    doc.text(clientName, 15, 20);
-    doc.setTextColor(0, 0, 0); //
-    doc.setFont("helvetica", "normal");
-    doc.text(city, 15, 25);
-    doc.text(country, 15, 30);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setFillColor(255, 165, 0); // Orange color
-    doc.rect(15, 43, 70, 10, "F");
-    doc.text("SERVICE FEE", 15, 50);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.text("SERVICE FEE (%)", 15, 57);
-    doc.text("Rate", 15, 64);
-    doc.setFont("helvetica", "normal");
-    doc.text(serviceFee + "%", 50, 57);
-    doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("Statement Date", 120, 15);
-    doc.text("Statement No.", 120, 20);
-    doc.setFont("helvetica", "normal");
-    doc.text(formattedDate, 170, 15);
-    doc.text(invoiceNo, 170, 20);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFillColor(255, 165, 0); // Orange color
-    doc.rect(118, 43, 80, 10, "F");
-    doc.text("PAYMENT SUMMARY", 120, 50);
-    doc.text("Ammount (Rp)", 170, 50);
-    doc.text("Total", 120, 57);
-    doc.setFont("helvetica", "normal");
-
-    doc.text("Rp" + formattedTotalAmount, 170, 57);
-    doc.setFontSize(10);
-    doc.text(
-      "Payment By Transfer To (Full amount in Rupiah)",
-      15,
-      startY + tableHeight + 30
-    );
-    doc.setFont("helvetica", "bold");
-    doc.text(bankName, 15, startY + tableHeight + 40);
-    doc.text(beneficiaryName, 15, startY + tableHeight + 45);
-    doc.text(accountNumber.toString(), 15, startY + tableHeight + 50);
+    doc.text(bankName, 15, tableStartY + tableHeight + 40);
+    doc.text(beneficiaryName, 15, tableStartY + tableHeight + 45);
+    doc.text(accountNumber.toString(), 15, tableStartY + tableHeight + 50);
 
     doc.setFont("helvetica", "italic");
 
@@ -912,13 +950,12 @@ const InvoiceDocument = ({
     doc.setTextColor(0, 0, 0);
 
     // Add the text with underline and italic style
-    doc.rect(8, startY + tableHeight + 65, 195, 10);
+    doc.rect(8, tableStartY + tableHeight + 65, 195, 10);
     doc.text(
-      "Please make a payment within 7 days after this statement is issued, otherwise the software will be deactivated",
+      "Please make a payment within 7 days after this statement is issued, otherwise, the software will be deactivated",
       12,
-      startY + tableHeight + 70
+      tableStartY + tableHeight + 70
     );
-
     const pdfBlob = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, "_blank");
