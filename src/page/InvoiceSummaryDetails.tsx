@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { InputInvoiceSummary } from "../interface/InputInvoiceSummary";
-import { useParams } from "react-router-dom";
-import SuccessModal from "../components/SuccessModal";
-import Navbar from "../components/Navbar";
 import axios from "axios";
-import { BASE_URL } from "../config/config";
-import { goBack } from "../utils/navigationUtils";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Breadcrumb from "../components/Breadcrumb";
+import Navbar from "../components/Navbar";
+import SuccessModal from "../components/SuccessModal";
+import { BASE_URL } from "../config/config";
 import datas from "../data/datas.json";
-import useContainerWidthUtils from "../utils/useContainerWidthUtils";
+import { InputInvoiceSummary } from "../interface/InputInvoiceSummary";
+import { changeDateFormatAndIncrementHour } from "../utils/dateUtils";
+import { goBack } from "../utils/navigationUtils";
 import { formatNumberToIDR } from "../utils/numberUtils";
-import {
-  changeDateFormatAndIncrementHour,
-  convertToDDMMYYYY,
-  formatDateToDDMMYYYY,
-  formatShortStringToDDMMYYYY,
-  getFormattedDate,
-  getIndonesianFormattedDate,
-  getIndonesianFormattedDateUNION,
-} from "../utils/dateUtils";
+import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 
 const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
   const { id } = useParams();

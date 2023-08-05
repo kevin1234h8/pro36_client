@@ -195,11 +195,11 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(`Client P/L Report`, 15, 20);
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
-      doc.text(
-        "Nb. Sort berdasarkan tanggal Invoice",
-        15,
-        startY + tableHeight + 30
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan tanggal Invoice",
+      //   15,
+      //   startY + tableHeight + 30
+      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -208,11 +208,11 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       });
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
-      doc.text(
-        "Nb. Sort berdasarkan tanggal Invoice",
-        15,
-        startY + rowHeight + 20
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan tanggal Invoice",
+      //   15,
+      //   startY + rowHeight + 20
+      // );
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
       doc.text("Client P/L Report", 15, 20);
@@ -290,11 +290,11 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.text(`Client P/L Report`, 15, 20);
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
-      doc.text(
-        "Nb. Sort berdasarkan tanggal Invoice",
-        15,
-        startY + tableHeight + 30
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan tanggal Invoice",
+      //   15,
+      //   startY + tableHeight + 30
+      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -303,11 +303,11 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
       });
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
-      doc.text(
-        "Nb. Sort berdasarkan tanggal Invoice",
-        15,
-        startY + rowHeight + 20
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan tanggal Invoice",
+      //   15,
+      //   startY + rowHeight + 20
+      // );
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
       doc.text("Client P/L Report", 15, 20);

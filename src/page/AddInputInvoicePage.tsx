@@ -39,6 +39,7 @@ const Summary = ({
   setIsImportModalIsVisible,
   setInvoiceNoDate,
   invoiceNoDate,
+  parsedUserData,
 }: any) => {
   const currentDate = new Date();
   function convertToRoman(month: number) {
@@ -87,7 +88,8 @@ const Summary = ({
     const getInvoiceNumber = async () => {
       const res = await axios.post(
         `${BASE_URL}/input-invoice/invoice-number`,
-        values
+        values,
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setInvoiceNo(res.data.invoiceNumber);
     };
@@ -544,6 +546,7 @@ const InvoiceDocument = ({
   user,
   setIsSuccessModalVisible,
   invoiceNoDate,
+  parsedUserData,
 }: any) => {
   const today = new Date();
   const year = today.getFullYear();
@@ -624,7 +627,8 @@ const InvoiceDocument = ({
     try {
       const res = await axios.post(
         `${BASE_URL}/input-invoice/input-invoice-details/create`,
-        { values }
+        { values },
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
     } catch (error) {
       console.error(error);
@@ -663,7 +667,8 @@ const InvoiceDocument = ({
     try {
       const res = await axios.post(
         `${BASE_URL}/input-invoice/input-invoice-summary/create`,
-        summaryValues
+        summaryValues,
+        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
     } catch (err) {
       console.log(err);
@@ -1327,6 +1332,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
         serviceFee={serviceFee}
         rate={rate}
         city={city}
+        parsedUserData={parsedUserData}
         country={country}
         setInvoiceNo={setInvoiceNo}
         setDate={setDate}
@@ -1377,6 +1383,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
         setLoading={setLoading}
         accountNumber={accountNumber}
         invoiceNoDate={invoiceNoDate}
+        parsedUserData={parsedUserData}
       />
     </div>
   );

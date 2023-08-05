@@ -13,6 +13,9 @@ import {
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
+import ExAccountPage from "../page/ExAccountPage";
+import { start } from "repl";
+import { totalmem } from "os";
 const ExAccountTable = ({
   user,
   exAccount,
@@ -20,6 +23,7 @@ const ExAccountTable = ({
   totalExAccount,
   exAccountPageSize,
   exAccountPage,
+  parsedUserData,
   setExAccountPageSize,
   setExAccountSearch,
 }: any) => {
@@ -33,7 +37,8 @@ const ExAccountTable = ({
     useState<boolean>(false);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
-
+  console.log(totalExAccount);
+  console.log(totalPages);
   const restoreUser = async (id: string) => {
     const values = {
       restored_by: user?.id,
@@ -45,7 +50,10 @@ const ExAccountTable = ({
       try {
         const res = await axios.put(
           `${BASE_URL}/ex-account/restore/${id}`,
-          values
+          values,
+          {
+            headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+          }
         );
         if (res.status === 200) {
           setIsSuccessModalVisible(true);
@@ -65,6 +73,32 @@ const ExAccountTable = ({
       setSortColumn(columnName);
       setSortDirection("asc");
     }
+  };
+
+  const maxVisibleButtons = 5; // Maximum number of visible page buttons excluding ellipsis
+  const ellipsis = "...";
+  const halfVisibleButtons = Math.floor(maxVisibleButtons / 2);
+
+  const [startPage, setStartPage] = useState(1);
+  const [endPage, setEndPage] = useState(
+    totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
+  );
+
+  const handlePageClick = (pageNumber: any) => {
+    if (pageNumber <= halfVisibleButtons + 1) {
+      setStartPage(1);
+      setEndPage(
+        totalPages > maxVisibleButtons ? maxVisibleButtons : totalPages
+      );
+    } else if (pageNumber >= totalPages - halfVisibleButtons) {
+      setStartPage(totalPages - maxVisibleButtons + 1);
+      setEndPage(totalPages);
+    } else {
+      setStartPage(pageNumber - halfVisibleButtons);
+      setEndPage(pageNumber + halfVisibleButtons);
+    }
+
+    getExAccountPaginateData(pageNumber, exAccountPageSize);
   };
 
   const sortedExAccount = [...exAccount].sort((a, b) => {
@@ -156,7 +190,6 @@ const ExAccountTable = ({
     }
     return 0;
   });
-
   return (
     <div className="w-full lg:mx-auto ">
       {isSuccessModalVisible ? (
@@ -457,33 +490,64 @@ const ExAccountTable = ({
                       </button>
                     </li>
                   ) : null}
-                  {Array.from({ length: totalPages }, (_, index) => {
-                    const pageIndex = index + 1;
-                    return (
-                      <li key={pageIndex}>
-                        <button
-                          onClick={() => {
-                            getExAccountPaginateData(pageIndex);
-                          }}
-                          className={`w-10 h-10 ${
-                            exAccountPage === index + 1
-                              ? "bg-indigo-600 text-white"
-                              : ""
-                          } text-indigo-600  transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
-                        >
-                          {index + 1}
-                        </button>
-                      </li>
-                    );
-                  })}
 
+                  {startPage > 2 && (
+                    <li key="ellipsis-start">
+                      <button
+                        onClick={() => handlePageClick(1)}
+                        className={`w-10 h-10 pagination-button ${
+                          exAccountPage === 1 ? "bg-indigo-600 text-white" : ""
+                        } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                      >
+                        {1}
+                      </button>
+                      <span className="mx-2 dark:text-white">{ellipsis}</span>
+                    </li>
+                  )}
+
+                  {Array.from(
+                    { length: endPage - startPage + 1 },
+                    (_, index) => {
+                      const pageNumber = startPage + index;
+                      return (
+                        <li key={pageNumber}>
+                          <button
+                            onClick={() => handlePageClick(pageNumber)}
+                            className={`w-10 h-10 pagination-button ${
+                              exAccountPage === pageNumber
+                                ? "bg-indigo-600 text-white"
+                                : ""
+                            } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                          >
+                            {pageNumber}
+                          </button>
+                        </li>
+                      );
+                    }
+                  )}
+
+                  {endPage < totalPages && (
+                    <li key="ellipsis-end">
+                      <span className="mx-2 dark:text-white">{ellipsis}</span>
+                      <button
+                        onClick={() => handlePageClick(totalPages)}
+                        className={`w-10 h-10 pagination-button ${
+                          exAccountPage === totalPages
+                            ? "bg-indigo-600 text-white"
+                            : ""
+                        } text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100`}
+                      >
+                        {totalPages}
+                      </button>
+                    </li>
+                  )}
                   {exAccountPage < totalPages ? (
                     <li>
                       <button
                         onClick={() => {
                           getExAccountPaginateData(exAccountPage + 1);
                         }}
-                        className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-indigo-100"
+                        className="flex items-center justify-center w-10 h-10 text-indigo-600 transition-colors duration-150 rounded-full focus:shadow-outline hover:bg-indigo-100"
                       >
                         <svg
                           className="w-4 h-4 fill-current"

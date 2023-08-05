@@ -109,7 +109,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
       };
       setLoading(true);
       const res = await axios.post(`${BASE_URL}/account/create`, values, {
-        withCredentials: true,
+        headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
       });
       if (res.status === 200) {
         const storedNotificationCount =
@@ -129,6 +129,7 @@ const AddMember = ({ setNotificationCount, user, parsedUserData }: any) => {
       console.log(err);
     }
   };
+
   const changeDate = (e: any) => {
     onChange(e);
     setShowRegistDateCalendar(false); // Close the calendar after selecting a date

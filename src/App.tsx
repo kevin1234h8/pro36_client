@@ -24,6 +24,7 @@ import {
   EDIT_MEMBER_PATH,
   LICENSE_EXPIRED_REPORT_PATH,
 } from "./config/config";
+
 import LicenseExpiredReportPage from "./page/LicenseExpiredReportPage";
 import ClientReportPage from "./page/ClientReportPage";
 import PageNotFoundPage from "./page/PageNotFoundPage";
@@ -230,7 +231,7 @@ function App() {
             path={EDIT_MEMBER_PATH}
             element={
               user != undefined && (user?.level === 1 || user?.level === 2) ? (
-                <EditMemberPage user={user} />
+                <EditMemberPage parsedUserData={parsedUserData} user={user} />
               ) : (
                 <UnAuthorizedPage user={user} />
               )
@@ -255,7 +256,10 @@ function App() {
             path="/account-details/:id"
             element={
               user != undefined && (user?.level === 1 || user?.level === 2) ? (
-                <AccountDetailsPage user={user} />
+                <AccountDetailsPage
+                  parsedUserData={parsedUserData}
+                  user={user}
+                />
               ) : (
                 <UnAuthorizedPage user={user} />
               )

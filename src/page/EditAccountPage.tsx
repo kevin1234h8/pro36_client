@@ -21,7 +21,7 @@ import {
   getIndonesianFormattedDateUNION,
 } from "../utils/dateUtils";
 
-const EditAccountPage = ({ user }: any) => {
+const EditAccountPage = ({ user, parsedUserData }: any) => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -236,7 +236,9 @@ const EditAccountPage = ({ user }: any) => {
         modified_by: user?.id,
       };
       setLoading(true);
-      const res = await axios.put(`${BASE_URL}/account/${id}`, values);
+      const res = await axios.put(`${BASE_URL}/account/${id}`, values, {
+        headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+      });
       if (res.status === 200) {
         setLoading(false);
         setIsSuccessModelIsVisible(true);

@@ -16,7 +16,7 @@ import {
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
 
-const DetailsPage = ({ user }: any) => {
+const DetailsPage = ({ user, parsedUserData }: any) => {
   const { id } = useParams();
   const [account, setAccount] = useState<AccountInterface>();
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
@@ -39,6 +39,9 @@ const DetailsPage = ({ user }: any) => {
   }, [id]);
 
   const handleDelete = async () => {
+    const values = {
+      deleted_by: user.id,
+    };
     if (account?.status == "2") {
       toast.error(
         "Cannot delete the account. The account has already been deleted.",
@@ -59,7 +62,9 @@ const DetailsPage = ({ user }: any) => {
       "Are you sure you want to delete your account ?"
     );
     if (confirmed) {
-      const res = await axios.put(`${BASE_URL}/account/delete/${id}`);
+      const res = await axios.put(`${BASE_URL}/account/delete/${id}`, values, {
+        headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
+      });
       if (res.status === 200) {
         setIsSuccessModalVisible(true);
       }

@@ -68,6 +68,7 @@ const ExAccountPage = ({ user, parsedUserData }: any) => {
                 exAccountPage={exAccountPage}
                 setExAccountPage={setExAccountPage}
                 setExAccountSearch={setExAccountSearch}
+                parsedUserData={parsedUserData}
               />
             </div>
           </div>

@@ -7,10 +7,9 @@ import {
   BASE_URL,
   CLIENT_REPORT_PATH,
   LICENSE_EXPIRED_REPORT_PATH,
-  REPORT_PATH,
 } from "../config/config";
-import UploadPhotoModal from "./UploadPhotoModal";
 import { NotificationInterface } from "../interface/NotifactionInterface";
+import UploadPhotoModal from "./UploadPhotoModal";
 
 const Navbar = ({ user, parsedUserData }: any) => {
   const [open, setOpen] = React.useState(false);
@@ -19,10 +18,10 @@ const Navbar = ({ user, parsedUserData }: any) => {
   const [isUploadPhotoModal, setIsUploadPhotoModal] = useState<boolean>(false);
   const [showDropdownMenu, setShowDropdownMenu] = useState<boolean>(false);
   const [openReportMenu, setOpenReportMenu] = useState<boolean>(false);
-  const [showNotification, setShowNotification] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
-  const [showLessNotification, setShowLessNotification] =
-    useState<boolean>(true);
+  // const [showNotification, setShowNotification] = useState<boolean>(false);
+  // const [loading, setLoading] = useState(false);
+  // const [showLessNotification, setShowLessNotification] =
+  useState<boolean>(true);
   const formRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
   const [accountNotifications, setAccountNotifications] = useState<

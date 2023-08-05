@@ -110,11 +110,11 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       const tableHeight = tableData.length * rowHeight;
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
-      doc.text(
-        "Nb. Sort berdasarkan Expired Date",
-        15,
-        startY + tableHeight + 10
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan Expired Date",
+      //   15,
+      //   startY + tableHeight + 10
+      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -134,11 +134,11 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
 
-      doc.text(
-        "Nb. Sort berdasarkan Expired Date",
-        15,
-        startY + rowHeight + 10
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan Expired Date",
+      //   15,
+      //   startY + rowHeight + 10
+      // );
     }
     doc.setFontSize(16);
     doc.setFont("helvetica", "normal");
@@ -192,11 +192,11 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       const tableHeight = tableData.length * rowHeight;
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
-      doc.text(
-        "Nb. Sort berdasarkan Expired Date",
-        15,
-        startY + tableHeight + 10
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan Expired Date",
+      //   15,
+      //   startY + tableHeight + 10
+      // );
     } else {
       autoTable(doc, {
         startY: startY,
@@ -216,11 +216,11 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
       doc.setFontSize(10);
       doc.setFont("helvetica", "italic");
 
-      doc.text(
-        "Nb. Sort berdasarkan Expired Date",
-        15,
-        startY + rowHeight + 10
-      );
+      // doc.text(
+      //   "Nb. Sort berdasarkan Expired Date",
+      //   15,
+      //   startY + rowHeight + 10
+      // );
     }
     doc.setFontSize(16);
     doc.setFont("helvetica", "normal");
