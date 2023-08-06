@@ -194,7 +194,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     try {
       const getMemberAccounts = async () => {
         const res = await axios.get(
-          `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
+          `${BASE_URL}/input-invoice/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}`,
           {
             headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
           }
@@ -266,7 +266,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     setLoadingImportMemberAccount(true);
     try {
       const res = await axios.get(
-        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}&searchBy=${searchMemberAccountByQuery}`,
+        `${BASE_URL}/input-invoice/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}&searchBy=${searchMemberAccountByQuery}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       if (res.status === 200) {
@@ -511,9 +511,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         detail.period_to,
         parseInt(detail.account_no),
         detail.broker_name,
-        parseInt(detail.profit),
-        parseInt((detail.profit * (serviceFeeRef.current / 100)).toFixed(2)),
-        parseInt(
+        parseFloat(detail.profit),
+        parseFloat((detail.profit * (serviceFeeRef.current / 100)).toFixed(2)),
+        parseFloat(
           (detail.profit * (serviceFeeRef.current / 100) * rate).toFixed(2)
         ),
         user?.id,

@@ -15,6 +15,7 @@ import datas from "../data/datas.json";
 import { AccountInterface } from "../interface/AccountInterface";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import {
+  changeDateFormatAndIncrementHour,
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
@@ -58,7 +59,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
   const getPaginateData = async (newPage: number, newPageSize: number) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDateValue.startDate}&endDate=${endDateValue.endDate}}&recruiter=${recruiter}`,
+        `${BASE_URL}/license-expired-report?page=${newPage}&pageSize=${newPageSize}&search=${search}&startDate=${startDateValue.startDate}&endDate=${endDateValue.endDate}&recruiter=${recruiter}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       setLicenseExpiredAccounts(res.data.licenseExpiredAccounts);
@@ -79,7 +80,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
           index + 1,
           account.client_name,
           account.account_no,
-          getIndonesianFormattedDate(getFormattedDate(account.expired_date)),
+          changeDateFormatAndIncrementHour(account.expired_date),
           account.recruit_by,
           account.vps,
           account.ea_name,
@@ -170,7 +171,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
           index + 1,
           account.client_name,
           account.account_no,
-          getIndonesianFormattedDate(getFormattedDate(account.expired_date)),
+          changeDateFormatAndIncrementHour(account.expired_date),
           account.recruit_by,
           account.vps,
           account.ea_name,
@@ -382,7 +383,6 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
 
   let customPageNumber = 0;
   const handlePageClick = (event: any) => {
-    console.log("page : ", event.selected + 1);
     customPageNumber = event.selected + 1;
     getPaginateData(event.selected + 1, pageSize);
   };
@@ -613,7 +613,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                 </svg>
               </span>
               <input
-                placeholder="Search"
+                placeholder="Search Account No"
                 className="appearance-none rounded-r rounded-l sm:rounded-l-none border border-gray-400 border-b block pl-8 pr-6 py-2 w-full bg-white text-sm  md:text-base lg:text-lg placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none dark:text-white dark:bg-[#0e1011] dark:focus:bg-[#0e1011] dark:focus:text-white"
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyPress={(e) => {
@@ -729,8 +729,8 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info">
                                         <p className="table-row text-center">
-                                          {getIndonesianFormattedDate(
-                                            getFormattedDate(user.expired_date)
+                                          {changeDateFormatAndIncrementHour(
+                                            user.expired_date
                                           )}
                                         </p>
                                       </div>

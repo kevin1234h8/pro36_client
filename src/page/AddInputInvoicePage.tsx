@@ -800,7 +800,10 @@ const InvoiceDocument = ({
     setLoading(false);
 
     setIsSuccessModalVisible(true);
-    doc.save(`${invoiceNo}_invoice.pdf`);
+    // doc.save(`${invoiceNo}_invoice.pdf`);
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, "_blank");
   };
 
   const previewPDF = async () => {
@@ -1222,7 +1225,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     setLoadingImportMemberAccount(true);
     try {
       const res = await axios.get(
-        `${BASE_URL}/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}&searchBy=${searchMemberAccountByQuery}`,
+        `${BASE_URL}/input-invoice/account?pageSize=100&search=${memberAccountSearchQuery}&createdDate=${createdDateMemberAccount}&searchBy=${searchMemberAccountByQuery}`,
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
       if (res.status === 200) {

@@ -25,6 +25,7 @@ const ImportAccountModal = ({
   oneMonthAgo.setMonth(currentDate.getMonth() - 1);
   var threeMonthsAgo = new Date(currentDate);
   threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+  console.log(currentDate.toISOString().substring(0, 10));
   return (
     <div
       className="min-w-screen  h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-[100] outline-none focus:outline-none bg-no-repeat bg-center bg-cover"
