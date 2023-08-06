@@ -378,7 +378,7 @@ const NewAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {changeDateFormatAndNotIncrementHour(
+                                  {changeDateFormatAndIncrementHour(
                                     user.expired_date
                                   )}
                                 </p>
@@ -442,7 +442,7 @@ const NewAccountTable = ({
                   </table>
                 </div>
               </div>
-              <div className="flex items-center  justify-between my-10 ">
+              <div className="flex items-center justify-between my-10 ">
                 <div></div>
                 <ul className="inline-flex space-x-2">
                   <ReactPaginate
@@ -471,7 +471,7 @@ const NewAccountTable = ({
                     activeLinkClassName="bg-indigo-600 text-white"
                   />
                 </ul>
-                <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                <div className="text-xs text-indigo-600 md:text-base lg:text-base">
                   Showing {firstItemIndex} - {lastItemIndex} of {totalAccount}{" "}
                   Account(s)
                 </div>

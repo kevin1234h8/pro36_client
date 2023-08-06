@@ -14,7 +14,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-calendar/dist/Calendar.css";
 import {
   changeDateFormatToDDMMYYYY,
-  formatDateFromLongStringToDDMMYYYY,
   formatDateToYYYYMMDD,
   getFormattedDate,
   getIndonesianFormattedDate,
@@ -85,7 +84,7 @@ const EditAccountPage = ({ user, parsedUserData }: any) => {
 
   const parseDateStringExpiredDate = (dateString: any) => {
     const parts = dateString.split("-");
-    const day = parseInt(parts[0], 10);
+    const day = parseInt(parts[0], 10) + 1;
     const month = parseInt(parts[1], 10) - 1; // Subtract 1 to get zero-based month
     const year = parseInt(parts[2], 10);
     return new Date(year, month, day);
@@ -140,36 +139,9 @@ const EditAccountPage = ({ user, parsedUserData }: any) => {
     onChangeExpiredDate(parseDateStringExpiredDate(formattedExpiredDate));
   }, [registDate, expiredDate]);
 
-  // useEffect(() => {
-  //   onChange(parseDateString(registDate));
-  //   onChangeExpiredDate(parseDateString(expiredDate));
-  // }, [registDate, expiredDate]);
-
-  // const formattedRegistDate = value
-  //   .toLocaleDateString("en-GB", {
-  //     day: "2-digit",
-  //     month: "2-digit",
-  //     year: "numeric",
-  //   })
-  //   .replace(/\//g, "-");
-  function formatExpiredDate(dateString: any) {
-    // Convert the date string to a Date object
-    const dateObj = new Date(dateString);
-
-    // Get the day, month, and year from the Date object
-    const day = dateObj.getUTCDate().toString().padStart(2, "0");
-    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
-    const year = dateObj.getUTCFullYear();
-
-    // Combine the parts to form the desired format
-    const formattedDate = `${day}-${month}-${year}`;
-
-    return formattedDate;
-  }
   const formatRegistDateToDDMMYYYY = changeDateFormatToDDMMYYYY(value);
   const formatExpiredDateToDDMMYYYY =
     changeDateFormatToDDMMYYYY(valueExpiredDate);
-
   const formatRegistDateToYYYYMMDD = formatDateToYYYYMMDD(
     formatRegistDateToDDMMYYYY
   );
@@ -180,7 +152,6 @@ const EditAccountPage = ({ user, parsedUserData }: any) => {
   const formattedRegistDate = getIndonesianFormattedDate(
     getFormattedDate(registDate)
   );
-
   const formattedExpiredDate = valueExpiredDate
     .toLocaleDateString("en-GB", {
       day: "2-digit",
