@@ -407,7 +407,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
         />
       ) : null}
 
-      <Navbar user={user} avatar={avatar} />
+      <Navbar user={user} avatar={avatar} parsedUserData={parsedUserData} />
       <Breadcrumb />
       <div className="w-full dark:bg-[#0e1011] lg:mx-auto lg:px-24 ">
         <div className="mx-auto max-w-7xl">

@@ -89,7 +89,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
           redirectLink={`/input-invoice`}
         />
       ) : null}
-      <Navbar user={user} />
+      <Navbar user={user} parsedUserData={parsedUserData} />
       <Breadcrumb />
       <div className="add-member-container lg:mx-[10rem] dark:text-white   ">
         <div className="add-member-form w-100">

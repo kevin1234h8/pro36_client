@@ -50,7 +50,7 @@ const ExAccountPage = ({ user, parsedUserData }: any) => {
   ) : (
     <div className="relative bg-[#fafafa]  dark:bg-[#0e1011]">
       <div>
-        <Navbar user={user} />
+        <Navbar user={user} parsedUserData={parsedUserData} />
         <Breadcrumb />
         <div className="main">
           <div className={`main__content pt-[32px] pb-[32px] w-full h-screen`}>

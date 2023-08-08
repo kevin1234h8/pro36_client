@@ -420,7 +420,7 @@ const Navbar = ({ user, parsedUserData }: any) => {
                 </form>
 
                 <div className="text-base font-medium text-gray-500 whitespace-nowrap hover:text-gray-900 dark:hover:text-red-500 ">
-                  {user?.username}
+                  {parsedUserData?.data.name}
                 </div>
 
                 <div

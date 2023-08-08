@@ -101,7 +101,7 @@ const DetailsPage = ({ user, parsedUserData }: any) => {
           redirectLink={`/new-account`}
         />
       ) : null}
-      <Navbar user={user} />
+      <Navbar user={user} parsedUserData={parsedUserData} />
       <Breadcrumb />
       <div className="add-member-container lg:mx-[10rem] dark:text-white   ">
         <div className="add-member-form w-100">

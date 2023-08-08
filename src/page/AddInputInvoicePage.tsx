@@ -1325,7 +1325,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
     <LoadingSpinner />
   ) : (
     <div className="dark:bg-[#0e1011] pb-10 ">
-      <Navbar user={user} />
+      <Navbar user={user} parsedUserData={parsedUserData} />
       {isImportMemberAccountModalVisible ? (
         <ImportMemberAccountModal
           setSearchMemberAccountByQuery={setSearchMemberAccountByQuery}

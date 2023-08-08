@@ -72,8 +72,8 @@ function App() {
         });
         if (res.data.user) {
           setUser(res.data.user);
+          console.log(res.data.user);
         }
-        // setLoading(false);
         setUserDataFetched(true); // Mark that user data has been fetched
       } catch (err) {
         console.log(err);

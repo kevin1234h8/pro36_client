@@ -81,7 +81,7 @@ const AddUser = ({ user, parsedUserData }: any) => {
           redirectLink="/add-user"
         />
       ) : null}
-      <Navbar user={user} />
+      <Navbar user={user} parsedUserData={parsedUserData} />
       <div className="add-member-container  lg:mx-[10rem]  dark:text-white  ">
         <div className="add-member-form w-100">
           <h2 className="add-member-form-title">Add User</h2>

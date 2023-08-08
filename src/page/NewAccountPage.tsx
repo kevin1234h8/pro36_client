@@ -25,7 +25,6 @@ const HomePage = ({
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  console.log(search);
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
 
@@ -83,7 +82,6 @@ const HomePage = ({
       }
       setAccount(res.data.accounts);
       setTotalAccount(res.data.totalAccount);
-      console.log(res.data.totalAccount);
       setPage(newPage);
     } catch (err) {
       console.log(err);

@@ -415,7 +415,6 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
 
   let customPageNumber = 0;
   const handlePageClick = (event: any) => {
-    console.log("page : ", event.selected + 1);
     customPageNumber = event.selected + 1;
     getPaginateData(event.selected + 1, pageSize);
   };
@@ -437,7 +436,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
         />
       ) : null}
 
-      <Navbar user={user} avatar={avatar} />
+      <Navbar user={user} avatar={avatar} parsedUserData={parsedUserData} />
       <Breadcrumb />
       <div className="w-full  lg:mx-auto dark:bg-[#0e1011] lg:px-24 ">
         <div className="mx-auto dark:bg-[#0e1011]  max-w-7xl">
@@ -914,7 +913,7 @@ const ClientReportPage = ({ user, avatar, parsedUserData }: any) => {
                           activeLinkClassName="bg-indigo-600 text-white"
                         />
                       </ul>
-                      <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                      <div className="text-xs text-indigo-600 md:text-base lg:text-base">
                         Showing {firstItemIndex} - {lastItemIndex} of{" "}
                         {ClientReportAccountsCount} Invoice(s)
                       </div>

@@ -635,7 +635,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
 
   let customPageNumber = 0;
   const handlePageClick = (event: any) => {
-    console.log("page : ", event.selected + 1);
     customPageNumber = event.selected + 1;
     getInvoiceSummaryPaginateData(event.selected + 1, invoiceSummaryPageSize);
   };
@@ -644,8 +643,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     firstItemIndex + invoiceSummaryPageSize - 1,
     totalInvoiceSummary
   );
-
-  console.log(inputInvoiceDetails);
 
   return isLoading ? (
     <LoadingSpinner />
@@ -657,7 +654,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
           redirectLink={"/input-invoice"}
         />
       ) : null}
-      <Navbar user={user} />
+      <Navbar user={user} parsedUserData={parsedUserData} />
       <Breadcrumb />
       <div className="w-full lg:mx-auto dark:bg-[#0e1011] ">
         <div className="mx-auto max-w-7xl">
