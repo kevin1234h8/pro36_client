@@ -27,7 +27,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
 
   const [licenseExpiredAccountsCount, setLicenseExpiredAccountsCount] =
     useState<number>(0);
-  const [pageSize, setPageSize] = useState<number>(20);
+  const [pageSize, setPageSize] = useState<number>(100);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [recruiter, setRecruiter] = useState<string>("");
