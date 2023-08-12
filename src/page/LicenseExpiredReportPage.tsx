@@ -550,34 +550,34 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                   }}
                 >
                   <option
-                    value="20"
-                    className="text-[6px] md:text-[6px] lg:text-[12px]"
-                  >
-                    20
-                  </option>
-                  <option
-                    value="40"
-                    className="text-[6px] md:text-[6px] lg:text-[12px]"
-                  >
-                    40
-                  </option>
-                  <option
-                    value="60"
-                    className="text-[6px] md:text-[6px] lg:text-[12px]"
-                  >
-                    60
-                  </option>
-                  <option
-                    value="80"
-                    className="text-[6px] md:text-[6px] lg:text-[12px]"
-                  >
-                    80
-                  </option>
-                  <option
                     value="100"
                     className="text-[6px] md:text-[6px] lg:text-[12px]"
                   >
                     100
+                  </option>
+                  <option
+                    value="500"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    500
+                  </option>
+                  <option
+                    value="1000"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    1000
+                  </option>
+                  <option
+                    value="2500"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    2500
+                  </option>
+                  <option
+                    value="5000"
+                    className="text-[6px] md:text-[6px] lg:text-[12px]"
+                  >
+                    5000
                   </option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
