@@ -492,7 +492,7 @@ const ExAccountTable = ({
                     activeLinkClassName="bg-indigo-600 text-white"
                   />
                 </ul>
-                <div className="text-indigo-600 text-xs md:text-base lg:text-base">
+                <div className="text-xs text-indigo-600 md:text-base lg:text-base">
                   Showing {firstItemIndex} - {lastItemIndex} of {totalExAccount}{" "}
                   Ex Account(s)
                 </div>

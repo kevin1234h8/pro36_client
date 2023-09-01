@@ -51,7 +51,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [country, setCountry] = useState("");
   const [bankName, setBankName] = useState("");
   const [beneficiaryName, setBeneficiaryName] = useState("");
-  const [accountNumber, setAccountNumber] = useState<number>(1);
+  const [accountNumber, setAccountNumber] = useState<number>(0);
 
   const periodFrom = useRef<string>("");
   const periodTo = useRef<string>("");
@@ -60,14 +60,13 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const clientNameRef = useRef("");
   const serviceFeeRef = useRef(1);
   const [serviceFee, setServiceFee] = useState<number>(serviceFeeRef.current);
-
   const rateRef = useRef(1);
   const [rate, setRate] = useState<number>(rateRef.current);
   const cityRef = useRef("");
   const countryRef = useRef("");
   const bankNameRef = useRef("");
   const beneficiaryNameRef = useRef("");
-  const accountNumberRef = useRef(1);
+  const accountNumberRef = useRef(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [inputInvoiceDetails, setInputInvoiceDetails] = useState<any>([]);
   const [defaultValue, setDefaultValue] = useState<any>([]);
@@ -104,6 +103,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       setBankName(inputInvoiceSummary.bank_name);
       setBeneficiaryName(inputInvoiceSummary.bank_beneficiary);
       setAccountNumber(inputInvoiceSummary.bank_no);
+
       invoiceNoRef.current = inputInvoiceSummary.no_invoice;
       dateRef.current = inputInvoiceSummary.date;
       clientNameRef.current = inputInvoiceSummary.client_name;
@@ -160,6 +160,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const newValue = parseInt(e.target.value);
     setRate(newValue);
   };
+
+  const handleChangeBankAccountNo = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value);
+    setAccountNumber(newValue);
+  };
+
   const handleChangeServiceFee = (e: ChangeEvent<HTMLInputElement>) => {
     let newValue = parseInt(e.target.value);
     if (newValue > 100) {
@@ -439,7 +445,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         country: countryRef.current,
         bankName: bankNameRef.current,
         beneficiaryName: beneficiaryNameRef.current,
-        bankNo: accountNumberRef.current,
+        bankNo: accountNumber,
         totalAmount: totalAmount,
         modifiedBy: user.id,
       };
@@ -537,7 +543,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
-
   return loading ? (
     <LoadingSpinner />
   ) : (
@@ -712,12 +717,11 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                     <input
                       type="number"
                       name=""
+                      value={accountNumber}
                       defaultValue={accountNumberRef.current}
                       required
                       min={1}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        (accountNumberRef.current = parseInt(e.target.value))
-                      }
+                      onChange={handleChangeBankAccountNo}
                     />
                     <label>Bank Account No</label>
                   </div>
