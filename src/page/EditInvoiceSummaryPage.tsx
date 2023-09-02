@@ -492,20 +492,20 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         values
       );
 
-      const hasInvalidDate = invoiceDetails?.some(
-        (detail: any) =>
-          !dateRegex.test(
-            changeDateFormatAndIncrementHour(detail.period_from)
-          ) ||
-          !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to))
-      );
-      if (hasInvalidDate) {
-        setLoading(false);
-        alert(
-          "Invalid period from or period to date format, please use the format dd-mm-yyyy. For example, 17-05-2023."
-        );
-        return;
-      }
+      // const hasInvalidDate = invoiceDetails?.some(
+      //   (detail: any) =>
+      //     !dateRegex.test(
+      //       changeDateFormatAndIncrementHour(detail.period_from)
+      //     ) ||
+      //     !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to))
+      // );
+      // if (hasInvalidDate) {
+      //   setLoading(false);
+      //   alert(
+      //     "Invalid period from or period to date format, please use the format dd-mm-yyyy. For example, 17-05-2023."
+      //   );
+      //   return;
+      // }
 
       const inputInvoiceDetailsData = invoiceDetails?.map(
         (detail: any, index: number) => {
