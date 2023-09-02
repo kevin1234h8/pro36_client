@@ -424,7 +424,7 @@ const Detail: React.FC<any> = ({
                               <input
                                 type="number"
                                 className="text-center border-none appearance-none cursor-pointer  dark:text-[#a0a1a4]   dark:bg-[#0e1011] "
-                                placeholder="0"
+                                // placeholder="0"
                                 min={1}
                                 value={detail.accountNo}
                                 onChange={(e) =>
@@ -454,7 +454,7 @@ const Detail: React.FC<any> = ({
                               <input
                                 className="text-center  cursor-pointer  dark:text-[#a0a1a4]  dark:bg-[#0e1011] "
                                 type="number"
-                                placeholder="0"
+                                // placeholder="0"
                                 value={detail.profit}
                                 onChange={(e) =>
                                   handleInputChange(index, "profit", e)
@@ -661,12 +661,6 @@ const InvoiceDocument = ({
     const summaryValues = {
       invoiceNo: invoiceNoDate,
       date: todayDate,
-      // .toLocaleDateString("en-GB", {
-      //   day: "2-digit",
-      //   month: "2-digit",
-      //   year: "numeric",
-      // })
-      // .replace(/\//g, "-"),
       clientName,
       serviceFee,
       rate,
@@ -1105,9 +1099,9 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       periodTo: new Date()
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
-      accountNo: 0,
+      accountNo: "",
       broker: "",
-      profit: Number(0),
+      profit: "",
       service: calculateService(Number(profit), rate),
       rupiah: Number(0),
     };
@@ -1128,9 +1122,9 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
       periodTo: new Date()
         .toLocaleDateString("en-GB", options)
         .replace(/\//g, "-"),
-      accountNo: 0,
+      accountNo: "",
       broker: "",
-      profit: Number(0),
+      profit: "",
       service: calculateService(Number(profit), rate),
       rupiah: Number(0),
     };
@@ -1167,7 +1161,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
           ),
           periodTo: changeDateFormatAndIncrementHour(detailsObject.period_to),
           accountNo: detailsObject.account_no,
-          broker: "",
+          broker: detailsObject.broker_name,
           profit: detailsObject.profit,
           service: detailsObject.service_cost,
           rupiah: detailsObject.cost_in_rupiah,
@@ -1191,7 +1185,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
         inputInvoiceDetailsObject.period_to
       ),
       accountNo: inputInvoiceDetailsObject.account_no,
-      broker: "",
+      broker: inputInvoiceDetailsObject.broker_name,
       profit: inputInvoiceDetailsObject.profit,
       service: inputInvoiceDetailsObject.service_cost,
       rupiah: inputInvoiceDetailsObject.cost_in_rupiah,
@@ -1213,7 +1207,7 @@ const AddInputInvoicePage = ({ user, parsedUserData }: any) => {
         .replace(/\//g, "-"),
       accountNo: memberAccounts.account_no,
       broker: "",
-      profit: 0,
+      profit: "",
       service: 0,
       rupiah: 0,
     };

@@ -29,6 +29,14 @@ import {
   formatShortStringDateToYYYYMMDD,
   changeDateFormatAndIncrementHour,
   changeDateFormatAndIncrementDayToYYYYMMDD,
+  changeDateFormatAndNotIncrementDayPlus1ToYYYYMMDD,
+  format,
+  formatDate,
+  reformatDate,
+  convertToShortDateFormat,
+  addDaysToDate,
+  convertToShortDateFormatSwapMonthAndDays,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
 } from "../utils/dateUtils";
 
 const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
@@ -86,7 +94,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [details, setDetails] = useState<InputInvoiceDetails[]>([]);
   const parts = dateRef.current.split("-");
   // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  const formattedDate = changeDateFormatAndIncrementHour(dateRef.current);
+  const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(
+    dateRef.current
+  );
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
@@ -247,9 +257,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       period_to: convertToDDMMYYYY(
         new Date().toLocaleDateString("en-GB", options).replace(/\//g, "-")
       ),
-      account_no: 0,
+      account_no: "",
       broker_name: "",
-      profit: Number(0),
+      profit: "",
       service: Number(0),
       rupiah: Number(0),
     };
@@ -298,7 +308,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       ),
       account_no: memberAccounts.account_no,
       broker_name: "",
-      profit: 0,
+      profit: "",
       service: 0,
       rupiah: 0,
     };
@@ -341,7 +351,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         inputInvoiceDetailsObject.period_to
       ),
       account_no: inputInvoiceDetailsObject.account_no,
-      broker_name: "",
+      broker_name: inputInvoiceDetailsObject.broker_name,
       profit: inputInvoiceDetailsObject.profit,
       service_cost: inputInvoiceDetailsObject.service_cost,
       cost_in_rupiah: inputInvoiceDetailsObject.cost_in_rupiah,
@@ -371,6 +381,21 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   };
+
+  const values = {
+    periodFrom: periodFrom.current,
+    periodTo: periodTo.current,
+    clientName: clientNameRef.current,
+    serviceFee: serviceFee,
+    rate: rate,
+    city: cityRef.current,
+    country: countryRef.current,
+    bankName: bankNameRef.current,
+    beneficiaryName: beneficiaryNameRef.current,
+    bankNo: accountNumber,
+    modifiedBy: user.id,
+  };
+
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [createdDate, setCreatedDate] = useState<string>("");
@@ -382,7 +407,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     );
     setSearchResults(res.data.inputInvoiceSummary);
   };
-
   const handleImport = async (id: string) => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-summary/${id}`
@@ -416,13 +440,24 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       setInvoiceDetails(newDetails);
     }
   };
-
   const [searchMessage, setSearchMessage] = useState("");
+  const format1Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+  const format2Regex = /^\d{2}-\d{2}-\d{4}$/;
+  function formatDate(input: any) {
+    if (format1Regex.test(input)) {
+      return addDaysToDate(input);
+    } else if (format2Regex.test(input)) {
+      return convertToShortDateFormatSwapMonthAndDays(input);
+    } else {
+      console.log("Invalid format");
+    }
+  }
 
   const handleUpdate = async (id: string, invoiceNo: string) => {
     setLoading(true);
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
+
       if (!dateRegex.test(formattedDate)) {
         alert(
           "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
@@ -435,6 +470,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           : (detail.profit * (serviceFee / 100) * rate).toFixed(2);
         return sum + parseFloat(amount);
       }, 0);
+
       const values = {
         periodFrom: periodFrom.current,
         periodTo: periodTo.current,
@@ -449,6 +485,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         totalAmount: totalAmount,
         modifiedBy: user.id,
       };
+
       const res = await axios.put(
         `${BASE_URL}/input-invoice/input-invoice-summary/${id}/${invoiceNo}`,
         values
@@ -469,11 +506,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         );
         return;
       }
+
       const inputInvoiceDetailsData = invoiceDetails?.map(
         (detail: any, index: number) => {
           return [
-            changeDateFormatAndIncrementDayToYYYYMMDD(detail.period_from),
-            changeDateFormatAndIncrementDayToYYYYMMDD(detail.period_to),
+            formatDate(detail.period_from),
+            formatDate(detail.period_to),
             parseInt(detail.account_no),
             detail.broker_name,
             parseFloat(detail.profit),
@@ -798,9 +836,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                               <p className="flex items-center justify-center gap-2">
                                 <input
                                   type="text"
-                                  className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
+                                  className="text-center  dark:text-[hsl(225,2%,64%)] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                   min={1}
-                                  defaultValue={changeDateFormatAndIncrementHour(
+                                  defaultValue={changeDateFormatAndNotIncrementHourWithAddedDate(
                                     detail.period_from
                                   )}
                                   onChange={(e) =>
@@ -822,7 +860,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                   type="text"
                                   className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
                                   min={1}
-                                  defaultValue={changeDateFormatAndIncrementHour(
+                                  defaultValue={changeDateFormatAndNotIncrementHourWithAddedDate(
                                     detail.period_to
                                   )}
                                   onChange={(e) =>
@@ -863,7 +901,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                 <input
                                   type="number"
                                   className="text-center  dark:text-[#a0a1a4] border-none appearance-none cursor-pointer  dark:bg-[#0e1011] "
-                                  placeholder="0"
+                                  // placeholder="0"
                                   min={1}
                                   defaultValue={detail.account_no}
                                   onChange={(e) =>
@@ -897,7 +935,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                                 <input
                                   className="text-center  dark:bg-[#0e1011]  dark:text-[#a0a1a4]  cursor-pointer "
                                   type="number"
-                                  placeholder="0"
+                                  // placeholder="0"
                                   defaultValue={detail.profit}
                                   onChange={(e) =>
                                     handleInputChange(
@@ -914,11 +952,11 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                               <p className="flex items-center justify-center  dark:text-[#a0a1a4] ">
                                 {detail.service_cost === 0
                                   ? (
-                                      parseInt(detail.profit) *
+                                      detail.profit *
                                       (serviceFee / 100)
                                     ).toFixed(2)
                                   : (
-                                      parseInt(detail.profit) *
+                                      detail.profit *
                                       (serviceFee / 100)
                                     ).toFixed(2)}
                               </p>

@@ -2,9 +2,9 @@ export interface DetailRow {
   id: string;
   periodFrom: string;
   periodTo: string;
-  accountNo: number;
+  accountNo: string;
   broker: string;
-  profit: number;
+  profit: string;
   service: number;
   rupiah: number;
 }

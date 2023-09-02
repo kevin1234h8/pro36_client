@@ -15,6 +15,8 @@ import { formatNumberToIDR } from "../utils/numberUtils";
 import {
   changeDateFormat,
   changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   formatDateToDDMMYYYY,
   formatShortDateFromYYYYMMDDToDDMMYYYY,
   getFormattedDate,
@@ -334,11 +336,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
             ? "Rp" + detail.rupiah
             : "Rp" +
               parseFloat(
-                (
-                  parseInt(detail.profit) *
-                  (data.service_fee / 100) *
-                  data.rate
-                ).toFixed(2)
+                (detail.profit * (data.service_fee / 100) * data.rate).toFixed(
+                  2
+                )
               ).toLocaleString("id-ID", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -821,7 +821,7 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                                   className=" table-row__td"
                                 >
                                   <div className="table-row__info">
-                                    {changeDateFormatAndIncrementHour(
+                                    {changeDateFormatAndNotIncrementHourWithAddedDate(
                                       details.date
                                     )}
                                   </div>
