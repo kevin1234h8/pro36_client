@@ -492,10 +492,13 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         values
       );
 
-      const hasInvalidDate = invoiceDetails?.some((detail: any) => {
-        !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_from)) ||
-          !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to));
-      });
+      const hasInvalidDate = invoiceDetails?.some(
+        (detail: any) =>
+          !dateRegex.test(
+            changeDateFormatAndIncrementHour(detail.period_from)
+          ) ||
+          !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to))
+      );
       if (hasInvalidDate) {
         setLoading(false);
         alert(
