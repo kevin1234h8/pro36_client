@@ -207,6 +207,18 @@ export const incrementHourInISOString = (originalDate: any) => {
   return updatedISOString;
 };
 
+export function changeDateFormatFromYYYYMMDDToDDMMYYYY(inputDate: string) {
+  const parts = inputDate.split("-");
+  if (parts.length === 3) {
+    // Reorder the parts to "dd-mm-yyyy"
+    const newDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return newDate;
+  } else {
+    // Handle invalid input or different formats
+    return inputDate; // Return as is
+  }
+}
+
 export const changeDateFormatAndIncrementHour = (originalDate: any) => {
   const updatedDate = new Date(originalDate);
 

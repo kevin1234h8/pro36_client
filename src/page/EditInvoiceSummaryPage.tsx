@@ -335,7 +335,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   }
-
+  console.log(invoiceDetails);
   const handleImportInvoiceDetails = async (invoiceDetailsId: string) => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${invoiceDetailsId}`
@@ -445,9 +445,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const format2Regex = /^\d{2}-\d{2}-\d{4}$/;
 
   function formatDate(input: any) {
-    console.log(input);
-    console.log(format1Regex.test(input));
-    console.log(format2Regex.test(input));
     if (format1Regex.test(input)) {
       return addDaysToDate(input);
     } else if (format2Regex.test(input)) {
@@ -495,14 +492,10 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         values
       );
 
-      const hasInvalidDate = invoiceDetails?.some(
-        (detail: any) =>
-          !dateRegex.test(
-            changeDateFormatAndIncrementHour(detail.period_from)
-          ) ||
-          !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to))
-      );
-
+      const hasInvalidDate = invoiceDetails?.some((detail: any) => {
+        !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_from)) ||
+          !dateRegex.test(changeDateFormatAndIncrementHour(detail.period_to));
+      });
       if (hasInvalidDate) {
         setLoading(false);
         alert(
@@ -569,8 +562,8 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
 
       const addDetailsValues = addDetails?.map((detail: any, index: number) => [
         detail.no_invoice,
-        detail.period_from,
-        detail.period_to,
+        formatDate(detail.period_from),
+        formatDate(detail.period_to),
         parseInt(detail.account_no),
         detail.broker_name,
         parseFloat(detail.profit),
@@ -581,6 +574,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         user?.id,
         user?.id,
       ]);
+      console.log("addDetailsValues", addDetailsValues);
       if (addDetailsValues.length > 0) {
         const invoiceDetailsCreateRes = await axios.post(
           `${BASE_URL}/input-invoice/input-invoice-details/create`,
