@@ -523,20 +523,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           ];
         }
       );
-      const hasEmptyOrNullComponent = inputInvoiceDetailsData.some((item) =>
-        item.some(
-          (component) =>
-            component === null || component === undefined || component === ""
-        )
-      );
-
-      if (hasEmptyOrNullComponent) {
-        alert("please fill all of the field in invoice details.");
-        setLoading(false);
-        return;
-      } else {
-        // Your code when all components are not empty or null
-      }
 
       if (removedDetails.length > 0) {
         const removeInputInvoiceDetailsData = removedDetails?.map(
@@ -564,9 +550,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         detail.no_invoice,
         formatDate(detail.period_from),
         formatDate(detail.period_to),
-        parseInt(detail.account_no),
+        parseInt(detail.account_no) || "",
         detail.broker_name,
-        parseFloat(detail.profit),
+        parseFloat(detail.profit) || "",
         parseFloat((detail.profit * (serviceFeeRef.current / 100)).toFixed(2)),
         parseFloat(
           (detail.profit * (serviceFeeRef.current / 100) * rate).toFixed(2)
@@ -574,7 +560,21 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
         user?.id,
         user?.id,
       ]);
-      console.log("addDetailsValues", addDetailsValues);
+      //   const addDetailsValues = inputInvoiceDetailsData.some((item) =>
+      //   item.some(
+      //     (component) =>
+      //       component === null || component === undefined || component === ""
+      //   )
+      // );
+
+      // if (hasEmptyOrNullComponent) {
+      //   alert("please fill all of the field in invoice details.");
+      //   setLoading(false);
+      //   return;
+      // } else {
+      //   // Your code when all components are not empty or null
+      // }
+
       if (addDetailsValues.length > 0) {
         const invoiceDetailsCreateRes = await axios.post(
           `${BASE_URL}/input-invoice/input-invoice-details/create`,
