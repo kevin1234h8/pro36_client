@@ -350,15 +350,27 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       const formattedTotalAmount = formatNumberToIDR(
         parseFloat(data.total_amount).toFixed(2)
       );
+      const boldFontStyle = "bold";
       const totalRow = [
-        "Total",
+        { content: "Total", fontStyle: boldFontStyle }, // Set the font style to bold
         "",
         "",
         "",
         "",
-        "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
-        "$" + formatNumberToIDR(parseFloat(totalFee).toFixed(2)),
-        "Rp" + formatNumberToIDR(parseFloat(data.total_amount).toFixed(2)),
+        {
+          content:
+            "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
+          fontStyle: boldFontStyle,
+        },
+        {
+          content: "$" + formatNumberToIDR(parseFloat(totalFee).toFixed(2)),
+          fontStyle: boldFontStyle,
+        },
+        {
+          content:
+            "Rp" + formatNumberToIDR(parseFloat(data.total_amount).toFixed(2)),
+          fontStyle: boldFontStyle,
+        },
       ];
       rows.push(totalRow);
       // Set table properties

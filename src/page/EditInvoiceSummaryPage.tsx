@@ -443,13 +443,17 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [searchMessage, setSearchMessage] = useState("");
   const format1Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
   const format2Regex = /^\d{2}-\d{2}-\d{4}$/;
+
   function formatDate(input: any) {
+    console.log(input);
+    console.log(format1Regex.test(input));
+    console.log(format2Regex.test(input));
     if (format1Regex.test(input)) {
       return addDaysToDate(input);
     } else if (format2Regex.test(input)) {
       return convertToShortDateFormatSwapMonthAndDays(input);
     } else {
-      console.log("Invalid format");
+      return input;
     }
   }
 
@@ -526,6 +530,20 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           ];
         }
       );
+      const hasEmptyOrNullComponent = inputInvoiceDetailsData.some((item) =>
+        item.some(
+          (component) =>
+            component === null || component === undefined || component === ""
+        )
+      );
+
+      if (hasEmptyOrNullComponent) {
+        alert("please fill all of the field in invoice details.");
+        setLoading(false);
+        return;
+      } else {
+        // Your code when all components are not empty or null
+      }
 
       if (removedDetails.length > 0) {
         const removeInputInvoiceDetailsData = removedDetails?.map(
