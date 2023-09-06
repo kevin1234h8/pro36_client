@@ -447,11 +447,11 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const format2Regex = /^\d{2}-\d{2}-\d{4}$/;
 
   function formatDate(input: any) {
-    console.log(input);
-    console.log(format1Regex.test(input));
-    console.log(format2Regex.test(input));
+    // console.log(input);
+    // console.log(format1Regex.test(input));
+    // console.log(format2Regex.test(input));
     if (format1Regex.test(input)) {
-      console.log(addDaysToDate(input));
+      // console.log(addDaysToDate(input));
       return addDaysToDate(input);
     } else if (format2Regex.test(input)) {
       return convertToShortDateFormatSwapMonthAndDays(input);
