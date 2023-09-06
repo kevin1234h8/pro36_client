@@ -72,7 +72,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const rateRef = useRef(1);
   const [rate, setRate] = useState<number>(rateRef.current);
   const cityRef = useRef("");
-  ``;
   const countryRef = useRef("");
   const bankNameRef = useRef("");
   const beneficiaryNameRef = useRef("");
