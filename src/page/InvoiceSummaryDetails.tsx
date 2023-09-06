@@ -7,7 +7,10 @@ import SuccessModal from "../components/SuccessModal";
 import { BASE_URL } from "../config/config";
 import datas from "../data/datas.json";
 import { InputInvoiceSummary } from "../interface/InputInvoiceSummary";
-import { changeDateFormatAndIncrementHour } from "../utils/dateUtils";
+import {
+  changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
+} from "../utils/dateUtils";
 import { goBack } from "../utils/navigationUtils";
 import { formatNumberToIDR } from "../utils/numberUtils";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
@@ -52,7 +55,21 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
       console.log(err);
     }
   }, [id]);
+  const changeDateFormatAndNotIncrementHourWithAddedDateFunction = (
+    originalDate: any
+  ) => {
+    const updatedDate = new Date(originalDate);
+    // Increment the hour by one
+    updatedDate.setUTCHours(updatedDate.getHours() + 7);
 
+    // Format the updated date in the desired format
+    const year: any = updatedDate.getFullYear();
+    const month: any = String(updatedDate.getMonth() + 1).padStart(2, "0");
+    const day: any = String(updatedDate.getDate()).padStart(2, "0");
+    const outputDate = `${day}-${month}-${year}`;
+    console.log(outputDate);
+    return outputDate;
+  };
   const handleDelete = async () => {
     try {
       const values: { deleted_by: string } = {
@@ -111,7 +128,9 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
               <div className="input-box">
                 <input
                   type="text"
-                  value={changeDateFormatAndIncrementHour(invoiceSummary?.date)}
+                  value={changeDateFormatAndNotIncrementHourWithAddedDate(
+                    invoiceSummary?.date
+                  )}
                   name=""
                   required
                   readOnly
@@ -242,7 +261,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         <td data-column="Period To" className="table-row__td ">
                           <div className="table-row__info">
                             <p className="table-row__name w-[100px]  dark:text-[#a0a1a4]">
-                              {changeDateFormatAndIncrementHour(
+                              {changeDateFormatAndNotIncrementHourWithAddedDate(
                                 detail.period_from
                               )}
                             </p>
@@ -254,7 +273,7 @@ const InvoiceSummaryDetails = ({ user, parsedUserData }: any) => {
                         >
                           <div className="table-row__info w-[100px]">
                             <p className="text-center table-row__name   dark:text-[#a0a1a4]">
-                              {changeDateFormatAndIncrementHour(
+                              {changeDateFormatAndNotIncrementHourWithAddedDate(
                                 detail.period_to
                               )}
                             </p>

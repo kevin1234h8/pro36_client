@@ -85,7 +85,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     );
     const parts = data.date.split("-");
     // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    const formattedDate = changeDateFormatAndIncrementHour(data.date);
+    const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(
+      data.date
+    );
     setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceDetails);
     const inputInvoiceDataDetails =
       inputInvoiceDetailsRes.data.inputInvoiceDetails;
@@ -129,8 +131,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       const rows = inputInvoiceDataDetails?.map(
         (detail: any, index: number) => [
           index + 1,
-          changeDateFormatAndIncrementHour(detail.period_from),
-          changeDateFormatAndIncrementHour(detail.period_to),
+          changeDateFormatAndNotIncrementHourWithAddedDate(detail.period_from),
+          changeDateFormatAndNotIncrementHourWithAddedDate(detail.period_to),
           detail.account_no,
           detail.broker_name,
           "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
@@ -280,7 +282,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     );
     const parts = data.date.split("-");
     // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    const formattedDate = changeDateFormatAndIncrementHour(data.date);
+    const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(
+      data.date
+    );
     setInputInvoiceDetails(inputInvoiceDetailsRes.data.inputInvoiceDetails);
     const inputInvoiceDataDetails =
       inputInvoiceDetailsRes.data.inputInvoiceDetails;
@@ -324,8 +328,8 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
       const rows = inputInvoiceDataDetails?.map(
         (detail: any, index: number) => [
           index + 1,
-          changeDateFormatAndIncrementHour(detail.period_from),
-          changeDateFormatAndIncrementHour(detail.period_to),
+          changeDateFormatAndNotIncrementHourWithAddedDate(detail.period_from),
+          changeDateFormatAndNotIncrementHourWithAddedDate(detail.period_to),
           detail.account_no,
           detail.broker_name,
           "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
@@ -818,7 +822,9 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
                           (details: InputInvoiceSummary, index: number) => {
                             const parts = details.date.split("-");
                             const formattedDate =
-                              getIndonesianFormattedDateUNION(details.date);
+                              changeDateFormatAndNotIncrementHourWithAddedDate(
+                                details.date
+                              );
                             return (
                               <tr
                                 key={index}

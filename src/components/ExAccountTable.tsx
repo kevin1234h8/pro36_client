@@ -10,6 +10,7 @@ import { BASE_URL } from "../config/config";
 import ReactPaginate from "react-paginate";
 import {
   changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   formatDateToDDMMYYYY,
 } from "../utils/dateUtils";
 import ExAccountPage from "../page/ExAccountPage";
@@ -359,7 +360,7 @@ const ExAccountTable = ({
                               >
                                 <div className="table-row__info">
                                   <p className="table-row__name w-[100px] dark:text-[#a0a1a4]  ">
-                                    {changeDateFormatAndIncrementHour(
+                                    {changeDateFormatAndNotIncrementHourWithAddedDate(
                                       user.regist_date
                                     )}
                                   </p>
@@ -400,7 +401,7 @@ const ExAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {changeDateFormatAndIncrementHour(
+                                  {changeDateFormatAndNotIncrementHourWithAddedDate(
                                     user.expired_date
                                   )}
                                 </p>

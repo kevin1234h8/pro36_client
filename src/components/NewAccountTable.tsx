@@ -8,6 +8,7 @@ import NoResultsFound from "./NoResultsFound";
 import {
   changeDateFormatAndIncrementHour,
   changeDateFormatAndNotIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   formatDateToDDMMYYYY,
   formatDateToYYYYMMDD,
   getFormattedDate,
@@ -337,7 +338,7 @@ const NewAccountTable = ({
                               >
                                 <div className="table-row__info">
                                   <p className="table-row__name w-[100px]   dark:text-[#a0a1a4] ">
-                                    {changeDateFormatAndIncrementHour(
+                                    {changeDateFormatAndNotIncrementHourWithAddedDate(
                                       user.regist_date
                                     )}
                                   </p>
@@ -378,7 +379,7 @@ const NewAccountTable = ({
                                 className="table-row__td "
                               >
                                 <p className="table-row__info w-[100px]  dark:text-[#a0a1a4] ">
-                                  {changeDateFormatAndIncrementHour(
+                                  {changeDateFormatAndNotIncrementHourWithAddedDate(
                                     user.expired_date
                                   )}
                                 </p>

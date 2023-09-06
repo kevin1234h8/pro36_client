@@ -37,6 +37,7 @@ import {
   addDaysToDate,
   convertToShortDateFormatSwapMonthAndDays,
   changeDateFormatAndNotIncrementHourWithAddedDate,
+  formatDateToYYYYMMDD,
 } from "../utils/dateUtils";
 
 const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
@@ -53,7 +54,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [isSuccessModalVisible, setIsSuccessModalVisible] =
     useState<boolean>(false);
   const [invoiceNo, setInvoiceNo] = useState("");
-  const [date, setDate] = useState("");
   const [clientName, setClientName] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
@@ -65,12 +65,15 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const periodTo = useRef<string>("");
   const invoiceNoRef = useRef("");
   const dateRef = useRef("");
+  const [date, setDate] = useState(dateRef.current);
+  console.log(convertToYYYYMMDD(date));
   const clientNameRef = useRef("");
   const serviceFeeRef = useRef(1);
   const [serviceFee, setServiceFee] = useState<number>(serviceFeeRef.current);
   const rateRef = useRef(1);
   const [rate, setRate] = useState<number>(rateRef.current);
   const cityRef = useRef("");
+  ``;
   const countryRef = useRef("");
   const bankNameRef = useRef("");
   const beneficiaryNameRef = useRef("");
@@ -94,9 +97,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const [details, setDetails] = useState<InputInvoiceDetails[]>([]);
   const parts = dateRef.current.split("-");
   // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(
-    dateRef.current
-  );
+  const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(date);
+  console.log(formattedDate);
+  console.log(changeDateFormatAndNotIncrementHourWithAddedDate(date));
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
@@ -104,7 +107,11 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       );
       const inputInvoiceSummary = res.data.inputInvoiceSummary;
       setInvoiceNo(inputInvoiceSummary.no_invoice);
-      setDate(inputInvoiceSummary.date);
+      setDate(
+        changeDateFormatAndNotIncrementHourWithAddedDate(
+          inputInvoiceSummary.date
+        )
+      );
       setClientName(inputInvoiceSummary.client_name);
       setServiceFee(inputInvoiceSummary.service_fee);
       setRate(inputInvoiceSummary.rate);
@@ -475,6 +482,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       const values = {
         periodFrom: periodFrom.current,
         periodTo: periodTo.current,
+        date: convertToYYYYMMDD(date),
         clientName: clientNameRef.current,
         serviceFee: serviceFee,
         rate: rate,
@@ -587,7 +595,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           }
         );
       }
-
       if (res.status === 200) {
         setLoading(false);
         setIsSuccessModalVisible(true);
@@ -595,6 +602,21 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     } catch (err) {
       console.log(err);
     }
+  };
+  const changeDateFormatAndNotIncrementHourWithAddedDateFunction = (
+    originalDate: any
+  ) => {
+    const updatedDate = new Date(originalDate);
+    // Increment the hour by one
+    updatedDate.setUTCHours(updatedDate.getHours() + 7);
+
+    // Format the updated date in the desired format
+    const year: any = updatedDate.getFullYear();
+    const month: any = String(updatedDate.getMonth() + 1).padStart(2, "0");
+    const day: any = String(updatedDate.getDate()).padStart(2, "0");
+    const outputDate = `${day}-${month}-${year}`;
+    console.log(outputDate);
+    return outputDate;
   };
   return loading ? (
     <LoadingSpinner />
@@ -672,10 +694,10 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                   <div className="input-box">
                     <input
                       type="text"
-                      value={formattedDate}
+                      defaultValue={date}
                       name=""
+                      onChange={(e) => setDate(e.target.value)}
                       required
-                      readOnly
                     />
                     <label>Date</label>
                   </div>

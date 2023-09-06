@@ -13,6 +13,7 @@ import "react-calendar/dist/Calendar.css";
 import {
   changeDateFormatAndIncrementHour,
   changeDateFormatAndNotIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
@@ -199,7 +200,9 @@ const DetailsPage = ({ user, parsedUserData }: any) => {
               <div className="input-box">
                 <input
                   id="RegistDate"
-                  value={changeDateFormatAndIncrementHour(account?.regist_date)}
+                  value={changeDateFormatAndNotIncrementHourWithAddedDate(
+                    account?.regist_date
+                  )}
                   type="text"
                   readOnly
                 />
@@ -208,7 +211,7 @@ const DetailsPage = ({ user, parsedUserData }: any) => {
               <div className="input-box">
                 <input
                   id="RegistDate"
-                  value={changeDateFormatAndIncrementHour(
+                  value={changeDateFormatAndNotIncrementHourWithAddedDate(
                     account?.expired_date
                   )}
                   type="text"

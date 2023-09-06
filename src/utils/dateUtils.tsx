@@ -237,15 +237,15 @@ export const changeDateFormatAndNotIncrementHourWithAddedDate = (
   originalDate: any
 ) => {
   const updatedDate = new Date(originalDate);
-
   // Increment the hour by one
-  updatedDate.setUTCHours(updatedDate.getHours() + 1);
+  updatedDate.setUTCHours(updatedDate.getHours() + 7);
 
   // Format the updated date in the desired format
   const year: any = updatedDate.getFullYear();
   const month: any = String(updatedDate.getMonth() + 1).padStart(2, "0");
   const day: any = String(updatedDate.getDate()).padStart(2, "0");
   const outputDate = `${day}-${month}-${year}`;
+  console.log(outputDate);
   return outputDate;
 };
 

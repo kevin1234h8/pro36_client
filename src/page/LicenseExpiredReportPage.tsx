@@ -16,6 +16,7 @@ import { AccountInterface } from "../interface/AccountInterface";
 import useContainerWidthUtils from "../utils/useContainerWidthUtils";
 import {
   changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   getFormattedDate,
   getIndonesianFormattedDate,
 } from "../utils/dateUtils";
@@ -80,7 +81,9 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
           index + 1,
           account.client_name,
           account.account_no,
-          changeDateFormatAndIncrementHour(account.expired_date),
+          changeDateFormatAndNotIncrementHourWithAddedDate(
+            account.expired_date
+          ),
           account.recruit_by,
           account.vps,
           account.ea_name,
@@ -171,7 +174,9 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
           index + 1,
           account.client_name,
           account.account_no,
-          changeDateFormatAndIncrementHour(account.expired_date),
+          changeDateFormatAndNotIncrementHourWithAddedDate(
+            account.expired_date
+          ),
           account.recruit_by,
           account.vps,
           account.ea_name,
@@ -729,7 +734,7 @@ const LicenseExpiredReportPage = ({ user, avatar, parsedUserData }: any) => {
                                     >
                                       <div className="table-row__info">
                                         <p className="table-row text-center">
-                                          {changeDateFormatAndIncrementHour(
+                                          {changeDateFormatAndNotIncrementHourWithAddedDate(
                                             user.expired_date
                                           )}
                                         </p>

@@ -99,16 +99,6 @@ const EditAccountPage = ({ user, parsedUserData }: any) => {
 
     return `${day}-${month}-${year}`;
   }
-  function formatPeriodDate(inputDate: any) {
-    const parts = inputDate.split("-");
-    if (parts.length !== 3) {
-      // Check if the input date is in the correct format
-      return "Invalid date format";
-    }
-
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return formattedDate;
-  }
 
   function formatDateToLongString(inputDateStr: any) {
     const date = new Date(inputDateStr);

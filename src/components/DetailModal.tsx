@@ -5,6 +5,7 @@ import datas from "../data/datas.json";
 import { BASE_URL } from "../config/config";
 import {
   changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   getIndonesianFormattedDateUNION,
 } from "../utils/dateUtils";
 const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
@@ -43,7 +44,9 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
               <div className="detail-item">
                 <div className="detail-title">Regist Date</div>
                 <div className="detail-value">
-                  {changeDateFormatAndIncrementHour(exAccount?.regist_date)}
+                  {changeDateFormatAndNotIncrementHourWithAddedDate(
+                    exAccount?.regist_date
+                  )}
                 </div>
               </div>
               <div className="detail-item">
@@ -61,7 +64,9 @@ const DetailModal = ({ accountId, setIsDetailModalVisible }: any) => {
               <div className="detail-item">
                 <div className="detail-title">Expired Date</div>
                 <div className="detail-value">
-                  {changeDateFormatAndIncrementHour(exAccount?.expired_date)}
+                  {changeDateFormatAndNotIncrementHourWithAddedDate(
+                    exAccount?.expired_date
+                  )}
                 </div>
               </div>
               <div className="detail-item">
