@@ -66,7 +66,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const invoiceNoRef = useRef("");
   const dateRef = useRef("");
   const [date, setDate] = useState(dateRef.current);
-  console.log(convertToYYYYMMDD(date));
   const clientNameRef = useRef("");
   const serviceFeeRef = useRef(1);
   const [serviceFee, setServiceFee] = useState<number>(serviceFeeRef.current);
@@ -98,8 +97,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const parts = dateRef.current.split("-");
   // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
   const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(date);
-  console.log(formattedDate);
-  console.log(changeDateFormatAndNotIncrementHourWithAddedDate(date));
   useEffect(() => {
     const getInvoiceSummary = async () => {
       const res = await axios.get(
@@ -342,7 +339,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   }
-  console.log(invoiceDetails);
   const handleImportInvoiceDetails = async (invoiceDetailsId: string) => {
     const res = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${invoiceDetailsId}`
@@ -615,7 +611,6 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     const month: any = String(updatedDate.getMonth() + 1).padStart(2, "0");
     const day: any = String(updatedDate.getDate()).padStart(2, "0");
     const outputDate = `${day}-${month}-${year}`;
-    console.log(outputDate);
     return outputDate;
   };
   return loading ? (
