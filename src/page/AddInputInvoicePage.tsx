@@ -32,6 +32,7 @@ const Summary = ({
   invoiceNo,
   clientName,
   date,
+  setDate,
   serviceFee,
   rate,
   city,

@@ -447,7 +447,11 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const format2Regex = /^\d{2}-\d{2}-\d{4}$/;
 
   function formatDate(input: any) {
+    console.log(input);
+    console.log(format1Regex.test(input));
+    console.log(format2Regex.test(input));
     if (format1Regex.test(input)) {
+      console.log(addDaysToDate(input));
       return addDaysToDate(input);
     } else if (format2Regex.test(input)) {
       return convertToShortDateFormatSwapMonthAndDays(input);
@@ -461,12 +465,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
     try {
       const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
 
-      if (!dateRegex.test(formattedDate)) {
-        alert(
-          "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
-        );
-        return;
-      }
+      // if (!dateRegex.test(formattedDate)) {
+      //   alert(
+      //     "Invalid regist date or expired date  format , Please use the format dd-mm-yyyy. For example, 17-05-2023."
+      //   );
+      //   return;
+      // }
       const totalAmount = invoiceDetails.reduce((sum: number, detail: any) => {
         const amount = detail.rupiah
           ? detail.rupiah
