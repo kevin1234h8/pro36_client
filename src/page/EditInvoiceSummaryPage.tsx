@@ -454,11 +454,12 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       // console.log(addDaysToDate(input));
       return addDaysToDate(input);
     } else if (format2Regex.test(input)) {
-      return convertToShortDateFormatSwapMonthAndDays(input);
+      // return formatDateToYYYYMMDD(input);
     } else {
       return input;
     }
   }
+  // console.log("invoiceDetails", invoiceDetails);
 
   const handleUpdate = async (id: string, invoiceNo: string) => {
     setLoading(true);
@@ -514,8 +515,9 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       //   return;
       // }
 
-      const inputInvoiceDetailsData = invoiceDetails?.map(
+      const inputInvoiceDetailsData = invoiceDetails.map(
         (detail: any, index: number) => {
+          console.log(detail.broker_name, detail.period_from, detail.period_to);
           return [
             formatDate(detail.period_from),
             formatDate(detail.period_to),
@@ -533,6 +535,8 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
           ];
         }
       );
+
+      console.log(inputInvoiceDetailsData);
 
       if (removedDetails.length > 0) {
         const removeInputInvoiceDetailsData = removedDetails?.map(
