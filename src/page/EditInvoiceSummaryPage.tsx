@@ -454,7 +454,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
       // console.log(addDaysToDate(input));
       return addDaysToDate(input);
     } else if (format2Regex.test(input)) {
-      // return formatDateToYYYYMMDD(input);
+      return formatDateToYYYYMMDD(input);
     } else {
       return input;
     }
@@ -517,7 +517,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
 
       const inputInvoiceDetailsData = invoiceDetails.map(
         (detail: any, index: number) => {
-          console.log(detail.broker_name, detail.period_from, detail.period_to);
+          // console.log(detail.broker_name, detail.period_from, detail.period_to);
           return [
             formatDate(detail.period_from),
             formatDate(detail.period_to),
