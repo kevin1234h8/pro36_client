@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../config/config";
 import LoadingSpinner from "../components/LoadingSpinner";
+
 const LoginPage = ({ setUser, setLoginInfo, setShowToast }: any) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");

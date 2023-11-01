@@ -83,7 +83,6 @@ const InputInvoicePage = ({ user, parsedUserData }: any) => {
     const inputInvoiceDetailsRes = await axios.get(
       `${BASE_URL}/input-invoice/input-invoice-details/${noInvoice}`
     );
-    const parts = data.date.split("-");
     // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
     const formattedDate = changeDateFormatAndNotIncrementHourWithAddedDate(
       data.date

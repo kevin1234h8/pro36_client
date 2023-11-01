@@ -74,11 +74,11 @@ function App() {
           setUser(res.data.user);
           console.log(res.data.user);
         }
-        setUserDataFetched(true); // Mark that user data has been fetched
+        setUserDataFetched(true);
       } catch (err) {
         console.log(err);
         // setLoading(false);
-        setUserDataFetched(true); // Mark that user data has been fetched even on error
+        setUserDataFetched(true);
       }
     };
     getLoginUser();

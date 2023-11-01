@@ -134,6 +134,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
             headers: { Authorization: "Bearer " + parsedUserData?.accessToken },
           }
         );
+        console.log(res.data);
         setDefaultValue(res.data.inputInvoiceDetails);
         setInputInvoiceDetails(res.data.inputInvoiceDetails);
         setInvoiceDetails(res.data.inputInvoiceDetails);
@@ -464,7 +465,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
   const handleUpdate = async (id: string, invoiceNo: string) => {
     setLoading(true);
     try {
-      const dateRegex = /^\d{2}-\d{2}-\d{4}$/; // Regular expression to match dd-mm-yyyy format
+      // Regular expression to match dd-mm-yyyy format
 
       // if (!dateRegex.test(formattedDate)) {
       //   alert(
@@ -860,6 +861,7 @@ const EditInvoiceSummaryPage = ({ user, parsedUserData }: any) => {
                     </thead>
                     <tbody className="table__tbody">
                       {invoiceDetails?.map((detail: any, index: number) => {
+                        console.log(invoiceDetails);
                         return (
                           <tr
                             key={detail.id}

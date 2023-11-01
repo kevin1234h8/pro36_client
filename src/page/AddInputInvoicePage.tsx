@@ -62,7 +62,7 @@ const Summary = ({
 
     return romanNumerals[month];
   }
-  const monthNumber = date.getMonth() + 1; // Adding 1 to get the month number from 1 to 12
+  const monthNumber = date.getMonth() + 1;
   const romanMonth = convertToRoman(monthNumber);
 
   useEffect(() => {
@@ -616,6 +616,7 @@ const InvoiceDocument = ({
       return;
     }
     // If all date formats are correct, create the array of values
+    const sortIndex = 1;
     const values = details?.map((detail: any, index: number) => [
       invoiceNo,
       formatDateToYYYYMMDD(detail.periodFrom),
@@ -627,8 +628,9 @@ const InvoiceDocument = ({
       (parseFloat(detail.profit) * (serviceFee / 100) * rate).toFixed(2),
       user?.id,
       user?.id,
+      index++,
     ]);
-
+    console.log(values);
     // Continue with the rest of your logic (e.g., submitting the data)
     try {
       const res = await axios.post(
@@ -636,6 +638,7 @@ const InvoiceDocument = ({
         { values },
         { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
       );
+      console.log("res", res);
     } catch (error) {
       console.error(error);
     }
