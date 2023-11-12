@@ -634,12 +634,9 @@ const InvoiceDocument = ({
     try {
       const [inputInvoiceDetailsRes, inputInvoiceSummaryRes] =
         await Promise.all([createDetailRequests, createInvoiceSummaryRequest]);
-      console.log("inputInvoiceDetailsRes", inputInvoiceDetailsRes);
-      console.log("inputInvoiceDetailsRes", inputInvoiceSummaryRes);
       const res = await axios.get(
         `${BASE_URL}/input-invoice/input-invoice-details/${invoiceNo}`
       );
-      console.log(res);
       // setInvoiceDetails(res.data.inputInvoiceDetails);
       const invoiceDetails = res.data.inputInvoiceDetails;
       let isFirstPage = true;
