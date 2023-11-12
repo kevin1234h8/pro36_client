@@ -16,12 +16,14 @@ import { v4 } from "uuid";
 import LoadingSpinner from "../components/LoadingSpinner";
 import {
   changeDateFormatAndIncrementHour,
+  changeDateFormatAndNotIncrementHourWithAddedDate,
   formatDateFromLongStringToDDMMYYYY,
   formatDateToYYYYMMDD,
   getIndonesianFormattedDate,
   getIndonesianFormattedDateUNION,
 } from "../utils/dateUtils";
 import { goBack } from "../utils/navigationUtils";
+import { InputInvoiceDetails } from "../interface/InputInvoiceDetailsInterface";
 const Summary = ({
   setInvoiceNo,
   setServiceFee,
@@ -98,8 +100,8 @@ const Summary = ({
   }, [invoiceNoDate]);
 
   return (
-    <div>
-      <div className="add-member-container lg:mx-[10rem] dark:text-white">
+    <div className="max-w-7xl mx-auto w-auto md:max-w-7xl sm:max-w-lg">
+      <div className="add-member-container  dark:text-white">
         <div className="add-member-form w-100">
           <h2 className="font-bold add-member-form-title">Summary</h2>
           <div className="flex justify-end">
@@ -219,7 +221,7 @@ const TransferTo = ({
 }: any) => {
   return (
     <div>
-      <div className="add-member-container lg:mx-[10rem] dark:text-white ">
+      <div className="add-member-container  max-w-7xl md:max-w-7xl mx-auto w-auto dark:text-white ">
         <div className="add-member-form w-100">
           <h2 className="font-bold add-member-form-title">Transfer To</h2>
           <form className="form lg:w-full">
@@ -267,17 +269,6 @@ const TransferTo = ({
 
 // Detai;l component
 
-interface DetailProps {
-  details: DetailRow[];
-  onAddDetailRow: () => void;
-  onDetailChange: (
-    index: number,
-    field: keyof DetailRow,
-    value: string
-  ) => void;
-  onRemoveDetailRow: (index: number) => void;
-}
-
 const Detail: React.FC<any> = ({
   details,
   serviceFee,
@@ -316,7 +307,7 @@ const Detail: React.FC<any> = ({
   //   });
   // };
   return (
-    <div className=" max-w-7xl">
+    <div className="max-w-7xl  mx-auto w-auto md:max-w-7xl  sm:max-w-lg">
       <div className="flex flex-col items-center font-bold">
         <h2>Detail</h2>
         <div className="flex items-end justify-end"></div>
@@ -351,7 +342,7 @@ const Detail: React.FC<any> = ({
       </div>
       {details.length > 0 ? (
         <div
-          className={`lg:w-full overflow-x-scroll lg:overflow-x-hidden   px-4 md:px-8 lg:px-8  dark:bg-[#0e1011] `}
+          className={`lg:w-full overflow-x-scroll lg:overflow-x-hidden   dark:bg-[#0e1011] `}
           style={{ width: widthStyle }}
         >
           <div className="row row--top-40"></div>
@@ -549,6 +540,10 @@ const InvoiceDocument = ({
   invoiceNoDate,
   parsedUserData,
 }: any) => {
+  const [invoiceDetails, setInvoiceDetails] = useState<InputInvoiceDetails[]>(
+    []
+  );
+
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth() + 1; // Months are zero-indexed, so add 1
@@ -571,84 +566,16 @@ const InvoiceDocument = ({
 
   const generatePDF = async () => {
     setLoading(true);
-    let isFirstPage = true;
-    const doc = new jsPDF();
-    const startY = 80; // Initial Y-coordinate for the table
-    const tableStartY = startY + 10;
-    const rowHeight = 10; // Adjust the row height as needed
 
-    const rows = details?.map((detail: any, index: number) => [
-      index + 1,
-      detail.periodFrom,
-      detail.periodTo,
-      detail.accountNo,
-      detail.broker,
-      "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
-      detail.service
-        ? "$" + detail.service
-        : "$" +
-          formatNumberToIDR((detail.profit * (serviceFee / 100)).toFixed(2)),
-      detail.rupiah
-        ? "Rp" + detail.rupiah
-        : "Rp" +
-          parseFloat(
-            (detail.profit * (serviceFee / 100) * rate).toFixed(2)
-          ).toLocaleString("id-ID", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-            style: "decimal",
-            useGrouping: true,
-          }),
-    ]);
-
-    const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-
-    const hasInvalidDate = details?.some(
-      (detail: any) =>
-        !dateRegex.test(detail.periodFrom) || !dateRegex.test(detail.periodTo)
-    );
-
-    if (hasInvalidDate) {
-      setLoading(false);
-      alert(
-        "Invalid period from or period to date format, please use the format dd-mm-yyyy. For example, 17-05-2023."
-      );
-      return;
-    }
-    // If all date formats are correct, create the array of values
-    const sortIndex = 1;
-    const values = details?.map((detail: any, index: number) => [
-      invoiceNo,
-      formatDateToYYYYMMDD(detail.periodFrom),
-      formatDateToYYYYMMDD(detail.periodTo),
-      detail.accountNo,
-      detail.broker,
-      parseFloat(detail.profit).toFixed(2),
-      (parseFloat(detail.profit) * (serviceFee / 100)).toFixed(2),
-      (parseFloat(detail.profit) * (serviceFee / 100) * rate).toFixed(2),
-      user?.id,
-      user?.id,
-      index++,
-    ]);
-    console.log(values);
-    // Continue with the rest of your logic (e.g., submitting the data)
-    try {
-      const res = await axios.post(
-        `${BASE_URL}/input-invoice/input-invoice-details/create`,
-        { values },
-        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
-      );
-      console.log("res", res);
-    } catch (error) {
-      console.error(error);
-    }
     const totalAmount = details.reduce((sum: number, detail: any) => {
       const amount = detail.rupiah
         ? detail.rupiah
         : (detail.profit * (serviceFee / 100) * rate).toFixed(2);
       return sum + parseFloat(amount);
     }, 0);
+
     setTotalAmountInRupiah(totalAmount.toFixed(2));
+
     const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
     const totalUSDProfit = details.reduce((sum: number, detail: any) => {
       const profit = detail.profit;
@@ -662,6 +589,21 @@ const InvoiceDocument = ({
         : (detail.profit * (serviceFee / 100)).toFixed(2);
       return sum + parseFloat(fee);
     }, 0);
+
+    const values = details?.map((detail: any, index: number) => [
+      invoiceNo,
+      formatDateToYYYYMMDD(detail.periodFrom),
+      formatDateToYYYYMMDD(detail.periodTo),
+      detail.accountNo,
+      detail.broker,
+      parseFloat(detail.profit).toFixed(2),
+      (parseFloat(detail.profit) * (serviceFee / 100)).toFixed(2),
+      (parseFloat(detail.profit) * (serviceFee / 100) * rate).toFixed(2),
+      user?.id,
+      user?.id,
+      index++,
+    ]);
+
     const summaryValues = {
       invoiceNo: invoiceNoDate,
       date: todayDate,
@@ -677,131 +619,281 @@ const InvoiceDocument = ({
       created_by: user?.id,
       owner: user?.id,
     };
+    const createInvoiceSummaryRequest = await axios.post(
+      `${BASE_URL}/input-invoice/input-invoice-summary/create`,
+      summaryValues,
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+    );
+
+    const createDetailRequests = await axios.post(
+      `${BASE_URL}/input-invoice/input-invoice-details/create`,
+      { values },
+      { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+    );
 
     try {
-      const res = await axios.post(
-        `${BASE_URL}/input-invoice/input-invoice-summary/create`,
-        summaryValues,
-        { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+      const [inputInvoiceDetailsRes, inputInvoiceSummaryRes] =
+        await Promise.all([createDetailRequests, createInvoiceSummaryRequest]);
+      console.log("inputInvoiceDetailsRes", inputInvoiceDetailsRes);
+      console.log("inputInvoiceDetailsRes", inputInvoiceSummaryRes);
+      const res = await axios.get(
+        `${BASE_URL}/input-invoice/input-invoice-details/${invoiceNo}`
       );
-    } catch (err) {
-      console.log(err);
-    }
-    const totalRow = [
-      "Total",
-      "",
-      "",
-      "",
-      "",
-      "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
-      "$" + formatNumberToIDR(totalFee.toFixed(2)),
-      "Rp" + formattedTotalAmount,
-    ];
-    rows.push(totalRow);
-    // Set table properties
-    const tableProps = {
-      startY: startY,
-      margin: { top: 150 },
-    };
+      console.log(res);
+      // setInvoiceDetails(res.data.inputInvoiceDetails);
+      const invoiceDetails = res.data.inputInvoiceDetails;
+      let isFirstPage = true;
+      const doc = new jsPDF();
+      const startY = 80; // Initial Y-coordinate for the table
+      const tableStartY = startY + 10;
+      const rowHeight = 10; // Adjust the row height as needed
 
-    const formattedDate = formatDateFromLongStringToDDMMYYYY(date);
+      const rows = invoiceDetails.map((detail: any, index: number) => [
+        index + 1,
+        changeDateFormatAndNotIncrementHourWithAddedDate(detail.period_from),
+        changeDateFormatAndNotIncrementHourWithAddedDate(detail.period_to),
+        detail.account_no,
+        detail.broker_name,
+        "$" + formatNumberToIDR(parseFloat(detail.profit).toFixed(2)),
+        detail.service
+          ? "$" + detail.service
+          : "$" +
+            formatNumberToIDR((detail.profit * (serviceFee / 100)).toFixed(2)),
+        detail.rupiah
+          ? "Rp" + detail.rupiah
+          : "Rp" +
+            parseFloat(
+              (detail.profit * (serviceFee / 100) * rate).toFixed(2)
+            ).toLocaleString("id-ID", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+              style: "decimal",
+              useGrouping: true,
+            }),
+      ]);
 
-    const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
-    const tableData = [tableHeaders, ...rows];
+      const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
 
-    const drawFirstPageContent = () => {
+      const hasInvalidDate = details?.some(
+        (detail: any) =>
+          !dateRegex.test(detail.periodFrom) || !dateRegex.test(detail.periodTo)
+      );
+
+      if (hasInvalidDate) {
+        setLoading(false);
+        alert(
+          "Invalid period from or period to date format, please use the format dd-mm-yyyy. For example, 17-05-2023."
+        );
+        return;
+      }
+      // If all date formats are correct, create the array of values
+      // const values = details?.map((detail: any, index: number) => [
+      //   invoiceNo,
+      //   formatDateToYYYYMMDD(detail.periodFrom),
+      //   formatDateToYYYYMMDD(detail.periodTo),
+      //   detail.accountNo,
+      //   detail.broker,
+      //   parseFloat(detail.profit).toFixed(2),
+      //   (parseFloat(detail.profit) * (serviceFee / 100)).toFixed(2),
+      //   (parseFloat(detail.profit) * (serviceFee / 100) * rate).toFixed(2),
+      //   user?.id,
+      //   user?.id,
+      //   index++,
+      // ]);
+      // console.log(values);
+      // // Continue with the rest of your logic (e.g., submitting the data)
+      // try {
+      //   const res = await axios.post(
+      //     `${BASE_URL}/input-invoice/input-invoice-details/create`,
+      //     { values },
+      //     { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+      //   );
+      //   console.log("res", res);
+      // } catch (error) {
+      //   console.error(error);
+      // }
+
+      // const totalAmount = details.reduce((sum: number, detail: any) => {
+      //   const amount = detail.rupiah
+      //     ? detail.rupiah
+      //     : (detail.profit * (serviceFee / 100) * rate).toFixed(2);
+      //   return sum + parseFloat(amount);
+      // }, 0);
+
+      // setTotalAmountInRupiah(totalAmount.toFixed(2));
+
+      // const formattedTotalAmount = formatNumberToIDR(totalAmount.toFixed(2));
+      // const totalUSDProfit = details.reduce((sum: number, detail: any) => {
+      //   const profit = detail.profit;
+      //   return sum + parseFloat(profit);
+      // }, 0);
+
+      // const totalFee = details.reduce((sum: number, detail: any) => {
+      //   // const fee = Number(detail.service) ;
+      //   const fee = detail.service
+      //     ? detail.service
+      //     : (detail.profit * (serviceFee / 100)).toFixed(2);
+      //   return sum + parseFloat(fee);
+      // }, 0);
+      // const summaryValues = {
+      //   invoiceNo: invoiceNoDate,
+      //   date: todayDate,
+      //   clientName,
+      //   serviceFee,
+      //   rate,
+      //   city,
+      //   country,
+      //   bankName,
+      //   beneficiaryName,
+      //   accountNumber,
+      //   totalAmountInRupiah: totalAmount,
+      //   created_by: user?.id,
+      //   owner: user?.id,
+      // };
+
+      // try {
+      //   const res = await axios.post(
+      //     `${BASE_URL}/input-invoice/input-invoice-summary/create`,
+      //     summaryValues,
+      //     { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+      //   );
+      // } catch (err) {
+      //   console.log(err);
+      // }
+
+      const totalRow = [
+        "Total",
+        "",
+        "",
+        "",
+        "",
+        "$" + formatNumberToIDR(parseFloat(totalUSDProfit).toFixed(2)),
+        "$" + formatNumberToIDR(totalFee.toFixed(2)),
+        "Rp" + formattedTotalAmount,
+      ];
+
+      rows.push(totalRow);
+      // Set table properties
+      const tableProps = {
+        startY: startY,
+        margin: { top: 150 },
+      };
+
+      const formattedDate = formatDateFromLongStringToDDMMYYYY(date);
+
+      const tableHeaders = datas.inputInvoiceDetailsTableHeaders;
+      const tableData = [tableHeaders, ...rows];
+
+      const drawFirstPageContent = () => {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(clientName, 15, 20);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "normal");
+        doc.text(city, 15, 25);
+        doc.text(country, 15, 30);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setFillColor(255, 165, 0); // Orange color
+        doc.rect(15, 43, 70, 10, "F");
+        doc.text("SERVICE FEE", 15, 50);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("SERVICE FEE (%)", 15, 57);
+        doc.text("Rate", 15, 64);
+        doc.setFont("helvetica", "normal");
+        doc.text(serviceFee + "%", 50, 57);
+        doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("Statement Date", 120, 15);
+        doc.text("Statement No.", 120, 20);
+        doc.setFont("helvetica", "normal");
+        doc.text(formattedDate, 170, 15);
+        doc.text(invoiceNo, 170, 20);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFillColor(255, 165, 0); // Orange color
+        doc.rect(118, 43, 80, 10, "F");
+        doc.text("PAYMENT SUMMARY", 120, 50);
+        doc.text("Ammount (Rp)", 170, 50);
+        doc.text("Total", 120, 57);
+        doc.setFont("helvetica", "normal");
+
+        doc.text("Rp" + formattedTotalAmount, 170, 57);
+        isFirstPage = false;
+      };
+      const tableHeight = tableData.length * rowHeight;
+
+      const tableConfig = {
+        startY: tableStartY,
+        head: [tableHeaders],
+        body: rows,
+        didDrawPage: (data: any) => {
+          if (isFirstPage) {
+            // Draw the content at the top of the first page
+            drawFirstPageContent();
+            isFirstPage = false; // Set the flag to false after drawing the first page
+          } else {
+            // Draw the content at the bottom of the table on subsequent pages
+          }
+        },
+      };
+      autoTable(doc, tableConfig);
+
       doc.setFontSize(10);
+      doc.text(
+        "Payment By Transfer To (Full amount in Rupiah)",
+        15,
+        startY + tableHeight + 30
+      );
       doc.setFont("helvetica", "bold");
-      doc.text(clientName, 15, 20);
+      doc.text(bankName, 15, startY + tableHeight + 40);
+      doc.text(beneficiaryName, 15, startY + tableHeight + 45);
+      doc.text(accountNumber.toString(), 15, startY + tableHeight + 50);
+
+      doc.setFont("helvetica", "italic");
+
+      // Set the underline style
+
+      // Set the font size and text color
+      doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "normal");
-      doc.text(city, 15, 25);
-      doc.text(country, 15, 30);
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setFillColor(255, 165, 0); // Orange color
-      doc.rect(15, 43, 70, 10, "F");
-      doc.text("SERVICE FEE", 15, 50);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "bold");
-      doc.text("SERVICE FEE (%)", 15, 57);
-      doc.text("Rate", 15, 64);
-      doc.setFont("helvetica", "normal");
-      doc.text(serviceFee + "%", 50, 57);
-      doc.text("Rp" + formatNumberToIDR(parseFloat(rate).toFixed(2)), 50, 64);
+      // Add the text with underline and italic style
+      doc.rect(8, tableStartY + tableHeight + 65, 195, 10);
+      doc.text(
+        "Please make a payment within 7 days after this statement is issued, otherwise, the software will be deactivated",
+        12,
+        tableStartY + tableHeight + 70
+      );
+      setLoading(false);
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text("Statement Date", 120, 15);
-      doc.text("Statement No.", 120, 20);
-      doc.setFont("helvetica", "normal");
-      doc.text(formattedDate, 170, 15);
-      doc.text(invoiceNo, 170, 20);
+      setIsSuccessModalVisible(true);
+      // doc.save(`${invoiceNo}_invoice.pdf`);
+      const pdfBlob = doc.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, "_blank");
+    } catch (error) {
+      console.error(error);
+    }
 
-      doc.setFont("helvetica", "bold");
-      doc.setFillColor(255, 165, 0); // Orange color
-      doc.rect(118, 43, 80, 10, "F");
-      doc.text("PAYMENT SUMMARY", 120, 50);
-      doc.text("Ammount (Rp)", 170, 50);
-      doc.text("Total", 120, 57);
-      doc.setFont("helvetica", "normal");
+    // const createInvoiceSummary =
 
-      doc.text("Rp" + formattedTotalAmount, 170, 57);
-      isFirstPage = false;
-    };
-    const tableHeight = tableData.length * rowHeight;
-
-    const tableConfig = {
-      startY: tableStartY,
-      head: [tableHeaders],
-      body: rows,
-      didDrawPage: (data: any) => {
-        if (isFirstPage) {
-          // Draw the content at the top of the first page
-          drawFirstPageContent();
-          isFirstPage = false; // Set the flag to false after drawing the first page
-        } else {
-          // Draw the content at the bottom of the table on subsequent pages
-        }
-      },
-    };
-    autoTable(doc, tableConfig);
-
-    doc.setFontSize(10);
-    doc.text(
-      "Payment By Transfer To (Full amount in Rupiah)",
-      15,
-      startY + tableHeight + 30
-    );
-    doc.setFont("helvetica", "bold");
-    doc.text(bankName, 15, startY + tableHeight + 40);
-    doc.text(beneficiaryName, 15, startY + tableHeight + 45);
-    doc.text(accountNumber.toString(), 15, startY + tableHeight + 50);
-
-    doc.setFont("helvetica", "italic");
-
-    // Set the underline style
-
-    // Set the font size and text color
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-
-    // Add the text with underline and italic style
-    doc.rect(8, tableStartY + tableHeight + 65, 195, 10);
-    doc.text(
-      "Please make a payment within 7 days after this statement is issued, otherwise, the software will be deactivated",
-      12,
-      tableStartY + tableHeight + 70
-    );
-    setLoading(false);
-
-    setIsSuccessModalVisible(true);
-    // doc.save(`${invoiceNo}_invoice.pdf`);
-    const pdfBlob = doc.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    window.open(pdfUrl, "_blank");
+    // // Continue with the rest of your logic (e.g., submitting the data)
+    // try {
+    // const res = await axios.post(
+    //   `${BASE_URL}/input-invoice/input-invoice-details/create`,
+    //   { values },
+    //   { headers: { Authorization: "Bearer " + parsedUserData?.accessToken } }
+    // );
+    //   console.log("res", res);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   const previewPDF = async () => {
